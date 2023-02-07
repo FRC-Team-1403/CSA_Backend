@@ -42,11 +42,7 @@ type Firestore struct {
 func (Firestore) Init() (s Firestore, err error) {
 	s.Ctx = context.Background()
 	var file option.ClientOption
-	if debug {
-		file = option.WithCredentialsFile("admin.json")
-	} else {
-		file = option.WithCredentialsFile("microService/firestore_send/admin.json")
-	}
+	file = option.WithCredentialsFile("admin.json")
 	s.App, err = firebase.NewApp(s.Ctx, nil, file)
 	if err != nil {
 		return s, errors.New("Failed due to: " + err.Error())
