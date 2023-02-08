@@ -27,7 +27,7 @@ impl YearData {
         self.cache.insert(loc, json);
         (self, true)
     }
-    pub async fn get_new_data( team : &str, year_check : u16) -> Option<TeamYearAroundJsonParser> {
+    pub async fn get_new_data(team: &str, year_check: u16) -> Option<TeamYearAroundJsonParser> {
         let mut _failed: u8 = 0;
         loop {
             let response = get(&team, year_check).await;
@@ -42,7 +42,7 @@ impl YearData {
             }
         }
     }
-    pub  fn team() -> Vec<u16> {
+    pub fn team() -> Vec<u16> {
         vec![
             613, 714, 747, 752, 816, 869, 896, 1089, 1228, 1257, 1279, 1403, 1626, 1647, 1672,
             1676, 1791, 1807, 1809, 1811, 1812, 1914, 1923, 1989, 2016, 2070, 2180, 2191, 2458,

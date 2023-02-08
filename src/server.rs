@@ -1,6 +1,6 @@
+use log::{info, warn};
 use std::thread;
 use std::time::Duration;
-use log::{info, warn};
 
 use crate::http::year_around::year_around_main::YearData;
 
@@ -8,10 +8,8 @@ pub async fn run() {
     let join = tokio::spawn(async move {
         let mut year = YearData::new();
         loop {
-            let tx_ctx = sentry::TransactionContext::new(
-                "Updating new Year Value",
-                "run() function",
-            );
+            let tx_ctx =
+                sentry::TransactionContext::new("Updating new Year Value", "run() function");
             let transaction = sentry::start_transaction(tx_ctx);
 
             info!("Updating year value: ");
@@ -26,10 +24,7 @@ pub async fn run() {
 async fn update(mut year: YearData) -> YearData {
     let mut error: u8 = 0;
     loop {
-        let tx_ctx = sentry::TransactionContext::new(
-            "Update Year",
-            "Running from update()",
-        );
+        let tx_ctx = sentry::TransactionContext::new("Update Year", "Running from update()");
         let transaction = sentry::start_transaction(tx_ctx);
 
         match year.update(2022).await {

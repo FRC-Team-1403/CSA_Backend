@@ -4,11 +4,11 @@ extern crate core;
 
 use crate::constant::SENTRY_DSN;
 
+mod config;
 mod constant;
 mod db;
 mod http;
 mod server;
-mod config;
 
 #[tokio::main]
 async fn main() {
