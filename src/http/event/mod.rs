@@ -18,7 +18,7 @@ impl Event {
     }
     pub async fn set_match(self, team: &str) -> Result<Self, Self> {
         let Ok(json) = get().await else {
-            return Err(Self);
+            return Err(self);
         };
         if json == self.cache {
             return Ok(self);
