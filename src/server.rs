@@ -8,7 +8,7 @@ pub async fn run() {
     let join = tokio::spawn(async move {
         let mut year = YearData::new();
         loop {
-            info!("Updating year value: {}", year);
+            info!("Updating year value: ");
             year = update(year).await;
             thread::sleep(Duration::from_secs(360))
         }
