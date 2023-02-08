@@ -1,5 +1,6 @@
 use std::thread;
 use std::time::Duration;
+use log::{info, warn};
 
 use crate::http::year_around::year_around_main::YearData;
 
@@ -7,6 +8,7 @@ pub async fn run() {
     let join = tokio::spawn(async move {
         let mut year = YearData::new();
         loop {
+            info!("Updating year value: {}", year);
             year = update(year).await;
             thread::sleep(Duration::from_secs(360))
         }
@@ -27,7 +29,7 @@ async fn update(mut year: YearData) -> YearData {
             }
         }
         if error > 120 {
-            println!("critical Failure, skipping");
+            warn!("critical Failure, skipping");
             return year;
         }
     }
