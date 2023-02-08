@@ -13,10 +13,8 @@ struct Event {
 }
 
 impl Event {
-    pub fn new() -> Self {
-        Self {
-            cache: TeamYearAroundJsonParser,
-        }
+    pub fn new(data: TeamYearAroundJsonParser) -> Self {
+        Self { cache: data }
     }
     pub async fn set_match(self, team: &str) -> Result<Self, Self> {
         let Ok(json) = get().await else {
