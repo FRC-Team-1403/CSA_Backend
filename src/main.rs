@@ -8,6 +8,7 @@ mod constant;
 mod db;
 mod http;
 mod server;
+mod config;
 
 #[tokio::main]
 async fn main() {
