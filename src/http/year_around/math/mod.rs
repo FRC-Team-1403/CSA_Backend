@@ -1,5 +1,5 @@
 use crate::http::shared::{Shared, Team};
-use crate::http::year_around::fuctions::parse::{ScoreBreakdown, TeamYearAroundJsonParser};
+use crate::http::year_around::fuctions::parse::TeamYearAroundJsonParser;
 use std::fmt::Error;
 
 pub struct Data {
