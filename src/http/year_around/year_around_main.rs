@@ -10,6 +10,7 @@ use crate::http::year_around::math::YearAround;
 pub struct YearData {
     pub cache: HashMap<u16, TeamYearAroundJsonParser>,
 }
+
 impl YearData {
     pub fn new() -> Self {
         Self {
@@ -61,15 +62,18 @@ impl YearData {
         let mut good: bool = false;
         for loc in 0..amount + 1 {
             let team = teams[loc].to_string();
-            let data: TeamYearAroundJsonParser = Self::get_new_data(&team, year_check);
+            let Some(data) =
+                Self::get_new_data(&team, year_check).await else {
+                return Err(self);
+            };
             let mut _allow: bool = false;
             (self, _allow) = self.check_cache(data.clone(), &team);
             if _allow {
                 let year = YearAround::new(data).calculate(&team);
                 let Ok(year) = year else {
-                println!("failed to parse data");
-                return Err(self);
-            };
+                    println!("failed to parse data");
+                    return Err(self);
+                };
                 //checking if data exists
                 if year.rp.avg.is_none() {
                     println!("Advanced data unavailable for team {}", &team)

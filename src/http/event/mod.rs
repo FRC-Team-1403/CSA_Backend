@@ -1,9 +1,6 @@
-use crate::db::firebase::Firebase;
 use crate::http::event::get::get;
 use crate::http::event::math::math;
 use crate::http::year_around::fuctions::parse::TeamYearAroundJsonParser;
-use std::collections::HashMap;
-use std::f32::consts::E;
 
 pub mod get;
 pub mod math;
@@ -23,7 +20,7 @@ impl Event {
         if json == self.cache {
             return Ok(self);
         }
-        let Ok(final_data) = math(json, team) else {
+        let Ok(_final_data) = math(json, team) else {
             return Err(self)
         };
         todo!();

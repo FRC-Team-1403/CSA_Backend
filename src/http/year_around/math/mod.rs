@@ -1,10 +1,6 @@
+use crate::http::shared::{Shared, Team};
 use crate::http::year_around::fuctions::parse::{ScoreBreakdown, TeamYearAroundJsonParser};
 use std::fmt::Error;
-
-enum Team {
-    Blue,
-    Red,
-}
 
 pub struct Data {
     pub avg: f32,
@@ -50,6 +46,7 @@ pub struct YearAround {
     pub auto: OData,
 }
 
+impl Shared for YearAround {}
 impl YearAround {
     pub fn new(data: TeamYearAroundJsonParser) -> Self {
         Self {
@@ -164,70 +161,6 @@ impl YearAround {
         //adding of avg
         return_data.avg_score.push(return_data.score);
         (self, return_data)
-    }
-    fn compare_highest(old: i16, new: i16) -> i16 {
-        if old > new {
-            return old;
-        }
-        new
-    }
-    fn compare_lowest(old: i16, new: i16) -> i16 {
-        if old < new {
-            return old;
-        }
-        new
-    }
-    fn get_breakdown_data(
-        breakdown: Option<ScoreBreakdown>,
-        team: Team,
-    ) -> (Option<i16>, Option<i16>, Option<i16>) {
-        if let Some(breakdown) = breakdown {
-            return match team {
-                Team::Red => {
-                    let location = breakdown.red;
-                    (
-                        Some(location.auto_points),
-                        Some(location.foul_points),
-                        Some(location.rp),
-                    )
-                }
-                Team::Blue => {
-                    let location = breakdown.red;
-                    (
-                        Some(location.auto_points),
-                        Some(location.foul_points),
-                        Some(location.rp),
-                    )
-                }
-            };
-        }
-        (None, None, None)
-    }
-    fn avg(&self, avg_score: Vec<i16>) -> f32 {
-        let divider = avg_score.len();
-        let mut divide = 0;
-        for num in avg_score {
-            divide += num;
-        }
-        divide as f32 / divider as f32
-    }
-    fn check_win(compare: Team, losses: i16, wins: i16, winner: &str) -> (i16, i16) {
-        match compare {
-            Team::Red => {
-                if winner == "red" {
-                    (losses, wins + 1)
-                } else {
-                    (losses + 1, wins)
-                }
-            }
-            Team::Blue => {
-                if winner == "blue" {
-                    (losses, wins + 1)
-                } else {
-                    (losses + 1, wins)
-                }
-            }
-        }
     }
 }
 
