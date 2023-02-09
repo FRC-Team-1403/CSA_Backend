@@ -14,7 +14,7 @@ impl Event {
     // pub fn new(data: TeamYearAroundJsonParser) -> Self {
     //     Self { cache: data }
     // }
-    pub async fn set_match(self, team: &str) -> Result<Self, Self> {
+    pub async fn set_match(self, _team: &str) -> Result<Self, Self> {
         let Ok(json) = get().await else {
             return Err(self);
         };

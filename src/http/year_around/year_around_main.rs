@@ -1,3 +1,5 @@
+#![allow(clippy::needless_range_loop)]
+
 use std::collections::HashMap;
 use std::thread;
 use std::thread::JoinHandle;
@@ -34,7 +36,7 @@ impl YearData {
     pub async fn get_new_data(team: &str, year_check: u16) -> Option<TeamYearAroundJsonParser> {
         let mut _failed: u8 = 0;
         loop {
-            let response = get(&team, year_check).await;
+            let response = get(team, year_check).await;
             if let Ok(json) = response {
                 return Some(json);
             } else {

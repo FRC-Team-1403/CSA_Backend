@@ -77,7 +77,7 @@ impl YearAround {
                     json.winning_alliance.trim(),
                 );
                 let (auto_points, foul, rp) =
-                    Self::get_breakdown_data(json.score_breakdown, Team::Red);
+                    Self::get_breakdown_data(json.score_breakdown, &Team::Red);
                 let handle = HandleData {
                     rp,
                     score: json.alliances.red.score,
@@ -102,7 +102,7 @@ impl YearAround {
                     json.winning_alliance.trim(),
                 );
                 let (auto_points, foul, rp) =
-                    Self::get_breakdown_data(json.score_breakdown, Team::Blue);
+                    Self::get_breakdown_data(json.score_breakdown, &Team::Blue);
                 let mut handle = HandleData {
                     rp,
                     score: json.alliances.red.score,
