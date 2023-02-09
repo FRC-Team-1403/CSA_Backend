@@ -5,6 +5,7 @@ use crate::http::year_around::fuctions::parse::TeamYearAroundJsonParser;
 pub mod get;
 pub mod math;
 
+
 struct Event {
     pub cache: TeamYearAroundJsonParser,
 }
