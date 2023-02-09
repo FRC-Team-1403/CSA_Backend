@@ -14,8 +14,8 @@ pub struct Root2 {
     #[serde(rename = "event_key")]
     pub event_key: String,
     pub key: String,
-    // #[serde(rename = "match_number")]
-    // pub match_number: i16,
+    #[serde(rename = "match_number")]
+    pub match_number: i8,
     #[serde(rename = "score_breakdown")]
     pub score_breakdown: Option<ScoreBreakdown>,
     // pub videos: Vec<Video>,

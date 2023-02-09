@@ -1,6 +1,14 @@
-use crate::http::year_around::fuctions::parse::ScoreBreakdown;
+use crate::http::year_around::fuctions::parse::{
+    Blue, Root2, ScoreBreakdown, TeamYearAroundJsonParser,
+};
 
 pub trait Shared {
+    fn get_teammates(team: Team, json: Root2) -> Vec<String> {
+        return match team {
+            Team::Blue => json.alliances.blue.team_keys,
+            Team::Red => json.alliances.red.team_keys,
+        };
+    }
     fn team() -> Vec<u16> {
         vec![
             613, 714, 747, 752, 816, 869, 896, 1089, 1228, 1257, 1279, 1403, 1626, 1647, 1672,
