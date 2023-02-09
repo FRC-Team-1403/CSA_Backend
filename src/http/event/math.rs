@@ -1,3 +1,4 @@
+use crate::http::event::Event;
 use crate::http::year_around::fuctions::parse::TeamYearAroundJsonParser;
 use crate::http::year_around::math::YearAround;
 use serde_derive::Deserialize;
@@ -8,6 +9,8 @@ use std::fmt::Error;
 pub struct EventData {
     data: String,
 }
-pub fn math(data: TeamYearAroundJsonParser, team: &str) -> Result<YearAround, Error> {
-    todo!()
+impl Event {
+    pub fn math(data: TeamYearAroundJsonParser, team: &str) -> Result<YearAround, Error> {
+        todo!()
+    }
 }
