@@ -9,7 +9,6 @@ import (
 const debug = false
 
 func main() {
-	db := firebaseWrite{}
 	var result map[string]interface{}
 	jsonData := []byte(os.Args[1])
 	err := json.Unmarshal(jsonData, &result)
@@ -18,6 +17,20 @@ func main() {
 		return
 	}
 	title := fmt.Sprintf("%v", result["team"])
+	//for nested send
+	if os.Args[3] != "" && os.Args[4] != "" {
+		client := Firestore{}
+		app, err := client.Init()
+		if err != nil {
+			fmt.Println("failed to start firestore")
+		}
+		app.Client.Collection(os.Args[2]).Doc(os.Args[3]).Collection(os.Args[4]).Doc(title)
+		err = client.Close(client)
+		if err != nil {
+			fmt.Println("Failed to close connection")
+		}
+	}
+	db := firebaseWrite{}
 	db.Doc = title
 	db.Collection = os.Args[2]
 	db.WhatWrite = result
