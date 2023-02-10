@@ -1,4 +1,5 @@
 use crate::http::event::get::get;
+use crate::http::event::math::EventData;
 use crate::http::year_around::fuctions::parse::TeamYearAroundJsonParser;
 
 pub mod get;
@@ -11,19 +12,27 @@ pub struct Event {
 }
 
 impl Event {
-    // pub fn new(data: TeamYearAroundJsonParser) -> Self {
-    //     Self { cache: data }
-    // }
-    pub async fn set_match(self, _team: &str) -> Result<Self, Self> {
+    pub fn new(team: i16) -> Self {
+        Self {
+            cache: vec![],
+            new_data: vec![],
+            team,
+        }
+    }
+    pub async fn send_request(mut self) -> Result<Self, Self> {
         let Ok(json) = get().await else {
             return Err(self);
         };
-        if json == self.cache {
-            return Ok(self);
+        self.new_data = json;
+        if self.new_data == self.cache {
+            return Err(self);
         }
-        // let Ok(_final_data) = self.math() else {
-        //     return Err(self)
-        // };
-        todo!();
+        Ok(self)
+    }
+    pub async fn parse(self) -> Result<(Self, Vec<EventData>), Self> {
+        let Ok(final_data) = self.math() else {
+            return Err(self)
+        };
+        Ok((self, final_data))
     }
 }

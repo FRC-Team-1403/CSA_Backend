@@ -3,6 +3,7 @@
 extern crate core;
 
 use crate::constant::SENTRY_DSN;
+use crate::http::event::Event;
 
 mod config;
 mod constant;

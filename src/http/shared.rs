@@ -8,10 +8,19 @@ pub trait Shared {
         }
     }
     fn get_teammates(team: Team, json: Root2) -> Vec<String> {
+        let team_list;
         match team {
-            Team::Blue => json.alliances.blue.team_keys,
-            Team::Red => json.alliances.red.team_keys,
+            Team::Blue => team_list = json.alliances.blue.team_keys,
+            Team::Red => team_list = json.alliances.red.team_keys,
         }
+        Self::remove_frc(team_list)
+    }
+    fn remove_frc(who: Vec<String>) -> Vec<String> {
+        let mut return_data = vec![];
+        for x in who {
+            return_data.push(x.replace("frc", ""))
+        }
+        return_data
     }
     fn team() -> Vec<u16> {
         vec![
