@@ -7,6 +7,8 @@ use std::fmt::Error;
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct EventData {
+    #[serde(rename = "team")]
+    team: u16,
     #[serde(rename = "Penalty Points")]
     penalty: Option<i16>,
     #[serde(rename = "Auto Points")]
@@ -34,6 +36,7 @@ impl Event {
             let (auto, penalty, rp) =
                 Self::get_breakdown_data(game_json.score_breakdown.clone(), &team);
             return_data.push(EventData {
+                team: self.team,
                 video: Self::get_video(&game_json),
                 rp,
                 penalty,
