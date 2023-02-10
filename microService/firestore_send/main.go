@@ -18,13 +18,13 @@ func main() {
 	}
 	title := fmt.Sprintf("%v", result["team"])
 	//for nested send
-	if os.Args[3] != "" && os.Args[4] != "" {
+	if os.Args[3] != "" {
 		client := Firestore{}
 		app, err := client.Init()
 		if err != nil {
 			fmt.Println("failed to start firestore")
 		}
-		app.Client.Collection(os.Args[2]).Doc(os.Args[3]).Collection(os.Args[4]).Doc(title)
+		app.Client.Collection(os.Args[2]).Doc(title).Collection("Matches").Doc(os.Args[3])
 		err = client.Close(client)
 		if err != nil {
 			fmt.Println("Failed to close connection")

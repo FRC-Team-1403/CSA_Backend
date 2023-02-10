@@ -11,7 +11,7 @@ impl MatchStore {
         Self { data }
     }
     //todo
-    pub fn send(self) -> Result<(), io::Error> {
+    pub fn send(self, year_check: u16) -> Result<(), io::Error> {
         let json = serde_json::to_string(&self.data)?;
         let result = String::from_utf8(
             Command::new("microService/firestore_send/bin")
