@@ -19,7 +19,10 @@ pub struct EventData {
     team_members: Vec<String>,
     #[serde(rename = "Score")]
     score: i16,
+    #[serde(rename = "Video")]
+    video: Option<String>,
 }
+//https://www.youtube.com/watch?v=_G38qoLkH4A
 
 impl Shared for Event {}
 
@@ -31,12 +34,13 @@ impl Event {
             let (auto, penalty, rp) =
                 Self::get_breakdown_data(game_json.score_breakdown.clone(), &team);
             return_data.push(EventData {
-                auto,
+                video: Self::get_video(&game_json),
                 rp,
                 penalty,
                 score: Self::get_score(&team, game_json.clone()),
                 match_number: game_json.match_number,
                 team_members: Self::get_teammates(team, game_json),
+                auto,
             });
         }
         Ok(return_data)
@@ -52,5 +56,11 @@ impl Event {
             }
         }
         return_data
+    }
+    fn get_video(game_json: &Root2) -> Option<String> {
+        let Some(video) = game_json.videos.get(0) else {
+            return None
+        };
+        Some(format!("https://www.youtube.com/watch?v={}", video.key))
     }
 }

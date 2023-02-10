@@ -18,7 +18,7 @@ pub struct Root2 {
     pub match_number: i8,
     #[serde(rename = "score_breakdown")]
     pub score_breakdown: Option<ScoreBreakdown>,
-    // pub videos: Vec<Video>,
+    pub videos: Vec<Video>,
     #[serde(rename = "winning_alliance")]
     pub winning_alliance: String,
 }
