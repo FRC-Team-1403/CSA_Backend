@@ -8,7 +8,7 @@ pub trait Shared {
             Team::Red => json.alliances.red.score,
         }
     }
-    fn get_teammates(team: Team, json: Root2, check_team: u16) -> Vec<String> {
+    fn get_teammates(team: Team, json: Root2) -> Vec<String> {
         let team_list;
         match team {
             Team::Blue => team_list = json.alliances.blue.team_keys,

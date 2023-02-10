@@ -52,10 +52,10 @@ impl Event {
             }
             match MatchStore::new(event_data).send() {
                 Ok(_) => {
-                    println!("sent successfully for {}", team)
+                    println!("sent successfully for {team}")
                 }
                 Err(e) => {
-                    println!("failed to send for {} because {}", team, e)
+                    println!("failed to send for {team} because {e}")
                 }
             }
         }

@@ -42,7 +42,7 @@ impl Event {
                 penalty,
                 score: Self::get_score(&team, game_json.clone()),
                 match_number: game_json.match_number,
-                team_members: Self::get_teammates(team, game_json, check_team),
+                team_members: Self::get_teammates(team, game_json),
                 auto,
             });
         }
@@ -50,7 +50,7 @@ impl Event {
     }
     fn find_team(&self, check_team: u16) -> Vec<(Root2, Team)> {
         let mut return_data = vec![];
-        let team = format!("frc{}", check_team);
+        let team = format!("frc{check_team}");
         for data in self.new_data.clone() {
             if data.alliances.red.team_keys.contains(&team) {
                 return_data.push((data, Team::Red));
