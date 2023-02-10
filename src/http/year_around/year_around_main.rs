@@ -4,7 +4,7 @@ use std::collections::HashMap;
 use std::thread;
 use std::thread::JoinHandle;
 
-use crate::db::firebase::Firebase;
+use crate::db::firebase::YearStore;
 use crate::http::shared::Shared;
 use crate::http::year_around::fuctions::get;
 use crate::http::year_around::fuctions::parse::TeamYearAroundJsonParser;
@@ -81,7 +81,7 @@ impl YearData {
                     );
                     good = true;
                     wait.push(thread::spawn(move || {
-                        Firebase::new(year)
+                        YearStore::new(year)
                             .set_year(&team, year_check)
                             .expect("failed when writing data");
                     }));

@@ -1,3 +1,5 @@
+pub mod r#match;
+
 use std::io::Error;
 use std::process::Command;
 
@@ -6,11 +8,11 @@ use serde_derive::Serialize;
 
 use crate::http::year_around::math::YearAround;
 
-pub struct Firebase {
+pub struct YearStore {
     pub(crate) year: YearAround,
 }
 
-impl Firebase {
+impl YearStore {
     pub fn new(data: YearAround) -> Self {
         Self { year: data }
     }
