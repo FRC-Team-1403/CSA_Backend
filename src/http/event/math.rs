@@ -16,7 +16,7 @@ pub struct EventData {
     #[serde(rename = "Ranking Points")]
     rp: Option<i16>,
     #[serde(rename = "Match Number")]
-    match_number: i8,
+    pub match_number: u8,
     #[serde(rename = "Team Members")]
     team_members: Vec<String>,
     #[serde(rename = "Score")]
@@ -29,28 +29,28 @@ pub struct EventData {
 impl Shared for Event {}
 
 impl Event {
-    pub fn math(&self) -> Result<Vec<EventData>, Error> {
+    pub fn math(&self, check_team: u16) -> Result<Vec<EventData>, Error> {
         let mut return_data = vec![];
-        let matches = self.find_team();
+        let matches = self.find_team(check_team);
         for (game_json, team) in matches {
             let (auto, penalty, rp) =
                 Self::get_breakdown_data(game_json.score_breakdown.clone(), &team);
             return_data.push(EventData {
-                team: self.team,
+                team: check_team,
                 video: Self::get_video(&game_json),
                 rp,
                 penalty,
                 score: Self::get_score(&team, game_json.clone()),
                 match_number: game_json.match_number,
-                team_members: Self::get_teammates(team, game_json),
+                team_members: Self::get_teammates(team, game_json, check_team),
                 auto,
             });
         }
         Ok(return_data)
     }
-    fn find_team(&self) -> Vec<(Root2, Team)> {
+    fn find_team(&self, check_team: u16) -> Vec<(Root2, Team)> {
         let mut return_data = vec![];
-        let team = format!("frc{}", self.team);
+        let team = format!("frc{}", check_team);
         for data in self.new_data.clone() {
             if data.alliances.red.team_keys.contains(&team) {
                 return_data.push((data, Team::Red));

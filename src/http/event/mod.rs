@@ -1,3 +1,4 @@
+use crate::db::firebase::r#match::MatchStore;
 use crate::http::event::get::get;
 use crate::http::event::math::EventData;
 use crate::http::shared::Shared;
@@ -9,15 +10,13 @@ pub mod math;
 pub struct Event {
     pub cache: TeamYearAroundJsonParser,
     pub new_data: TeamYearAroundJsonParser,
-    team: u16,
 }
 
 impl Event {
-    pub fn new(team: u16) -> Self {
+    pub fn new() -> Self {
         Self {
             cache: vec![],
             new_data: vec![],
-            team,
         }
     }
     pub async fn send_request(mut self) -> Result<Self, Self> {
@@ -30,8 +29,8 @@ impl Event {
         }
         Ok(self)
     }
-    pub fn parse(self) -> Result<(Self, Vec<EventData>), Self> {
-        let Ok(final_data) = self.math() else {
+    pub fn parse(self, team: u16) -> Result<(Self, Vec<EventData>), Self> {
+        let Ok(final_data) = self.math(team) else {
             return Err(self)
         };
         Ok((self, final_data))
@@ -43,16 +42,22 @@ impl Event {
             Err(e) => return e,
         }
         for team in teams {
-            self.team = team;
             let event_data;
-            match self.parse() {
+            match self.parse(team) {
                 Ok((class, event)) => {
                     self = class;
                     event_data = event;
                 }
                 Err(e) => return e,
             }
-            dbg!(event_data);
+            match MatchStore::new(event_data).send() {
+                Ok(_) => {
+                    println!("sent successfully for {}", team)
+                }
+                Err(e) => {
+                    println!("failed to send for {} because {}", team, e)
+                }
+            }
         }
         self
     }

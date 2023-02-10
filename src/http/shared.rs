@@ -1,3 +1,4 @@
+#![allow(clippy::needless_late_init)]
 use crate::http::year_around::fuctions::parse::{Root2, ScoreBreakdown};
 
 pub trait Shared {
@@ -7,7 +8,7 @@ pub trait Shared {
             Team::Red => json.alliances.red.score,
         }
     }
-    fn get_teammates(team: Team, json: Root2) -> Vec<String> {
+    fn get_teammates(team: Team, json: Root2, check_team: u16) -> Vec<String> {
         let team_list;
         match team {
             Team::Blue => team_list = json.alliances.blue.team_keys,
