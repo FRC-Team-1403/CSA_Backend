@@ -1,5 +1,6 @@
 //allow for now
 #![allow(dead_code)]
+#![deny(clippy::unwrap_used)]
 extern crate core;
 
 use crate::constant::SENTRY_DSN;
