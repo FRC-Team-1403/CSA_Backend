@@ -5,8 +5,8 @@ use std::path::{Path};
 use redis::{pipe, Client, Commands};
 
 fn get_redis_data(key: String) -> redis::RedisResult<String> {
-    let my_path = env::home_dir().and_then(|a| Some(a.join("/.env"))).unwrap();
-    dotenv::from_path(my_path.as_path());
+    let my_path = env::home_dir().map(|a| a.join("/.env")).unwrap();
+    dotenv::from_path(my_path.as_path()).expect("No .env file detected");
     let redis = dotenv::var("redis").unwrap();
 
     let client = Client::open(redis)?;
@@ -16,8 +16,8 @@ fn get_redis_data(key: String) -> redis::RedisResult<String> {
 }
 
 fn set_value(key: String, value: String) -> redis::RedisResult<bool> {
-    let my_path = env::home_dir().and_then(|a| Some(a.join("/.env"))).unwrap();
-    dotenv::from_path(my_path.as_path());
+    let my_path = env::home_dir().map(|a| a.join("/.env")).unwrap();
+    dotenv::from_path(my_path.as_path()).expect("No .env file detected");
     let redis = dotenv::var("redis").unwrap();
 
     let client = Client::open(redis)?;
@@ -26,8 +26,8 @@ fn set_value(key: String, value: String) -> redis::RedisResult<bool> {
 }
 
 fn set_list(key: &str, values: Vec<&str>) -> redis::RedisResult<bool> {
-    let my_path = env::home_dir().and_then(|a| Some(a.join("/.env"))).unwrap();
-    dotenv::from_path(my_path.as_path());
+    let my_path = env::home_dir().map(|a| a.join("/.env")).unwrap();
+    dotenv::from_path(my_path.as_path()).expect("No .env file detected");
     let redis = dotenv::var("redis").unwrap();
 
     let client = Client::open(redis).unwrap();

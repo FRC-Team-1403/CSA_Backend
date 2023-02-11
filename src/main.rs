@@ -1,6 +1,5 @@
 //allow for now
 #![allow(dead_code)]
-#![deny(clippy::unwrap_used)]
 extern crate core;
 
 use dotenv;
@@ -15,8 +14,8 @@ mod server;
 
 #[tokio::main]
 async fn main() {
-    let my_path = env::home_dir().and_then(|a| Some(a.join("/.env"))).unwrap();
-    dotenv::from_path(my_path.as_path());
+    let my_path = env::home_dir().map(|a| a.join("/.env")).unwrap();
+    dotenv::from_path(my_path.as_path()).expect("No .env file detected");
     let sentry_dsn = dotenv::var("SENTRY_DSN").unwrap();
 
     let _guard = sentry::init((

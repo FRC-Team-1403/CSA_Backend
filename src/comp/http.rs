@@ -5,8 +5,8 @@ use std::path::{Path};
 use reqwest::Error;
 
 pub async fn get_yearly(team: &str, year: u16) -> Result<TeamYearAroundJsonParser, Error> {
-    let my_path = env::home_dir().and_then(|a| Some(a.join("/.env"))).unwrap();
-    dotenv::from_path(my_path.as_path());
+    let my_path = env::home_dir().map(|a| a.join("/.env")).unwrap();
+    dotenv::from_path(my_path.as_path()).expect("No .env file detected");
     let api_key = dotenv::var("API_KEY").unwrap();
 
     let response = reqwest::Client::new()
@@ -20,8 +20,8 @@ pub async fn get_yearly(team: &str, year: u16) -> Result<TeamYearAroundJsonParse
 }
 
 pub async fn get_match() -> reqwest::Result<TeamYearAroundJsonParser> {
-    let my_path = env::home_dir().and_then(|a| Some(a.join("/.env"))).unwrap();
-    dotenv::from_path(my_path.as_path());
+    let my_path = env::home_dir().map(|a| a.join("/.env")).unwrap();
+    dotenv::from_path(my_path.as_path()).expect("No .env file detected");
     let api_key = dotenv::var("API_KEY").unwrap();
     let update_where = dotenv::var("UPDATE_WHERE").unwrap();
 
