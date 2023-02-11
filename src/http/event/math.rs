@@ -19,7 +19,7 @@ pub struct EventData {
     pub match_number: u8,
     #[serde(rename = "Team Members")]
     team_members: Vec<String>,
-    #[serde(rename = "Score")]
+    #[serde(rename = "Total Points")]
     score: i16,
     #[serde(rename = "Video")]
     video: Option<String>,
