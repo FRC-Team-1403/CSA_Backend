@@ -1,0 +1,25 @@
+name: Rust
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Export Variables
+      run: |
+        export API_KEY="${{ secrets.API_KEY }}" && export REDIS=${{ secrets.REDIS }} && export SENTRY_DSN=${{ secrets.SENTRY_DSN }} &&  export FIRESTORE_LOCATION=${{ secrets.FIRESTORE_LOCATION }} && export UPDATE_WHERE=${{ secrets.UPDATE_WHERE }}
+    - name: Build
+      run: cargo build --verbose
+    - name: Run tests
+      run: cargo test --verbose
