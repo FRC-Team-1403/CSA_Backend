@@ -25,18 +25,13 @@ func main() {
 			fmt.Println("failed to start firestore")
 			return
 		}
-		fmt.Println(os.Args[1], os.Args[2], os.Args[3])
 		_, err = app.Client.Collection(os.Args[2]).Doc(title).Collection("Matches").Doc(os.Args[3]).Set(app.Ctx, result)
 		if err != nil {
 			fmt.Println("Failed to send because: ", err)
 			return
 		}
-		err = client.Close(client)
-		if err != nil {
-			fmt.Println("Failed to close connection")
-			return
-		}
 		fmt.Println("success")
+		return
 	}
 	db := firebaseWrite{}
 	db.Doc = title
