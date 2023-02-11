@@ -1,8 +1,5 @@
 use crate::comp::event::math::EventData;
-// use crate::config::FIRESTORE_LOCATION;
-use dotenv;
-use std::env;
-use std::path::{Path};
+use crate::ram::ENV;
 use std::io;
 use std::process::Command;
 
@@ -17,10 +14,7 @@ impl MatchStore {
     pub fn send(self) -> Result<(), io::Error> {
         for raw_json in self.data {
             let json = serde_json::to_string(&raw_json)?;
-            let my_path = env::home_dir().map(|a| a.join("/.env")).unwrap();
-            dotenv::from_path(my_path.as_path()).expect("No .env file detected");
-            let firestore_location = dotenv::var("FIRESTORE_LOCATION").unwrap();
-
+            let firestore_location = &ENV.firestore_collection;
             let result = String::from_utf8(
                 Command::new("microService/firestore_send/bin")
                     .args([

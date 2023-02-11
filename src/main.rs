@@ -1,23 +1,19 @@
 //allow for now
 #![allow(dead_code)]
 extern crate core;
+#[macro_use]
+extern crate dotenv_codegen;
 
-use dotenv;
-use std::env;
-use std::path::{Path};
-
-// use crate::constant::SENTRY_DSN;
+use crate::ram::ENV;
 
 mod comp;
 mod db;
+mod ram;
 mod server;
 
 #[tokio::main]
 async fn main() {
-    let my_path = env::home_dir().map(|a| a.join("/.env")).unwrap();
-    dotenv::from_path(my_path.as_path()).expect("No .env file detected");
-    let sentry_dsn = dotenv::var("SENTRY_DSN").unwrap();
-
+    let sentry_dsn = ENV.sentry_dsn.clone();
     let _guard = sentry::init((
         sentry_dsn,
         sentry::ClientOptions {
