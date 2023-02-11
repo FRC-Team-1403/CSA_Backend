@@ -6,7 +6,7 @@ use std::thread;
 use std::thread::JoinHandle;
 
 use crate::comp::avg::math::YearAround;
-use crate::comp::http::get;
+use crate::comp::http::get_yearly;
 use crate::comp::parse::TeamYearAroundJsonParser;
 use crate::db::firebase::YearStore;
 
@@ -34,7 +34,7 @@ impl YearData {
     pub async fn get_new_data(team: &str, year_check: u16) -> Option<TeamYearAroundJsonParser> {
         let mut _failed: u8 = 0;
         loop {
-            let response = get(team, year_check).await;
+            let response = get_yearly(team, year_check).await;
             if let Ok(json) = response {
                 return Some(json);
             } else {

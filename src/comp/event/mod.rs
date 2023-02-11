@@ -1,5 +1,5 @@
 use crate::comp::event::math::EventData;
-use crate::comp::http::get_year;
+use crate::comp::http::get_match;
 use crate::comp::parse::TeamYearAroundJsonParser;
 use crate::comp::shared::team;
 use crate::db::firebase::r#match::MatchStore;
@@ -19,7 +19,7 @@ impl Event {
         }
     }
     pub async fn send_request(mut self) -> Result<Self, Self> {
-        let Ok(json) = get_year().await else {
+        let Ok(json) = get_match().await else {
             return Err(self);
         };
         self.new_data = json;

@@ -3,7 +3,7 @@ use crate::config::UPDATE_WHERE;
 use crate::constant::API_KEY;
 use reqwest::Error;
 
-pub async fn get(team: &str, year: u16) -> Result<TeamYearAroundJsonParser, Error> {
+pub async fn get_yearly(team: &str, year: u16) -> Result<TeamYearAroundJsonParser, Error> {
     let response = reqwest::Client::new()
         .get(format!(
             "https://www.thebluealliance.com/api/v3/team/frc{team}/matches/{year}"
@@ -14,7 +14,7 @@ pub async fn get(team: &str, year: u16) -> Result<TeamYearAroundJsonParser, Erro
     response.json::<TeamYearAroundJsonParser>().await
 }
 
-pub async fn get_year() -> reqwest::Result<TeamYearAroundJsonParser> {
+pub async fn get_match() -> reqwest::Result<TeamYearAroundJsonParser> {
     let response = reqwest::Client::new()
         .get(format!(
             "https://www.thebluealliance.com/api/v3/event/{UPDATE_WHERE}/matches"
