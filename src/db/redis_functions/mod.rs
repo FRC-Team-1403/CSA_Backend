@@ -1,21 +1,36 @@
-use crate::constant::REDIS;
+use dotenv;
+use std::env;
+use std::path::{Path};
+
 use redis::{pipe, Client, Commands};
 
 fn get_redis_data(key: String) -> redis::RedisResult<String> {
-    let client = Client::open(REDIS)?;
+    let my_path = env::home_dir().and_then(|a| Some(a.join("/.env"))).unwrap();
+    dotenv::from_path(my_path.as_path());
+    let redis = dotenv::var("redis").unwrap();
+
+    let client = Client::open(redis)?;
     let mut con = client.get_connection()?;
 
     con.get(key)
 }
 
 fn set_value(key: String, value: String) -> redis::RedisResult<bool> {
-    let client = Client::open(REDIS)?;
+    let my_path = env::home_dir().and_then(|a| Some(a.join("/.env"))).unwrap();
+    dotenv::from_path(my_path.as_path());
+    let redis = dotenv::var("redis").unwrap();
+
+    let client = Client::open(redis)?;
     let mut con = client.get_connection()?;
     con.set(key, value)
 }
 
 fn set_list(key: &str, values: Vec<&str>) -> redis::RedisResult<bool> {
-    let client = Client::open(REDIS).unwrap();
+    let my_path = env::home_dir().and_then(|a| Some(a.join("/.env"))).unwrap();
+    dotenv::from_path(my_path.as_path());
+    let redis = dotenv::var("redis").unwrap();
+
+    let client = Client::open(redis).unwrap();
     let mut con = client.get_connection().unwrap();
     let mut pipe = pipe();
     for value in values {
