@@ -18,12 +18,12 @@ func main() {
 	title := fmt.Sprintf("%v", result["team"])
 	//for nested send
 	if os.Args[3] != "" {
-		set_match(title, result)
+		setMatch(title, result)
 	}
-	set_year(title, result)
+	setYear(title, result)
 }
 
-func set_year(title string, result map[string]interface{}) {
+func setYear(title string, result map[string]interface{}) {
 	db := firebaseWrite{}
 	db.Doc = title
 	db.Collection = os.Args[2]
@@ -40,7 +40,7 @@ func set_year(title string, result map[string]interface{}) {
 	fmt.Println("success")
 }
 
-func set_match(title string, result map[string]interface{}) {
+func setMatch(title string, result map[string]interface{}) {
 	client := Firestore{}
 	app, err := client.Init()
 	if err != nil {
