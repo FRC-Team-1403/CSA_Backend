@@ -4,10 +4,10 @@ extern crate core;
 
 use crate::constant::SENTRY_DSN;
 
+mod comp;
 mod config;
 mod constant;
 mod db;
-mod http;
 mod server;
 
 #[tokio::main]

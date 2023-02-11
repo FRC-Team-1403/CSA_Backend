@@ -1,6 +1,6 @@
-use crate::http::event::Event;
-use crate::http::shared::{Shared, Team};
-use crate::http::year_around::fuctions::parse::Root2;
+use crate::comp::event::Event;
+use crate::comp::parse::Root2;
+use crate::comp::shared::{get_breakdown_data, get_score, get_teammates, Team};
 use serde_derive::Deserialize;
 use serde_derive::Serialize;
 use std::fmt::Error;
@@ -26,23 +26,20 @@ pub struct EventData {
 }
 //https://www.youtube.com/watch?v=_G38qoLkH4A
 
-impl Shared for Event {}
-
 impl Event {
     pub fn math(&self, check_team: u16) -> Result<Vec<EventData>, Error> {
         let mut return_data = vec![];
         let matches = self.find_team(check_team);
         for (game_json, team) in matches {
-            let (auto, penalty, rp) =
-                Self::get_breakdown_data(game_json.score_breakdown.clone(), &team);
+            let (auto, penalty, rp) = get_breakdown_data(game_json.score_breakdown.clone(), &team);
             return_data.push(EventData {
                 team: check_team,
                 video: Self::get_video(&game_json),
                 rp,
                 penalty,
-                score: Self::get_score(&team, game_json.clone()),
+                score: get_score(&team, game_json.clone()),
                 match_number: game_json.match_number,
-                team_members: Self::get_teammates(team, game_json),
+                team_members: get_teammates(team, game_json),
                 auto,
             });
         }

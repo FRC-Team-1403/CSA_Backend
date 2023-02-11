@@ -1,9 +1,9 @@
-use crate::http::event::Event;
+use crate::comp::event::Event;
 use log::{info, warn};
 use std::thread;
 use std::time::Duration;
 
-use crate::http::year_around::year_around_main::YearData;
+use crate::comp::avg::year_around_main::YearData;
 
 pub async fn run() {
     let join = tokio::spawn(async move {

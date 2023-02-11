@@ -6,7 +6,7 @@ use std::process::Command;
 use serde_derive::Deserialize;
 use serde_derive::Serialize;
 
-use crate::http::year_around::math::YearAround;
+use crate::comp::avg::math::YearAround;
 
 pub struct YearStore {
     pub(crate) year: YearAround,

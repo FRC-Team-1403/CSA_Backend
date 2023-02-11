@@ -1,20 +1,18 @@
 #![allow(clippy::needless_range_loop)]
 
+use crate::comp::shared::team;
 use std::collections::HashMap;
 use std::thread;
 use std::thread::JoinHandle;
 
+use crate::comp::avg::math::YearAround;
+use crate::comp::http::get;
+use crate::comp::parse::TeamYearAroundJsonParser;
 use crate::db::firebase::YearStore;
-use crate::http::shared::Shared;
-use crate::http::year_around::fuctions::get;
-use crate::http::year_around::fuctions::parse::TeamYearAroundJsonParser;
-use crate::http::year_around::math::YearAround;
 
 pub struct YearData {
     pub cache: HashMap<u16, TeamYearAroundJsonParser>,
 }
-
-impl Shared for YearData {}
 
 impl YearData {
     pub fn new() -> Self {
@@ -49,7 +47,7 @@ impl YearData {
         }
     }
     pub async fn update(mut self, year_check: u16) -> Result<Self, Self> {
-        let teams = Self::team();
+        let teams = team();
         let mut wait: Vec<JoinHandle<()>> = vec![];
         let amount = teams.len() - 1;
         let mut good: bool = false;

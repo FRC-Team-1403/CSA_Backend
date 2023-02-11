@@ -1,5 +1,7 @@
-use crate::http::shared::{Shared, Team};
-use crate::http::year_around::fuctions::parse::TeamYearAroundJsonParser;
+use crate::comp::parse::TeamYearAroundJsonParser;
+use crate::comp::shared::{
+    avg, check_win, compare_highest, compare_lowest, get_breakdown_data, Team,
+};
 use std::fmt::Error;
 
 pub struct Data {
@@ -46,7 +48,6 @@ pub struct YearAround {
     pub auto: OData,
 }
 
-impl Shared for YearAround {}
 impl YearAround {
     pub fn new(data: TeamYearAroundJsonParser) -> Self {
         Self {
@@ -70,14 +71,13 @@ impl YearAround {
         //looping through the JSON
         for json in self.data.clone().ok_or(Error)? {
             if json.alliances.red.team_keys.contains(&format!("frc{team}")) {
-                (self.losses, self.wins) = Self::check_win(
+                (self.losses, self.wins) = check_win(
                     Team::Red,
                     self.losses,
                     self.wins,
                     json.winning_alliance.trim(),
                 );
-                let (auto_points, foul, rp) =
-                    Self::get_breakdown_data(json.score_breakdown, &Team::Red);
+                let (auto_points, foul, rp) = get_breakdown_data(json.score_breakdown, &Team::Red);
                 let handle = HandleData {
                     rp,
                     score: json.alliances.red.score,
@@ -95,14 +95,13 @@ impl YearAround {
                 avg_rp = new_data.avg_rp;
                 avg_auto = new_data.avg_auto;
             } else {
-                (self.losses, self.wins) = Self::check_win(
+                (self.losses, self.wins) = check_win(
                     Team::Blue,
                     self.losses,
                     self.wins,
                     json.winning_alliance.trim(),
                 );
-                let (auto_points, foul, rp) =
-                    Self::get_breakdown_data(json.score_breakdown, &Team::Blue);
+                let (auto_points, foul, rp) = get_breakdown_data(json.score_breakdown, &Team::Blue);
                 let mut handle = HandleData {
                     rp,
                     score: json.alliances.red.score,
@@ -121,10 +120,10 @@ impl YearAround {
             }
         }
         self.data = None;
-        self.rp.avg = Some(self.avg(avg_rp));
-        self.pen.avg = Some(self.avg(avg_foul));
-        self.points.avg = self.avg(avg_score);
-        self.auto.avg = Some(self.avg(avg_auto));
+        self.rp.avg = Some(avg(avg_rp));
+        self.pen.avg = Some(avg(avg_foul));
+        self.points.avg = avg(avg_score);
+        self.auto.avg = Some(avg(avg_auto));
         self.win_rato = self.wins as f32 / self.losses as f32;
         self.matches_played = self.wins + self.losses;
 
@@ -136,16 +135,13 @@ impl YearAround {
             let foul = return_data.foul.unwrap_or(0);
             let auto_points = return_data.auto_points.unwrap_or(0);
             //lowest code
-            self.rp.highest = Some(Self::compare_highest(self.rp.highest.unwrap_or(0), rp));
-            self.pen.highest = Some(Self::compare_highest(self.pen.highest.unwrap_or(0), foul));
-            self.auto.highest = Some(Self::compare_highest(
-                self.auto.highest.unwrap_or(0),
-                auto_points,
-            ));
+            self.rp.highest = Some(compare_highest(self.rp.highest.unwrap_or(0), rp));
+            self.pen.highest = Some(compare_highest(self.pen.highest.unwrap_or(0), foul));
+            self.auto.highest = Some(compare_highest(self.auto.highest.unwrap_or(0), auto_points));
             //lowest code
-            self.rp.lowest = Some(Self::compare_lowest(self.rp.lowest.unwrap_or(1000), rp));
-            self.pen.lowest = Some(Self::compare_lowest(self.pen.lowest.unwrap_or(1000), foul));
-            self.auto.lowest = Some(Self::compare_lowest(
+            self.rp.lowest = Some(compare_lowest(self.rp.lowest.unwrap_or(1000), rp));
+            self.pen.lowest = Some(compare_lowest(self.pen.lowest.unwrap_or(1000), foul));
+            self.auto.lowest = Some(compare_lowest(
                 self.auto.lowest.unwrap_or(1000),
                 auto_points,
             ));
@@ -155,9 +151,9 @@ impl YearAround {
             return_data.avg_rp.push(rp);
             //avg
         }
-        self.points.highest = Self::compare_highest(self.points.highest, return_data.score);
+        self.points.highest = compare_highest(self.points.highest, return_data.score);
         //lowest code
-        self.points.lowest = Self::compare_lowest(self.points.lowest, return_data.score);
+        self.points.lowest = compare_lowest(self.points.lowest, return_data.score);
         //adding of avg
         return_data.avg_score.push(return_data.score);
         (self, return_data)
