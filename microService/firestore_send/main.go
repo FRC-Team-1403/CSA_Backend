@@ -19,6 +19,7 @@ func main() {
 	//for nested send
 	if os.Args[3] != "" {
 		setMatch(title, result)
+		return
 	}
 	setYear(title, result)
 }
