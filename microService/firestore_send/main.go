@@ -1,6 +1,7 @@
 package main
 
 import (
+	"cloud.google.com/go/firestore"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -25,7 +26,7 @@ func main() {
 			fmt.Println("failed to start firestore")
 			return
 		}
-		_, err = app.Client.Collection(os.Args[2]).Doc(title).Collection("Matches").Doc(os.Args[3]).Set(app.Ctx, result)
+		_, err = app.Client.Collection(os.Args[2]).Doc(title).Collection("Matches").Doc(os.Args[3]).Set(app.Ctx, result, firestore.MergeAll)
 		if err != nil {
 			fmt.Println("Failed to send because: ", err)
 			return
