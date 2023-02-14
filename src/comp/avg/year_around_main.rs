@@ -10,6 +10,8 @@ use crate::comp::http::get_yearly;
 use crate::comp::parse::TeamYearAroundJsonParser;
 use crate::db::firebase::YearStore;
 
+const publicCashe : u16 = 696969;
+
 pub struct YearData {
     pub cache: HashMap<u16, TeamYearAroundJsonParser>,
 }
@@ -20,13 +22,27 @@ impl YearData {
             cache: HashMap::new(),
         }
     }
-    fn check_cache(mut self, json: TeamYearAroundJsonParser, team: &str) -> (Self, bool) {
-        let loc: u16 = team.parse().unwrap();
-        if let Some(compare) = self.cache.get(&loc) {
-            if compare == &json {
-                println!("Skipping {team}, The data is not updated");
-                return (self, false);
-            }
+    fn check_cache(mut self, json: TeamYearAroundJsonParser, team: &SendType) -> (Self, bool) {
+        let loc: u16;
+        match team {
+            SendType::Year(_, team) => {
+                if let Some(compare) = self.cache.get(&team.parse().unwrap()) {
+                    if compare == &json {
+                        println!("Skipping {loc}, The data is updated");
+                        return (self, false);
+                    }
+                }
+                loc = team.parse().unwrap();
+            },
+            SendType::Match => {
+                if let Some(compare) = self.cache.get(&publicCashe) {
+                    if compare == &json {
+                        println!("Skipping match update,The data is updated");
+                        return (self, false);
+                    }
+                }
+                loc = publicCashe;
+            },
         }
         self.cache.insert(loc, json);
         (self, true)
@@ -35,7 +51,7 @@ impl YearData {
     pub async fn get_new_data(team: &str, what: SendType) -> Option<TeamYearAroundJsonParser> {
         let mut _failed: u8 = 0;
         loop {
-            let response = get_yearly(team, what).await;
+            let response = get_yearly(what).await;
             if let Ok(json) = response {
                 return Some(json);
             } else {
@@ -59,7 +75,7 @@ impl YearData {
                 return Err(self);
             };
             let mut _allow: bool = false;
-            (self, _allow) = self.check_cache(data.clone(), &team);
+            (self, _allow) = self.check_cache(data.clone(), &what);
             if _allow {
                 let year = YearAround::new(data).calculate(&team);
                 let Ok(year) = year else {
@@ -104,6 +120,6 @@ impl YearData {
 
 #[derive(Debug, Clone, Copy,)]
 pub enum SendType {
-    Year(u16),
+    Year(u16, &str),
     Match
 }
