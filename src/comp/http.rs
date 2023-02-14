@@ -4,7 +4,7 @@ use reqwest::Error;
 
 use super::avg::year_around_main::SendType;
 
-pub async fn get_yearly(year: SendType) -> Result<TeamYearAroundJsonParser, Error> {
+pub async fn get_yearly(year: &SendType) -> Result<TeamYearAroundJsonParser, Error> {
     let send_url : String =  {
         match year {
             SendType::Year(year, team) => {
