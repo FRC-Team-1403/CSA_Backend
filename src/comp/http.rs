@@ -4,10 +4,10 @@ use reqwest::Error;
 
 use super::avg::year_around_main::SendType;
 
-pub async fn get_yearly(team: &str, year: SendType) -> Result<TeamYearAroundJsonParser, Error> {
+pub async fn get_yearly(year: SendType) -> Result<TeamYearAroundJsonParser, Error> {
     let send_url : String =  {
         match year {
-            SendType::Year(year) => {
+            SendType::Year(year, team) => {
                 format!("https://www.thebluealliance.com/api/v3/team/frc{team}/matches/{year}")
             },
             SendType::Match => {
