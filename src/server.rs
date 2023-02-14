@@ -4,7 +4,7 @@ use log::{info, warn};
 use std::thread;
 use std::time::Duration;
 
-use crate::comp::avg::year_around_main::YearData;
+use crate::comp::avg::year_around_main::{YearData, SendType};
 
 pub async fn run() {
     let join = tokio::spawn(async move {
@@ -30,7 +30,7 @@ async fn update(mut year: YearData) -> YearData {
     loop {
         let tx_ctx = sentry::TransactionContext::new("Update Year", "Running from update()");
         let transaction = sentry::start_transaction(tx_ctx);
-        match year.update(2022).await {
+        match year.update(SendType::Year(2022, "88".to_owned())).await {
             Ok(e) => {
                 return e;
             }

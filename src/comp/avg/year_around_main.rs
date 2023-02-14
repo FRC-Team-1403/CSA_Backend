@@ -51,7 +51,7 @@ impl YearData {
     pub async fn get_new_data(team: &str, what: SendType) -> Option<TeamYearAroundJsonParser> {
         let mut _failed: u8 = 0;
         loop {
-            let response = get_yearly(what).await;
+            let response = get_yearly(&what).await;
             if let Ok(json) = response {
                 return Some(json);
             } else {
@@ -71,36 +71,42 @@ impl YearData {
         for loc in 0..amount + 1 {
             let team = teams[loc].to_string();
             let Some(data) =
-                Self::get_new_data(&team, what).await else {
+                Self::get_new_data(&team, what.clone()).await else {
                 return Err(self);
             };
             let mut _allow: bool = false;
-            (self, _allow) = self.check_cache(data.clone(), &what);
+            (self, _allow) = self.check_cache(data, &what);
             if _allow {
-                let year = YearAround::new(data).calculate(&team);
-                let Ok(year) = year else {
-                    println!("failed to parse data");
-                    return Err(self);
-                };
-                //checking if data exists
-                if year.rp.avg.is_none() {
-                    println!("Advanced data unavailable for team {}", &team)
+                match what.clone() {
+                    SendType::Year(year_check, team) => {
+                        let year = YearAround::new(data::).calculate(&team);
+                        let Ok(year) = year else {
+                            println!("failed to parse data");
+                            return Err(self);
+                        };
+                        //checking if data exists
+                        if year.rp.avg.is_none() {
+                            println!("Advanced data unavailable for team {}", &team)
+                        }
+                        if year.points.lowest == 10000 {
+                            println!("Data unavailable for {} , skipping...", &team)
+                        } else {
+                            println!(
+                                "Full data is found and is pushed to firstore for {}!\n\
+                    Amount Completed {}/{}",
+                                &team, loc, amount
+                            );
+                            good = true;
+                            wait.push(thread::spawn(move || {
+                                YearStore::new(year)
+                                    .set_year(&team, year_check)
+                                    .expect("failed when writing data");
+                            }));
+                        }
+                    }
+                    SendType::Match => todo!(),
                 }
-                if year.points.lowest == 10000 {
-                    println!("Data unavailable for {} , skipping...", &team)
-                } else {
-                    println!(
-                        "Full data is found and is pushed to firstore for {}!\n\
-            Amount Completed {}/{}",
-                        &team, loc, amount
-                    );
-                    good = true;
-                    wait.push(thread::spawn(move || {
-                        YearStore::new(year)
-                            .set_year(&team, year_check)
-                            .expect("failed when writing data");
-                    }));
-                }
+    
             }
         }
         if !good {
@@ -118,8 +124,8 @@ impl YearData {
 }
 
 
-#[derive(Debug, Clone, Copy,)]
+#[derive(Debug, Clone,)]
 pub enum SendType {
-    Year(u16, &str),
+    Year(u16, String),
     Match
 }
