@@ -31,10 +31,11 @@ impl YearData {
         self.cache.insert(loc, json);
         (self, true)
     }
-    pub async fn get_new_data(team: &str, year_check: u16) -> Option<TeamYearAroundJsonParser> {
+    //work on this
+    pub async fn get_new_data(team: &str, what: SendType) -> Option<TeamYearAroundJsonParser> {
         let mut _failed: u8 = 0;
         loop {
-            let response = get_yearly(team, year_check).await;
+            let response = get_yearly(team, what).await;
             if let Ok(json) = response {
                 return Some(json);
             } else {
@@ -46,7 +47,7 @@ impl YearData {
             }
         }
     }
-    pub async fn update(mut self, year_check: u16) -> Result<Self, Self> {
+    pub async fn update(mut self, what: SendType ) -> Result<Self, Self> {
         let teams = team();
         let mut wait: Vec<JoinHandle<()>> = vec![];
         let amount = teams.len() - 1;
@@ -54,7 +55,7 @@ impl YearData {
         for loc in 0..amount + 1 {
             let team = teams[loc].to_string();
             let Some(data) =
-                Self::get_new_data(&team, year_check).await else {
+                Self::get_new_data(&team, what).await else {
                 return Err(self);
             };
             let mut _allow: bool = false;
@@ -98,4 +99,11 @@ impl YearData {
         println!("done!");
         Ok(self)
     }
+}
+
+
+#[derive(Debug, Clone, Copy,)]
+pub enum SendType {
+    Year(u16),
+    Match
 }
