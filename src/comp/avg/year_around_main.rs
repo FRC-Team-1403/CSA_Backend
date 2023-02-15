@@ -10,7 +10,7 @@ use crate::comp::http::get_yearly;
 use crate::comp::parse::TeamYearAroundJsonParser;
 use crate::db::firebase::YearStore;
 
-const publicCashe : u16 = 696969;
+const publicCashe: u16 = 696969;
 
 pub struct YearData {
     pub cache: HashMap<u16, TeamYearAroundJsonParser>,
@@ -33,7 +33,7 @@ impl YearData {
                     }
                 }
                 loc = team.parse().unwrap();
-            },
+            }
             SendType::Match => {
                 if let Some(compare) = self.cache.get(&publicCashe) {
                     if compare == &json {
@@ -41,8 +41,8 @@ impl YearData {
                         return (self, false);
                     }
                 }
-                loc = publicCashe;
-            },
+                self.cache[&publicCashe] = json.clone();
+            }
         }
         self.cache.insert(loc, json);
         (self, true)
@@ -63,7 +63,7 @@ impl YearData {
             }
         }
     }
-    pub async fn update(mut self, what: SendType ) -> Result<Self, Self> {
+    pub async fn update(mut self, what: SendType) -> Result<Self, Self> {
         let teams = team();
         let mut wait: Vec<JoinHandle<()>> = vec![];
         let amount = teams.len() - 1;
@@ -75,11 +75,11 @@ impl YearData {
                 return Err(self);
             };
             let mut _allow: bool = false;
-            (self, _allow) = self.check_cache(data, &what);
+            (self, _allow) = self.check_cache(data.clone(), &what);
             if _allow {
                 match what.clone() {
                     SendType::Year(year_check, team) => {
-                        let year = YearAround::new(data::).calculate(&team);
+                        let year = YearAround::new(data).calculate(&team);
                         let Ok(year) = year else {
                             println!("failed to parse data");
                             return Err(self);
@@ -106,7 +106,6 @@ impl YearData {
                     }
                     SendType::Match => todo!(),
                 }
-    
             }
         }
         if !good {
@@ -123,9 +122,8 @@ impl YearData {
     }
 }
 
-
-#[derive(Debug, Clone,)]
+#[derive(Debug, Clone)]
 pub enum SendType {
     Year(u16, String),
-    Match
+    Match,
 }

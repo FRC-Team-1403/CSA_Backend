@@ -4,7 +4,7 @@ use log::{info, warn};
 use std::thread;
 use std::time::Duration;
 
-use crate::comp::avg::year_around_main::{YearData, SendType};
+use crate::comp::avg::year_around_main::{SendType, YearData};
 
 pub async fn run() {
     let join = tokio::spawn(async move {
