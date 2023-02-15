@@ -10,7 +10,6 @@ pub async fn run() {
         let mut year = YearData::new();
         let mut event = Event::new();
         loop {
-            event = event.update_match_data().await;
             let tx_ctx =
                 sentry::TransactionContext::new("Updating new Year Value", "run() function");
             let transaction = sentry::start_transaction(tx_ctx);
@@ -18,6 +17,7 @@ pub async fn run() {
             info!("Updating year value: ");
             year = update(year).await;
             transaction.finish();
+            event = event.update_match_data().await;
             thread::sleep(Duration::from_secs(360))
         }
     });
