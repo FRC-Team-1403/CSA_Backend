@@ -19,6 +19,7 @@ pub async fn run() {
             info!("Updating year value: ");
             year = update(year).await;
             transaction.finish();
+            event = event.update_match_data().await;
             thread::sleep(Duration::from_secs(360))
         }
     });

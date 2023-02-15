@@ -10,7 +10,7 @@ use crate::comp::http::get_yearly;
 use crate::comp::parse::TeamYearAroundJsonParser;
 use crate::db::firebase::YearStore;
 
-const publicCashe: u16 = 696969;
+const PUBLIC_CASHE: u16 = 16969;
 
 pub struct YearData {
     pub cache: HashMap<u16, TeamYearAroundJsonParser>,
@@ -28,21 +28,21 @@ impl YearData {
             SendType::Year(_, team) => {
                 if let Some(compare) = self.cache.get(&team.parse().unwrap()) {
                     if compare == &json {
-                        println!("Skipping {loc}, The data is updated");
+                        println!("Skipping {team}, The data is updated");
                         return (self, false);
                     }
                 }
                 loc = team.parse().unwrap();
             }
             SendType::Match => {
-                if let Some(compare) = self.cache.get(&publicCashe) {
+                if let Some(compare) = self.cache.get(&PUBLIC_CASHE) {
                     if compare == &json {
                         println!("Skipping match update,The data is updated");
                         return (self, false);
                     }
                 }
-                self.cache[&publicCashe] = json.clone();
-            }
+                loc = publicCashe;
+            },
         }
         self.cache.insert(loc, json);
         (self, true)
@@ -70,16 +70,16 @@ impl YearData {
         let mut good: bool = false;
         for loc in 0..amount + 1 {
             let team = teams[loc].to_string();
-            let Some(data) =
+            let Some(json) =
                 Self::get_new_data(&team, what.clone()).await else {
                 return Err(self);
             };
             let mut _allow: bool = false;
-            (self, _allow) = self.check_cache(data.clone(), &what);
+            (self, _allow) = self.check_cache(data, &what);
             if _allow {
                 match what.clone() {
                     SendType::Year(year_check, team) => {
-                        let year = YearAround::new(data).calculate(&team);
+                        let year = YearAround::new(data::).calculate(&team);
                         let Ok(year) = year else {
                             println!("failed to parse data");
                             return Err(self);
@@ -122,8 +122,9 @@ impl YearData {
     }
 }
 
-#[derive(Debug, Clone)]
+
+#[derive(Debug, Clone,)]
 pub enum SendType {
     Year(u16, String),
-    Match,
+    Match
 }
