@@ -26,7 +26,7 @@ func main() {
 		return
 	}
 	var builder *firestore.DocumentRef
-	for x := 2; x < len(os.Args); x++ {
+	for x := 2; x < len(os.Args); x+=2{
 		builder = app.Client.Collection(os.Args[x]).Doc(os.Args[x+1])
 	}
 	_, err = builder.Set(app.Ctx, result, firestore.MergeAll)
