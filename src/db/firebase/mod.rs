@@ -1,10 +1,10 @@
 pub mod r#match;
 
-use std::io::Error;
-use std::process::Command;
 use log::{info, warn};
 use serde_derive::Deserialize;
 use serde_derive::Serialize;
+use std::io::Error;
+use std::process::Command;
 
 use crate::comp::avg::math::YearAround;
 
@@ -36,19 +36,17 @@ impl YearStore {
             win: self.year.wins,
         };
         let json = serde_json::to_string(&data)?;
-        let result = String::from_utf8(
-            Command::new("microService/firestore_send/bin")
-                .arg(json)
-                .arg(2019.to_string())
-                .arg(data.team)
-                .output()?
-                .stdout,
-        )
-        .unwrap_or("utf8 error".to_owned());
-        if result.trim() != "success" {
-            warn!("FAILURE: {result}, skipping that team",)
-        }
-        Ok(result)
+        let result = Command::new("microService/firestore_send/bin")
+            .arg(json.clone())
+            .arg(2019.to_string())
+            .arg(data.team.clone())
+            .output()?;
+        let uft8_output = String::from_utf8(result.clone().stdout).unwrap_or(String::new());
+
+        return Ok(
+            String::from_utf8(result.clone().stderr).unwrap_or("Utf8 error".to_owned())
+                + &uft8_output,
+        );
     }
 }
 
