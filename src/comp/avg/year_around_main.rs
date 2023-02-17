@@ -100,7 +100,7 @@ impl YearData {
                                 Ok(e) => {
                                     println!(
                                         "Full data is found and is pushed to firstore for {}!\n\
-                                Amount Completed {}/{}\n with message {}",
+                                fAmount Completed {}/{}\n with message {}",
                                         &team, loc, amount, e
                                     );
                                 }

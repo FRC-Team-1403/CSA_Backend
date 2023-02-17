@@ -20,6 +20,8 @@ impl MatchStore {
                     .args([
                         json,
                         firestore_location.to_owned(),
+                        raw_json.team.to_string(),
+                        "Matches".to_owned(),
                         raw_json.match_number.to_string(),
                     ])
                     .output()?
