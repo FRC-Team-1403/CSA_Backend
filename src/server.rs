@@ -31,7 +31,7 @@ async fn update(mut year: YearData) -> YearData {
     loop {
         let tx_ctx = sentry::TransactionContext::new("Update Year", "Running from update()");
         let transaction = sentry::start_transaction(tx_ctx);
-        match year.update(SendType::Year(2022, "88".to_owned())).await {
+        match year.update(SendType::Year(2022)).await {
             Ok(e) => {
                 return e;
             }
