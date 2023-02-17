@@ -39,7 +39,8 @@ impl YearStore {
         let result = String::from_utf8(
             Command::new("microService/firestore_send/bin")
                 .arg(json)
-                .arg(year_check.to_string())
+                .arg(2019.to_string())
+                .arg(data.team)
                 .output()?
                 .stdout,
         )
