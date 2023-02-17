@@ -54,5 +54,4 @@ func setMatch(title string, result map[string]interface{}) {
 		return
 	}
 	fmt.Println("success")
-	return
 }
