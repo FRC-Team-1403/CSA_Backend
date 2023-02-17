@@ -4,6 +4,7 @@ use crate::comp::shared::team;
 use std::collections::HashMap;
 use std::thread;
 use std::thread::JoinHandle;
+use log::{info, warn};
 
 use crate::comp::avg::math::YearAround;
 use crate::comp::http::get_yearly;
@@ -24,7 +25,7 @@ impl YearData {
         let loc: u16 = team.parse().unwrap();
         if let Some(compare) = self.cache.get(&loc) {
             if compare == &json {
-                println!("Skipping {team}, The data is not updated");
+                info!("Skipping {team}, The data is not updated");
                 return (self, false);
             }
         }
@@ -39,7 +40,7 @@ impl YearData {
                 return Some(json);
             } else {
                 if _failed == 120 {
-                    println!("failed to get data");
+                    info!("failed to get data");
                     return None;
                 }
                 _failed += 1
@@ -62,17 +63,17 @@ impl YearData {
             if _allow {
                 let year = YearAround::new(data).calculate(&team);
                 let Ok(year) = year else {
-                    println!("failed to parse data");
+                    info!("failed to parse data");
                     return Err(self);
                 };
                 //checking if data exists
                 if year.rp.avg.is_none() {
-                    println!("Advanced data unavailable for team {}", &team)
+                    info!("Advanced data unavailable for team {}", &team)
                 }
                 if year.points.lowest == 10000 {
-                    println!("Data unavailable for {} , skipping...", &team)
+                    info!("Data unavailable for {} , skipping...", &team)
                 } else {
-                    println!(
+                    info!(
                         "Full data is found and is pushed to firstore for {}!\n\
             Amount Completed {}/{}",
                         &team, loc, amount
@@ -89,13 +90,13 @@ impl YearData {
         if !good {
             return Err(self);
         }
-        println!("waiting for jobs to finish");
+        info!("waiting for jobs to finish");
         for thread in wait {
             if thread.join().is_err() {
                 return Err(self);
             }
         }
-        println!("done!");
+        info!("done!");
         Ok(self)
     }
 }

@@ -1,5 +1,9 @@
 use crate::comp::event::math::EventData;
-use crate::ram::ENV;
+// use crate::config::FIRESTORE_LOCATION;
+use dotenv;
+use std::env;
+use std::path::{Path};
+use log::{info, warn};
 use std::io;
 use std::process::Command;
 
@@ -27,7 +31,7 @@ impl MatchStore {
             )
             .unwrap_or("utf8 error".to_owned());
             if result.trim() != "success" {
-                println!("FAILURE: {result}, skipping that team",)
+                warn!("FAILURE: {result}, skipping that team")
             }
         }
         Ok(())

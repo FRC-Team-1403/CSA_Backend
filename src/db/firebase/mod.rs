@@ -2,7 +2,7 @@ pub mod r#match;
 
 use std::io::Error;
 use std::process::Command;
-
+use log::{info, warn};
 use serde_derive::Deserialize;
 use serde_derive::Serialize;
 
@@ -45,7 +45,7 @@ impl YearStore {
         )
         .unwrap_or("utf8 error".to_owned());
         if result.trim() != "success" {
-            println!("FAILURE: {result}, skipping that team",)
+            warn!("FAILURE: {result}, skipping that team",)
         }
         Ok(result)
     }
