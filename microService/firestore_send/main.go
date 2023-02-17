@@ -4,10 +4,14 @@ import (
 	"cloud.google.com/go/firestore"
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 )
 
 func main() {
+	if len(os.Args) == 0 || len(os.Args)%2 != 0 {
+		log.Fatalln("Incorrect Args")
+	}
 	var result map[string]interface{}
 	jsonData := []byte(os.Args[1])
 	err := json.Unmarshal(jsonData, &result)
@@ -15,43 +19,20 @@ func main() {
 		fmt.Println("Error parsing JSON:", err)
 		return
 	}
-	title := fmt.Sprintf("%v", result["team"])
-	//for nested send
-	if os.Args[3] != "" {
-		setMatch(title, result)
-		return
-	}
-	setYear(title, result)
-}
-
-func setYear(title string, result map[string]interface{}) {
-	db := firebaseWrite{}
-	db.Doc = title
-	db.Collection = os.Args[2]
-	db.WhatWrite = result
-	err := db.One(db)
-	if result["Points Lowest"] == 10000 {
-		fmt.Println("data received was null")
-		return
-	}
-	if err != nil {
-		fmt.Println("failed sending to firestore", err)
-		return
-	}
-	fmt.Println("success")
-}
-
-func setMatch(title string, result map[string]interface{}) {
 	client := Firestore{}
 	app, err := client.Init()
 	if err != nil {
 		fmt.Println("failed to start firestore")
 		return
 	}
-	_, err = app.Client.Collection(os.Args[2]).Doc(title).Collection("Matches").Doc(os.Args[3]).Set(app.Ctx, result, firestore.MergeAll)
+	var builder *firestore.DocumentRef
+	for x := 2; x < len(os.Args); x++ {
+		builder = app.Client.Collection(os.Args[x]).Doc(os.Args[x+1])
+	}
+	_, err = builder.Set(app.Ctx, result, firestore.MergeAll)
 	if err != nil {
-		fmt.Println("Failed to send because: ", err)
+		fmt.Println("Error While Sending ", err)
 		return
 	}
-	fmt.Println("success")
+	fmt.Println("Success")
 }
