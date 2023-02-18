@@ -1,10 +1,9 @@
 //allow for now
 #![allow(dead_code)]
 extern crate core;
+
 #[macro_use]
 extern crate dotenv_codegen;
-
-use crate::ram::ENV;
 
 mod comp;
 mod db;
@@ -13,7 +12,8 @@ mod server;
 
 #[tokio::main]
 async fn main() {
-    let sentry_dsn = ENV.sentry_dsn.clone();
+    log4rs::init_file("logging_config.yaml", Default::default()).unwrap();
+    let sentry_dsn = dotenv::var("SENTRY_DSN").unwrap();
     let _guard = sentry::init((
         sentry_dsn,
         sentry::ClientOptions {

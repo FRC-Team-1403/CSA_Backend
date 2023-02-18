@@ -1,5 +1,6 @@
 use crate::comp::event::math::EventData;
 use crate::ram::ENV;
+use log::warn;
 use std::io;
 use std::process::Command;
 
@@ -26,7 +27,7 @@ impl MatchStore {
                 .output()?;
             let uft8_output = String::from_utf8(result.clone().stdout).unwrap_or(String::new());
             if uft8_output.is_empty() {
-                println!(
+                warn!(
                     "{}",
                     String::from_utf8(result.clone().stderr).unwrap_or("Utf8 error".to_owned())
                 );

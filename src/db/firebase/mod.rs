@@ -37,13 +37,13 @@ impl YearStore {
         };
         let json = serde_json::to_string(&data)?;
         let result = Command::new("microService/firestore_send/bin")
-            .arg(json.clone())
+            .arg(json)
             .arg(year_check)
-            .arg(data.team.clone())
+            .arg(data.team)
             .output()?;
         let uft8_output = String::from_utf8(result.clone().stdout).unwrap_or(String::new());
         if uft8_output.is_empty() {
-            return Ok(String::from_utf8(result.clone().stderr).unwrap_or("Utf8 error".to_owned()));
+            return Ok(String::from_utf8(result.stderr).unwrap_or("Utf8 error".to_owned()));
         }
         Ok(uft8_output)
     }
