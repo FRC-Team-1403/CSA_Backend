@@ -1,4 +1,3 @@
-use std::any::Any;
 use crate::comp::event::Event;
 use log::{info, warn};
 use std::thread;

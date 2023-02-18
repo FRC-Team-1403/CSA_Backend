@@ -1,16 +1,9 @@
 //allow for now
 #![allow(dead_code)]
 extern crate core;
-use dotenv;
 
 #[macro_use]
 extern crate dotenv_codegen;
-
-use log4rs;
-use std::env;
-use std::path::Path;
-use crate::ram::ENV;
-// use crate::constant::SENTRY_DSN;
 
 mod comp;
 mod db;

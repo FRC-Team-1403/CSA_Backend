@@ -1,5 +1,5 @@
 #![allow(clippy::needless_range_loop)]
-
+#![allow(clippy::needless_late_init)]
 use crate::comp::shared::team;
 use crate::ram::ENV;
 use std::collections::HashMap;
