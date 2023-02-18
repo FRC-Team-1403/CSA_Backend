@@ -1,5 +1,5 @@
+pub mod genral;
 pub mod r#match;
-
 use std::io::Error;
 use std::process::Command;
 
@@ -38,15 +38,14 @@ impl YearStore {
         let json = serde_json::to_string(&data)?;
         let result = Command::new("microService/firestore_send/bin")
             .arg(json.clone())
-            .arg(2019.to_string())
+            .arg(year_check.to_string())
             .arg(data.team.clone())
             .output()?;
         let uft8_output = String::from_utf8(result.clone().stdout).unwrap_or(String::new());
-
-        return Ok(
-            String::from_utf8(result.clone().stderr).unwrap_or("Utf8 error".to_owned())
-                + &uft8_output,
-        );
+        if uft8_output.is_empty() {
+            return Ok(String::from_utf8(result.clone().stderr).unwrap_or("Utf8 error".to_owned()));
+        }
+        Ok(uft8_output)
     }
 }
 

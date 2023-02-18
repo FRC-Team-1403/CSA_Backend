@@ -79,7 +79,6 @@ impl YearData {
             let mut _allow: bool = false;
             (self, _allow) = self.check_cache(json.clone(), &what, &teams[loc]);
             if _allow {
-                // Todo fix bug here
                 match what.clone() {
                     SendType::Year(year_check) => {
                         let year = YearAround::new(json).calculate(&team);
@@ -100,7 +99,7 @@ impl YearData {
                                 Ok(e) => {
                                     println!(
                                         "Full data is found and is pushed to firstore for {}!\n\
-                                fAmount Completed {}/{}\n with message {}",
+                                Amount Completed {}/{}\nWith Status: {}",
                                         &team, loc, amount, e
                                     );
                                 }
@@ -114,7 +113,17 @@ impl YearData {
                             }
                         }
                     }
-                    SendType::Match => todo!(),
+                    SendType::Match => {
+                        let calc = YearAround::new(json.clone());
+                        for team in teams {
+                            let team = team.to_string();
+                            let team_data = calc.clone().calculate(&team);
+                            let Ok(data) = team_data else {
+                                return Err(self);
+                            };
+                        }
+                        todo!();
+                    }
                 }
             }
         }
