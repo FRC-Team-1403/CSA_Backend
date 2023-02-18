@@ -13,11 +13,10 @@ pub async fn run() {
             let tx_ctx =
                 sentry::TransactionContext::new("Updating new Year Value", "run() function");
             let transaction = sentry::start_transaction(tx_ctx);
-            event = event.update_match_data().await;
-
             info!("Updating year value: ");
             year = update(year, SendType::Match).await;
             year = update(year, SendType::Year(2023)).await;
+            event = event.update_match_data().await;
             transaction.finish();
             event = event.update_match_data().await;
             thread::sleep(Duration::from_secs(360))
