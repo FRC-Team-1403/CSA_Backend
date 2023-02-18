@@ -2,12 +2,12 @@
 #![allow(dead_code)]
 extern crate core;
 #[macro_use]
-extern crate dotenv_codegen;
 
 use dotenv;
 use std::env;
 use std::path::{Path};
 use log4rs;
+use crate::ram::ENV;
 // use crate::constant::SENTRY_DSN;
 
 mod comp;
@@ -18,12 +18,9 @@ mod server;
 #[tokio::main]
 async fn main() {
     log4rs::init_file("logging_config.yaml", Default::default()).unwrap();
-    let my_path = env::home_dir().map(|a| a.join("/.env")).unwrap();
-    dotenv::from_path(my_path.as_path()).expect("No .env file detected");
-    let sentry_dsn = dotenv::var("SENTRY_DSN").unwrap();
 
     let _guard = sentry::init((
-        sentry_dsn,
+        ENV.SENTRY_DSN,
         sentry::ClientOptions {
             release: sentry::release_name!(),
             traces_sample_rate: 1.0,
