@@ -2,7 +2,7 @@ pub mod r#match;
 
 use std::io::Error;
 use std::process::Command;
-use log::{info, warn};
+
 use serde_derive::Deserialize;
 use serde_derive::Serialize;
 
@@ -16,7 +16,7 @@ impl YearStore {
     pub fn new(data: YearAround) -> Self {
         Self { year: data }
     }
-    pub fn set_year(&self, team: &str, year_check: u16) -> Result<String, Error> {
+    pub fn set_year(&self, team: &str, year_check: &str) -> Result<String, Error> {
         let data = SendYearAround {
             team: team.to_owned(),
             auto_high: self.year.auto.highest,
@@ -36,18 +36,16 @@ impl YearStore {
             win: self.year.wins,
         };
         let json = serde_json::to_string(&data)?;
-        let result = String::from_utf8(
-            Command::new("microService/firestore_send/bin")
-                .arg(json)
-                .arg(year_check.to_string())
-                .output()?
-                .stdout,
-        )
-        .unwrap_or("utf8 error".to_owned());
-        if result.trim() != "success" {
-            warn!("FAILURE: {result}, skipping that team",)
+        let result = Command::new("microService/firestore_send/bin")
+            .arg(json)
+            .arg(year_check)
+            .arg(data.team)
+            .output()?;
+        let uft8_output = String::from_utf8(result.clone().stdout).unwrap_or(String::new());
+        if uft8_output.is_empty() {
+            return Ok(String::from_utf8(result.stderr).unwrap_or("Utf8 error".to_owned()));
         }
-        Ok(result)
+        Ok(uft8_output)
     }
 }
 

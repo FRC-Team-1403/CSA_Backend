@@ -2,11 +2,22 @@ use crate::comp::parse::TeamYearAroundJsonParser;
 use crate::ram::ENV;
 use reqwest::Error;
 
-pub async fn get_yearly(team: &str, year: u16) -> Result<TeamYearAroundJsonParser, Error> {
+use super::avg::year_around_main::SendType;
+
+pub async fn get_yearly(year: &SendType, team: &str) -> Result<TeamYearAroundJsonParser, Error> {
+    let send_url: String = {
+        match year {
+            SendType::Year(year) => {
+                format!("https://www.thebluealliance.com/api/v3/team/frc{team}/matches/{year}")
+            }
+            SendType::Match => {
+                let update_where = &ENV.update_where;
+                format!("https://www.thebluealliance.com/api/v3/event/{update_where}/matches")
+            }
+        }
+    };
     let response = reqwest::Client::new()
-        .get(format!(
-            "https://www.thebluealliance.com/api/v3/team/frc{team}/matches/{year}"
-        ))
+        .get(send_url)
         .header("X-TBA-Auth-Key", &ENV.api_key)
         .send()
         .await?;
