@@ -1,6 +1,7 @@
 #![allow(clippy::needless_range_loop)]
 
 use crate::comp::shared::team;
+use crate::ram::ENV;
 use std::collections::HashMap;
 
 use crate::comp::avg::math::YearAround;
@@ -94,7 +95,7 @@ impl YearData {
                             println!("Data unavailable for {} , skipping...", &team)
                         } else {
                             good = true;
-                            let e = YearStore::new(year).set_year(&team, year_check);
+                            let e = YearStore::new(year).set_year(&team, &year_check.to_string());
                             match e {
                                 Ok(e) => {
                                     println!(
@@ -115,14 +116,39 @@ impl YearData {
                     }
                     SendType::Match => {
                         let calc = YearAround::new(json.clone());
-                        for team in teams {
+                        for team in crate::comp::shared::team() {
                             let team = team.to_string();
-                            let team_data = calc.clone().calculate(&team);
-                            let Ok(data) = team_data else {
+                            let year = calc.clone().calculate(&team);
+                            let Ok(year) = year else {
                                 return Err(self);
                             };
+                            if year.rp.avg.is_none() {
+                                println!("Advanced data unavailable for team {}", &team)
+                            }
+                            if year.points.lowest == 10000 {
+                                println!("Data unavailable for {} , skipping...", &team)
+                            } else {
+                                let e =
+                                    YearStore::new(year).set_year(&team, &ENV.firestore_collection);
+                                match e {
+                                    Ok(e) => {
+                                        good = true;
+                                        println!(
+                                        "Full data is found and is pushed to firstore for {}!\n\
+                                Amount Completed {}/{}\nWith Status: {}",
+                                        &team, loc, amount, e
+                                    );
+                                    }
+                                    Err(err) => {
+                                        println!(
+                                            "Failed for {}!\n\
+                                Amount Completed {}/{}\n with message {}",
+                                            &team, loc, amount, err
+                                        );
+                                    }
+                                }
+                            }
                         }
-                        todo!();
                     }
                 }
             }

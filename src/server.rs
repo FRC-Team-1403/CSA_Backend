@@ -17,7 +17,8 @@ pub async fn run() {
             event = event.update_match_data().await;
 
             info!("Updating year value: ");
-            year = update(year).await;
+            year = update(year, SendType::Match).await;
+            year = update(year, SendType::Year(2023)).await;
             transaction.finish();
             event = event.update_match_data().await;
             thread::sleep(Duration::from_secs(360))
@@ -26,12 +27,12 @@ pub async fn run() {
     join.await.unwrap();
 }
 
-async fn update(mut year: YearData) -> YearData {
+async fn update(mut year: YearData, what: SendType) -> YearData {
     let mut error: u8 = 0;
     loop {
         let tx_ctx = sentry::TransactionContext::new("Update Year", "Running from update()");
         let transaction = sentry::start_transaction(tx_ctx);
-        match year.update(SendType::Year(2022)).await {
+        match year.update(what.clone()).await {
             Ok(e) => {
                 return e;
             }
