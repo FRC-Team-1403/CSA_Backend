@@ -9,6 +9,7 @@ pub struct Data {
     pub avg: f32,
     pub lowest: i16,
     pub highest: i16,
+    pub graph: Vec<i16>,
 }
 
 #[derive(Clone)]
@@ -16,11 +17,13 @@ pub struct OData {
     pub avg: Option<f32>,
     pub lowest: Option<i16>,
     pub highest: Option<i16>,
+    pub graph: Vec<i16>,
 }
 
 impl OData {
     fn new() -> Self {
         Self {
+            graph: vec![],
             avg: None,
             lowest: None,
             highest: None,
@@ -30,6 +33,7 @@ impl OData {
 impl Data {
     fn new() -> Self {
         Self {
+            graph: vec![],
             avg: 0.0,
             lowest: 10000,
             highest: 0,
@@ -121,9 +125,13 @@ impl YearAround {
             }
         }
         self.data = None;
+        self.rp.graph = avg_rp.clone();
         self.rp.avg = Some(avg(avg_rp));
+        self.pen.graph = avg_foul.clone();
         self.pen.avg = Some(avg(avg_foul));
+        self.points.graph = avg_score.clone();
         self.points.avg = avg(avg_score);
+        self.auto.graph = avg_auto.clone();
         self.auto.avg = Some(avg(avg_auto));
         self.win_rato = self.wins as f32 / self.losses as f32;
         self.matches_played = self.wins + self.losses;
