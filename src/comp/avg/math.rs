@@ -4,7 +4,7 @@ use crate::comp::shared::{
 };
 use std::fmt::Error;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Data {
     pub avg: f32,
     pub lowest: i16,
@@ -12,7 +12,7 @@ pub struct Data {
     pub graph: Vec<i16>,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct OData {
     pub avg: Option<f32>,
     pub lowest: Option<i16>,
@@ -40,7 +40,7 @@ impl Data {
         }
     }
 }
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct YearAround {
     pub data: Option<TeamYearAroundJsonParser>,
     pub points: Data,

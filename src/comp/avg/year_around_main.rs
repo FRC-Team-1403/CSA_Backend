@@ -94,6 +94,7 @@ impl YearData {
                         if year.points.lowest == 10000 {
                             println!("Data unavailable for {} , skipping...", &team)
                         } else {
+                            dbg!(&year);
                             good = true;
                             let e = YearStore::new(year).set_year(&team, &year_check.to_string());
                             match e {
