@@ -4,6 +4,7 @@ extern crate core;
 use dotenv;
 
 #[macro_use]
+extern crate dotenv_codegen;
 
 use log4rs;
 use std::env;
@@ -21,7 +22,7 @@ async fn main() {
     log4rs::init_file("logging_config.yaml", Default::default()).unwrap();
     let sentry_dsn = dotenv::var("SENTRY_DSN").unwrap();
     let _guard = sentry::init((
-        ENV.SENTRY_DSN,
+        sentry_dsn,
         sentry::ClientOptions {
             release: sentry::release_name!(),
             traces_sample_rate: 1.0,
