@@ -1,5 +1,5 @@
-pub mod genral;
 pub mod r#match;
+
 use std::io::Error;
 use std::process::Command;
 
@@ -16,7 +16,7 @@ impl YearStore {
     pub fn new(data: YearAround) -> Self {
         Self { year: data }
     }
-    pub fn set_year(&self, team: &str, year_check: u16) -> Result<String, Error> {
+    pub fn set_year(&self, team: &str, year_check: &str) -> Result<String, Error> {
         let data = SendYearAround {
             team: team.to_owned(),
             auto_high: self.year.auto.highest,
@@ -38,7 +38,7 @@ impl YearStore {
         let json = serde_json::to_string(&data)?;
         let result = Command::new("microService/firestore_send/bin")
             .arg(json.clone())
-            .arg(year_check.to_string())
+            .arg(year_check)
             .arg(data.team.clone())
             .output()?;
         let uft8_output = String::from_utf8(result.clone().stdout).unwrap_or(String::new());
