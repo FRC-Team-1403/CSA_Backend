@@ -8,6 +8,7 @@ use dotenv;
 use log4rs;
 use std::env;
 use std::path::Path;
+use crate::ram::ENV;
 // use crate::constant::SENTRY_DSN;
 
 mod comp;
