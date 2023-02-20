@@ -1,17 +1,19 @@
-#![allow(clippy::needless_range_loop)]
 #![allow(clippy::needless_late_init)]
 
 use crate::comp::shared::team;
 use crate::ram::ENV;
 use std::collections::HashMap;
+use std::thread;
 
 use crate::comp::avg::math::YearAround;
 use crate::comp::http::get_yearly;
 use crate::comp::parse::TeamYearAroundJsonParser;
 use crate::db::firebase::YearStore;
+use rayon::prelude::*;
 
 const PUBLIC_CACHE: u16 = 16969;
 
+#[derive(Clone)]
 pub struct YearData {
     pub cache: HashMap<u16, TeamYearAroundJsonParser>,
 }
@@ -53,10 +55,10 @@ impl YearData {
         (self, true)
     }
     //work on this
-    pub async fn get_new_data(what: SendType, frc: &str) -> Option<TeamYearAroundJsonParser> {
+    pub fn get_new_data(what: SendType, frc: &str) -> Option<TeamYearAroundJsonParser> {
         let mut _failed: u8 = 0;
         loop {
-            let response = get_yearly(&what, frc).await;
+            let response = get_yearly(&what, frc);
             if let Ok(json) = response {
                 return Some(json);
             } else {
@@ -69,101 +71,81 @@ impl YearData {
         }
     }
     pub async fn update(mut self, what: SendType) -> Result<Self, Self> {
-        let teams = team();
-        let amount = teams.len() - 1;
-        let mut good: bool = false;
-        for loc in 0..amount + 1 {
-            let team = teams[loc].to_string();
-            let Some(json) =
-                Self::get_new_data(what.clone(), &team).await else {
-                return Err(self);
-            };
-            let mut _allow: bool = false;
-            (self, _allow) = self.check_cache(json.clone(), &what, &teams[loc]);
-            if _allow {
-                match what.clone() {
-                    SendType::Year(year_check) => {
+        match what {
+            SendType::Year(_) => {
+                for team_num in team() {
+                    let team = team_num.to_string();
+                    let Some(json) =
+                        Self::get_new_data(what.clone(), &team) else {
+                        return Err(self);
+                    };
+                    let mut _allow: bool = false;
+                    (self, _allow) = self.check_cache(json.clone(), &what, &team_num);
+                    if _allow {
                         let year = YearAround::new(json).calculate(&team);
                         let Ok(year) = year else {
                             println!("failed to parse data");
                             return Err(self);
                         };
-                        //checking if data exists
-                        if year.rp.avg.is_none() {
-                            println!("Advanced data unavailable for team {}", &team)
-                        }
-                        if year.points.lowest == 10000 {
-                            println!("Data unavailable for {} , skipping...", &team)
-                        } else {
-                            good = true;
-                            let e = YearStore::new(year).set_year(&team, &year_check.to_string());
-                            match e {
-                                Ok(e) => {
-                                    println!(
-                                        "Full data is found and is pushed to firstore for {}!\n\
-                                Amount Completed {}/{}\nWith Status: {}",
-                                        &team, loc, amount, e
-                                    );
-                                }
-                                Err(err) => {
-                                    println!(
-                                        "Failed for {}!\n\
-                                Amount Completed {}/{}\n with message {}",
-                                        &team, loc, amount, err
-                                    );
-                                }
-                            }
-                        }
-                    }
-                    SendType::Match => {
-                        let calc = YearAround::new(json);
-                        dbg!(&calc);
-                        for team in crate::comp::shared::team() {
-                            let team_calc = calc.clone();
-                            let team = team.to_string();
-                            let year = team_calc.calculate(&team);
-                            let Ok(year) = year else {
-                                return Err(self);
-                            };
-                            if year.rp.avg.is_none() {
-                                println!("Advanced data unavailable for team {}", &team)
-                            }
-                            if year.points.lowest == 10000 {
-                                println!("Data unavailable for {} , skipping...", &team)
-                            } else {
-                                let e =
-                                    YearStore::new(year).set_year(&team, &ENV.firestore_collection);
-                                match e {
-                                    Ok(e) => {
-                                        good = true;
-                                        println!(
-                                        "Full data is found and is pushed to firstore for {}!\n\
-                                Amount Completed {}/{}\nWith Status: {}",
-                                        &team, loc, amount, e
-                                    );
-                                    }
-                                    Err(err) => {
-                                        println!(
-                                            "Failed for {}!\n\
-                                Amount Completed {}/{}\n with message {}",
-                                            &team, loc, amount, err
-                                        );
-                                    }
-                                }
-                            }
-                        }
-                        if !good {
-                            return Err(self);
-                        }
-                        return Ok(self);
+                        thread::spawn(move || {
+                            send_and_check(year, team);
+                        });
                     }
                 }
+                Ok(self)
+            }
+            SendType::Match => {
+                let Some(json) =
+                    Self::get_new_data(what.clone(), "69") else {
+                    return Err(self);
+                };
+                let mut _allow = false;
+                (self, _allow) = self.check_cache(json.clone(), &what, &69);
+                if _allow {
+                    let calc = YearAround::new(json);
+                    team().par_iter().try_for_each(|team| -> Result<(), Self> {
+                        let team_calc = calc.clone();
+                        let team = team.to_string();
+                        let year = team_calc.calculate(&team);
+                        let Ok(year) = year else {
+                                return Err(self.clone());
+                            };
+                        thread::spawn(move || {
+                            send_and_check(year, team);
+                        });
+                        Ok(())
+                    })?;
+                }
+                Ok(self)
             }
         }
-        if !good {
-            return Err(self);
+    }
+}
+
+fn send_and_check(year: YearAround, team: String) {
+    if year.rp.avg.is_none() {
+        println!("Advanced data unavailable for team {}", &team)
+    }
+    if year.points.lowest == 10000 {
+        println!("Data unavailable for {} , skipping...", &team)
+    } else {
+        let e = YearStore::new(year).set_year(&team, &ENV.firestore_collection);
+        match e {
+            Ok(e) => {
+                println!(
+                    "Full data is found and is pushed to firstore for {}!\n\
+                                \nWith Status: {}",
+                    &team, e
+                );
+            }
+            Err(err) => {
+                println!(
+                    "Failed for {}!\n\
+                    with message {}",
+                    &team, err
+                );
+            }
         }
-        Ok(self)
     }
 }
 

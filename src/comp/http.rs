@@ -4,7 +4,7 @@ use reqwest::Error;
 
 use super::avg::year_around_main::SendType;
 
-pub async fn get_yearly(year: &SendType, team: &str) -> Result<TeamYearAroundJsonParser, Error> {
+pub fn get_yearly(year: &SendType, team: &str) -> Result<TeamYearAroundJsonParser, Error> {
     let send_url: String = {
         match year {
             SendType::Year(year) => {
@@ -16,12 +16,11 @@ pub async fn get_yearly(year: &SendType, team: &str) -> Result<TeamYearAroundJso
             }
         }
     };
-    let response = reqwest::Client::new()
+    let response = reqwest::blocking::Client::new()
         .get(send_url)
         .header("X-TBA-Auth-Key", &ENV.api_key)
-        .send()
-        .await?;
-    response.json::<TeamYearAroundJsonParser>().await
+        .send()?;
+    response.json::<TeamYearAroundJsonParser>()
 }
 
 pub async fn get_match() -> reqwest::Result<TeamYearAroundJsonParser> {

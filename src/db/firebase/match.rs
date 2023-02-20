@@ -32,7 +32,7 @@ impl MatchStore {
                     String::from_utf8(result.clone().stderr).unwrap_or("Utf8 error".to_owned())
                 );
             }
-            println!("{}", uft8_output);
+            println!("{uft8_output}",);
         }
         Ok(())
     }
