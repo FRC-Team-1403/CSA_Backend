@@ -33,7 +33,11 @@ impl YearStore {
             points_high: self.year.points.highest,
             loss: self.year.losses,
             win_ratio: self.year.win_rato,
+            score_graph: self.year.points.graph.clone(),
+            penalty_graph: self.year.pen.graph.clone(),
+            ranking_graph: self.year.rp.graph.clone(),
             win: self.year.wins,
+            auto_graph: self.year.auto.graph.clone(),
         };
         let json = serde_json::to_string(&data)?;
         let result = Command::new("microService/firestore_send/bin")
@@ -83,4 +87,8 @@ struct SendYearAround {
     loss: i16,
     #[serde(rename = "Win loss ratio")]
     win_ratio: f32,
+    score_graph: Vec<i16>,
+    penalty_graph: Vec<i16>,
+    ranking_graph: Vec<i16>,
+    auto_graph: Vec<i16>,
 }
