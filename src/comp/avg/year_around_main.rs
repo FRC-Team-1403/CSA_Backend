@@ -152,6 +152,10 @@ impl YearData {
                                 }
                             }
                         }
+                        if !good {
+                            return Err(self);
+                        }
+                        return Ok(self);
                     }
                 }
             }
@@ -159,8 +163,6 @@ impl YearData {
         if !good {
             return Err(self);
         }
-        println!("waiting for jobs to finish");
-        println!("done!");
         Ok(self)
     }
 }
