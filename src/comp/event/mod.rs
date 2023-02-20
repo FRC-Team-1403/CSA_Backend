@@ -22,17 +22,16 @@ impl Event {
         let Ok(json) = get_match().await else {
             return Err(self);
         };
-        self.new_data = json;
-        if self.new_data == self.cache {
+        if json == self.cache {
             return Err(self);
-        } else {
-            self.cache = self.new_data.clone();
         }
+        self.cache = json.clone();
+        self.new_data = json;
         Ok(self)
     }
     pub fn parse(self, team: u16) -> Result<(Self, Vec<EventData>), Self> {
         let Ok(final_data) = self.math(team) else {
-            return Err(self)
+            return Err(self);
         };
         Ok((self, final_data))
     }

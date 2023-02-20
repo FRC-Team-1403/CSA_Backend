@@ -4,14 +4,10 @@ import (
 	"cloud.google.com/go/firestore"
 	"encoding/json"
 	"fmt"
-	"log"
 	"os"
 )
 
 func main() {
-	if len(os.Args) == 0 || len(os.Args)%2 != 0 {
-		log.Fatalln("Incorrect Args")
-	}
 	var result map[string]interface{}
 	jsonData := []byte(os.Args[1])
 	err := json.Unmarshal(jsonData, &result)
@@ -26,9 +22,9 @@ func main() {
 		return
 	}
 	var builder *firestore.DocumentRef
-	if len(os.Args) == 3 {
+	if len(os.Args) < 5 {
 		builder = app.Client.Collection(os.Args[2]).Doc(os.Args[3])
-	} else  {
+	} else {
 		builder = app.Client.Collection(os.Args[2]).Doc(os.Args[3]).Collection(os.Args[4]).Doc(os.Args[5])
 	}
 	_, err = builder.Set(app.Ctx, result, firestore.MergeAll)

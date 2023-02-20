@@ -11,7 +11,7 @@ pub async fn run() {
     let mut event = Event::new();
     loop {
         event = event.update_match_data().await;
-        thread::sleep(Duration::from_secs(360))
+        thread::sleep(Duration::from_secs(120));
     }
 }
 
