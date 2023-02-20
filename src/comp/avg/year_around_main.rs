@@ -87,9 +87,7 @@ impl YearData {
                             println!("failed to parse data");
                             return Err(self);
                         };
-                        thread::spawn(move || {
-                            send_and_check(year, team);
-                        });
+                        send_and_check(year, team);
                     }
                 }
                 Ok(self)
@@ -110,9 +108,7 @@ impl YearData {
                         let Ok(year) = year else {
                                 return Err(self.clone());
                             };
-                        thread::spawn(move || {
-                            send_and_check(year, team);
-                        });
+                        send_and_check(year, team);
                         Ok(())
                     })?;
                 }
@@ -123,30 +119,32 @@ impl YearData {
 }
 
 fn send_and_check(year: YearAround, team: String) {
-    if year.rp.avg.is_none() {
-        println!("Advanced data unavailable for team {}", &team)
-    }
-    if year.points.lowest == 10000 {
-        println!("Data unavailable for {} , skipping...", &team)
-    } else {
-        let e = YearStore::new(year).set_year(&team, &ENV.firestore_collection);
-        match e {
-            Ok(e) => {
-                println!(
-                    "Full data is found and is pushed to firstore for {}!\n\
+    thread::spawn(move || {
+        if year.rp.avg.is_none() {
+            println!("Advanced data unavailable for team {}", &team)
+        }
+        if year.points.lowest == 10000 {
+            println!("Data unavailable for {} , skipping...", &team)
+        } else {
+            let e = YearStore::new(year).set_year(&team, &ENV.firestore_collection);
+            match e {
+                Ok(e) => {
+                    println!(
+                        "Full data is found and is pushed to firstore for {}!\n\
                                 \nWith Status: {}",
-                    &team, e
-                );
-            }
-            Err(err) => {
-                println!(
-                    "Failed for {}!\n\
+                        &team, e
+                    );
+                }
+                Err(err) => {
+                    println!(
+                        "Failed for {}!\n\
                     with message {}",
-                    &team, err
-                );
+                        &team, err
+                    );
+                }
             }
         }
-    }
+    });
 }
 
 #[derive(Debug, Clone)]
