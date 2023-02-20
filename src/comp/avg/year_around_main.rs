@@ -1,5 +1,6 @@
 #![allow(clippy::needless_range_loop)]
 #![allow(clippy::needless_late_init)]
+
 use crate::comp::shared::team;
 use crate::ram::ENV;
 use std::collections::HashMap;
@@ -94,7 +95,6 @@ impl YearData {
                         if year.points.lowest == 10000 {
                             println!("Data unavailable for {} , skipping...", &team)
                         } else {
-                            dbg!(&year);
                             good = true;
                             let e = YearStore::new(year).set_year(&team, &year_check.to_string());
                             match e {
@@ -116,10 +116,12 @@ impl YearData {
                         }
                     }
                     SendType::Match => {
-                        let calc = YearAround::new(json.clone());
+                        let calc = YearAround::new(json);
+                        dbg!(&calc);
                         for team in crate::comp::shared::team() {
+                            let team_calc = calc.clone();
                             let team = team.to_string();
-                            let year = calc.clone().calculate(&team);
+                            let year = team_calc.calculate(&team);
                             let Ok(year) = year else {
                                 return Err(self);
                             };

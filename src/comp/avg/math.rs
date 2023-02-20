@@ -99,7 +99,12 @@ impl YearAround {
                 avg_foul = new_data.avg_foul;
                 avg_rp = new_data.avg_rp;
                 avg_auto = new_data.avg_auto;
-            } else {
+            } else if json
+                .alliances
+                .blue
+                .team_keys
+                .contains(&format!("frc{team}"))
+            {
                 (self.losses, self.wins) = check_win(
                     Team::Blue,
                     self.losses,
