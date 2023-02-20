@@ -70,9 +70,9 @@ impl YearData {
             }
         }
     }
-    pub async fn update(mut self, what: SendType) -> Result<Self, Self> {
+    pub fn update(mut self, what: SendType) -> Result<Self, Self> {
         match what {
-            SendType::Year(_) => {
+            SendType::Year(year_check) => {
                 for team_num in team() {
                     let team = team_num.to_string();
                     let Some(json) =
@@ -87,7 +87,7 @@ impl YearData {
                             println!("failed to parse data");
                             return Err(self);
                         };
-                        send_and_check(year, team);
+                        send_and_check(year, team, year_check.to_string());
                     }
                 }
                 Ok(self)
@@ -108,7 +108,7 @@ impl YearData {
                         let Ok(year) = year else {
                                 return Err(self.clone());
                             };
-                        send_and_check(year, team);
+                        send_and_check(year, team, ENV.firestore_collection.clone());
                         Ok(())
                     })?;
                 }
@@ -118,7 +118,7 @@ impl YearData {
     }
 }
 
-fn send_and_check(year: YearAround, team: String) {
+fn send_and_check(year: YearAround, team: String, location: String) {
     thread::spawn(move || {
         if year.rp.avg.is_none() {
             println!("Advanced data unavailable for team {}", &team)
@@ -126,7 +126,7 @@ fn send_and_check(year: YearAround, team: String) {
         if year.points.lowest == 10000 {
             println!("Data unavailable for {} , skipping...", &team)
         } else {
-            let e = YearStore::new(year).set_year(&team, &ENV.firestore_collection);
+            let e = YearStore::new(year).set_year(&team, &location);
             match e {
                 Ok(e) => {
                     println!(

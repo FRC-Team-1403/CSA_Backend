@@ -35,7 +35,7 @@ impl MatchStore {
                         String::from_utf8(result.stderr).unwrap_or("Utf8 error".to_owned())
                     );
                 }
-                println!("{uft8_output}",);
+                println!("Sent for {} with output of {uft8_output}", raw_json.team);
                 Ok(())
             })?;
         Ok(())

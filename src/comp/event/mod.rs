@@ -25,6 +25,8 @@ impl Event {
         self.new_data = json;
         if self.new_data == self.cache {
             return Err(self);
+        } else {
+            self.cache = self.new_data.clone();
         }
         Ok(self)
     }
@@ -49,14 +51,7 @@ impl Event {
                 }
                 Err(e) => return e,
             }
-            match MatchStore::new(event_data).send() {
-                Ok(_) => {
-                    println!("sent successfully for {team}")
-                }
-                Err(e) => {
-                    println!("failed to send for {team} because {e}")
-                }
-            }
+            let _ = MatchStore::new(event_data).send();
         }
         self
     }

@@ -6,8 +6,8 @@ use std::time::Duration;
 use crate::comp::avg::year_around_main::{SendType, YearData};
 
 pub async fn run() {
-    update_year(SendType::Match).await;
-    update_year(SendType::Year(2023)).await;
+    update_year(SendType::Match);
+    update_year(SendType::Year(2023));
     let mut event = Event::new();
     loop {
         event = event.update_match_data().await;
@@ -15,27 +15,27 @@ pub async fn run() {
     }
 }
 
-async fn update_year(what: SendType) {
-    tokio::spawn(async move {
+fn update_year(what: SendType) {
+    thread::spawn(move || {
         let mut year = YearData::new();
         loop {
             let tx_ctx =
                 sentry::TransactionContext::new("Updating new Year Value", "run() function");
             let transaction = sentry::start_transaction(tx_ctx);
             info!("Updating year value: ");
-            year = update(year, what.clone()).await;
+            year = update(year, what.clone());
             transaction.finish();
             thread::sleep(Duration::from_secs(360))
         }
     });
 }
 
-async fn update(mut year: YearData, what: SendType) -> YearData {
+fn update(mut year: YearData, what: SendType) -> YearData {
     let mut error: u8 = 0;
     loop {
         let tx_ctx = sentry::TransactionContext::new("Update Year", "Running from update()");
         let transaction = sentry::start_transaction(tx_ctx);
-        match year.update(what.clone()).await {
+        match year.update(what.clone()) {
             Ok(e) => {
                 return e;
             }
