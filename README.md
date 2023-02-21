@@ -26,4 +26,4 @@
 ## How Do you Run the get_all_teams.py File?
 [Python README](https://github.com/FRC-Team-1403/CSA_Backend/blob/main/microService/get_all_teams/README.md)
 
-## Please note this is a work in progress
+## Please note this is a work in progress with 1425 lines of code

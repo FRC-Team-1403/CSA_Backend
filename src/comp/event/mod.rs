@@ -3,6 +3,7 @@ use crate::comp::http::get_match;
 use crate::comp::parse::TeamYearAroundJsonParser;
 use crate::comp::shared::team;
 use crate::db::firebase::r#match::MatchStore;
+use crate::ram::CACHE_MATCH;
 
 pub mod math;
 
@@ -50,8 +51,22 @@ impl Event {
                 }
                 Err(e) => return e,
             }
-            let _ = MatchStore::new(event_data).send();
+            if check_cache(&event_data, &team) {
+                MatchStore::new(event_data).send();
+            }
         }
         self
     }
+}
+
+fn check_cache(year: &Vec<EventData>, team_num: &u16) -> bool {
+    if let Ok(mut data) = CACHE_MATCH.lock() {
+        if let Some(data) = data.get(team_num) {
+            if data == year {
+                return false;
+            }
+        }
+        data.insert(team_num.to_owned(), year.to_owned());
+    }
+    true
 }

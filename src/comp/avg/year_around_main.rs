@@ -1,7 +1,7 @@
 #![allow(clippy::needless_late_init)]
 
 use crate::comp::shared::team;
-use crate::ram::ENV;
+use crate::ram::{CACHE_MATCH_AVG, ENV};
 use std::collections::HashMap;
 use std::thread;
 
@@ -101,14 +101,16 @@ impl YearData {
                 (self, _allow) = self.check_cache(json.clone(), &what, &69);
                 if _allow {
                     let calc = YearAround::new(json);
-                    team().par_iter().try_for_each(|team| -> Result<(), Self> {
+                    team().par_iter().try_for_each(|team_num| -> Result<(), Self> {
                         let team_calc = calc.clone();
-                        let team = team.to_string();
+                        let team = team_num.to_string();
                         let year = team_calc.calculate(&team);
                         let Ok(year) = year else {
                                 return Err(self.clone());
                             };
-                        send_and_check(year, team, ENV.firestore_collection.clone());
+                        if check_cache(&year, team_num) {
+                            send_and_check(year, team, ENV.firestore_collection.clone());
+                        }
                         Ok(())
                     })?;
                 }
@@ -116,6 +118,18 @@ impl YearData {
             }
         }
     }
+}
+
+fn check_cache(year : &YearAround, team_num : &u16) -> bool {
+    if let Ok(mut data) = CACHE_MATCH_AVG.lock(){
+        if let Some(data) = data.get(team_num) {
+            if data == year {
+                return false;
+            }
+        }
+        data.insert(team_num.to_owned(), year.to_owned());
+    }
+    true
 }
 
 fn send_and_check(year: YearAround, team: String, location: String) {
