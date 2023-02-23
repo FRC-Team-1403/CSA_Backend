@@ -22,6 +22,7 @@ func main() {
 		return
 	}
 	var builder *firestore.DocumentRef
+
 	if len(os.Args) < 5 {
 		builder = app.Client.Collection(os.Args[2]).Doc(os.Args[3])
 	} else {
