@@ -1,9 +1,10 @@
 package main
 
 import (
-	"cloud.google.com/go/firestore"
 	"context"
 	"errors"
+
+	"cloud.google.com/go/firestore"
 	firebase "firebase.google.com/go"
 	"google.golang.org/api/option"
 )
@@ -16,8 +17,7 @@ type Firestore struct {
 
 func (Firestore) Init() (s Firestore, err error) {
 	s.Ctx = context.Background()
-	var file option.ClientOption
-	file = option.WithCredentialsFile("microService/admin.json")
+	var file option.ClientOption = option.WithCredentialsFile("microService/admin.json")
 	s.App, err = firebase.NewApp(s.Ctx, nil, file)
 	if err != nil {
 		return s, errors.New("Failed due to: " + err.Error())
