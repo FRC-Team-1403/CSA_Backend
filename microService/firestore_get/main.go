@@ -49,7 +49,7 @@ func main() {
 		log.Panic("Failed To Start Firestore Client due to:", err)
 	}
 	defer db.close(db)
-	data, err := db.Client.Collection(os.Args[1]).Doc(os.Args[2]).Get(db.Ctx)
+	data, err := db.Client.Collection(os.Args[1]).Doc(os.Args[2]).Collection(os.Args[3]).Doc(os.Args[4]).Get(db.Ctx)
 	if err != nil {
 		log.Panic("Failed to Get data due to: ", err)
 	}
