@@ -51,7 +51,14 @@ pub fn compare_lowest(old: i16, new: i16) -> i16 {
 pub fn get_breakdown_data(
     breakdown: Option<ScoreBreakdown>,
     team: &Team,
-) -> (Option<i16>, Option<i16>, Option<i16>) {
+) -> (
+    Option<i16>,
+    Option<i16>,
+    Option<i16>,
+    Option<String>,
+    Option<String>,
+    Option<bool>,
+) {
     if let Some(breakdown) = breakdown {
         return match team {
             Team::Red => {
@@ -60,19 +67,25 @@ pub fn get_breakdown_data(
                     Some(location.auto_points),
                     Some(location.foul_points),
                     Some(location.rp),
+                    Some(location.auto_bridge_state),
+                    Some(location.end_game_bridge_state),
+                    Some(location.sustainability_bonus_achieved),
                 )
             }
             Team::Blue => {
-                let location = breakdown.red;
+                let location = breakdown.blue;
                 (
                     Some(location.auto_points),
                     Some(location.foul_points),
                     Some(location.rp),
+                    Some(location.auto_bridge_state),
+                    Some(location.end_game_bridge_state),
+                    Some(location.sustainability_bonus_achieved),
                 )
             }
         };
     }
-    (None, None, None)
+    (None, None, None, None, None, None)
 }
 pub fn avg(avg_score: Vec<i16>) -> f32 {
     let divider = avg_score.len();

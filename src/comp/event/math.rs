@@ -23,6 +23,12 @@ pub struct EventData {
     score: i16,
     #[serde(rename = "Video")]
     video: Option<String>,
+    #[serde(rename = "Is Auto Charge Station Level")]
+    pub auto_level: Option<String>,
+    #[serde(rename = "Is End Game Charge Station Level")]
+    pub end_level: Option<String>,
+    #[serde(rename = "Sustainability Bonus Achieved")]
+    pub sustain_bonus: Option<bool>,
 }
 //https://www.youtube.com/watch?v=_G38qoLkH4A
 
@@ -31,16 +37,20 @@ impl Event {
         let mut return_data = vec![];
         let matches = self.find_team(check_team);
         for (game_json, team) in matches {
-            let (auto, penalty, rp) = get_breakdown_data(game_json.score_breakdown.clone(), &team);
+            let (auto, penalty, rp, auto_l, end_l, bonus) =
+                get_breakdown_data(game_json.score_breakdown.clone(), &team);
             return_data.push(EventData {
                 team: check_team,
                 video: Self::get_video(&game_json),
+                auto_level: auto_l,
                 rp,
                 penalty,
                 score: get_score(&team, game_json.clone()),
                 match_number: game_json.match_number,
                 team_members: get_teammates(team, game_json),
                 auto,
+                end_level: end_l,
+                sustain_bonus: bonus,
             });
         }
         Ok(return_data)

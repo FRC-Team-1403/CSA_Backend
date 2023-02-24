@@ -68,6 +68,12 @@ pub struct Blue2 {
     pub auto_points: i16,
     pub foul_count: i16,
     pub foul_points: i16,
+    #[serde(rename = "sustainabilityBonusAchieved")]
+    pub sustainability_bonus_achieved: bool,
+    #[serde(rename = "endGameBridgeState")]
+    pub end_game_bridge_state: String,
+    #[serde(rename = "autoBridgeState")]
+    pub auto_bridge_state: String,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -77,6 +83,12 @@ pub struct Red2 {
     pub auto_points: i16,
     pub foul_count: i16,
     pub foul_points: i16,
+    #[serde(rename = "sustainabilityBonusAchieved")]
+    pub sustainability_bonus_achieved: bool,
+    #[serde(rename = "endGameBridgeState")]
+    pub end_game_bridge_state: String,
+    #[serde(rename = "autoBridgeState")]
+    pub auto_bridge_state: String,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
