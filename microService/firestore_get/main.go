@@ -3,6 +3,9 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
+	"log"
+	"os"
 
 	"cloud.google.com/go/firestore"
 	firebase "firebase.google.com/go"
@@ -15,7 +18,7 @@ type Firestore struct {
 	App    *firebase.App
 }
 
-func (Firestore) Init() (s Firestore, err error) {
+func (Firestore) init() (s Firestore, err error) {
 	s.Ctx = context.Background()
 	var file option.ClientOption = option.WithCredentialsFile("microService/admin.json")
 	s.App, err = firebase.NewApp(s.Ctx, nil, file)
@@ -29,10 +32,26 @@ func (Firestore) Init() (s Firestore, err error) {
 	return s, err
 }
 
-func (Firestore) Close(r Firestore) (err error) {
+func (Firestore) close(r Firestore) (err error) {
 	err = r.Client.Close()
 	if err != nil {
 		return errors.New("Failed due to: " + err.Error())
 	}
 	return err
+}
+
+func main() {
+	if len(os.Args) < 1 {
+		log.Panic("Please Give OS Args")
+	}
+	db, err := Firestore{}.init()
+	if err != nil {
+		log.Panic("Failed To Start Firestore Client due to:", err)
+	}
+	defer db.close(db)
+	data, err := db.Client.Collection(os.Args[1]).Doc(os.Args[2]).Collection(os.Args[3]).Doc(os.Args[4]).Get(db.Ctx)
+	if err != nil {
+		log.Panic("Failed to Get data due to: ", err)
+	}
+	fmt.Print(data)
 }
