@@ -10,7 +10,8 @@ func main() {
 	if len(os.Args) < 1 {
 		log.Panic("Please Give OS Args")
 	}
-	db, err := Firestore{}.Init()
+	fire := Firestore{}
+	db, err := fire.Init()
 	if err != nil {
 		log.Panic("Failed To Start Firestore Client due to:", err)
 	}
