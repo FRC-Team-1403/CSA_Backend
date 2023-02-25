@@ -4,7 +4,7 @@ use crate::comp::shared::team;
 use crate::ram::{CACHE_MATCH_AVG, ENV};
 use std::collections::HashMap;
 use std::thread;
-
+use log::{info, warn};
 use crate::comp::avg::math::YearAround;
 use crate::comp::http::get_yearly;
 use crate::comp::parse::TeamYearAroundJsonParser;
@@ -35,7 +35,7 @@ impl YearData {
             SendType::Year(_) => {
                 if let Some(compare) = self.cache.get(team) {
                     if compare == &json {
-                        println!("Skipping {team}, The data is updated");
+                        info!("Skipping {team}, The data is updated");
                         return (self, false);
                     }
                 }
@@ -44,7 +44,7 @@ impl YearData {
             SendType::Match => {
                 if let Some(compare) = self.cache.get(&PUBLIC_CACHE) {
                     if compare == &json {
-                        println!("Skipping match update,The data is updated");
+                        info!("Skipping match update,The data is updated");
                         return (self, false);
                     }
                 }
@@ -63,7 +63,7 @@ impl YearData {
                 return Some(json);
             } else {
                 if _failed == 120 {
-                    println!("failed to get data");
+                    info!("failed to get data");
                     return None;
                 }
                 _failed += 1
@@ -84,7 +84,7 @@ impl YearData {
                     if _allow {
                         let year = YearAround::new(json).calculate(&team);
                         let Ok(year) = year else {
-                            println!("failed to parse data");
+                            warn!("failed to parse data");
                             return Err(self);
                         };
                         send_and_check(year, team, year_check.to_string());
@@ -135,22 +135,22 @@ fn check_cache(year : &YearAround, team_num : &u16) -> bool {
 fn send_and_check(year: YearAround, team: String, location: String) {
     thread::spawn(move || {
         if year.rp.avg.is_none() {
-            println!("Advanced data unavailable for team {}", &team)
+            warn!("Advanced data unavailable for team {}", &team)
         }
         if year.points.lowest == 10000 {
-            println!("Data unavailable for {} , skipping...", &team)
+            warn!("Data unavailable for {} , skipping...", &team)
         } else {
             let e = YearStore::new(year).set_year(&team, &location);
             match e {
                 Ok(e) => {
-                    println!(
+                    warn!(
                         "Full data is found and is pushed to firstore for {}!\n\
                                 \nWith Status: {}",
                         &team, e
                     );
                 }
                 Err(err) => {
-                    println!(
+                    warn!(
                         "Failed for {}!\n\
                     with message {}",
                         &team, err

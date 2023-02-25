@@ -1,6 +1,6 @@
 use crate::comp::event::math::EventData;
 use crate::ram::{CACHE_MATCH, ENV};
-use log::warn;
+use log::{info, warn};
 use rayon::prelude::*;
 use std::process::Command;
 use std::{io, thread};
@@ -39,7 +39,7 @@ impl MatchStore {
                                 String::from_utf8(result.stderr).unwrap_or("Utf8 error".to_owned())
                             );
                         }
-                        println!("Sent for {} with output of {uft8_output}", raw_json.team);
+                        info!("Sent for {} with output of {uft8_output}", raw_json.team);
                     }
                     Ok(())
                 });
