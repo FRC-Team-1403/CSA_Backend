@@ -20,8 +20,12 @@ jobs:
       run: |
         echo "${{ secrets.ENV_FILE }}" > .env
     - name: Export Variables
-      run: |
-        export API_KEY="${{ secrets.API_KEY }}" && export REDIS=${{ secrets.REDIS }} && export SENTRY_DSN=${{ secrets.SENTRY_DSN }} &&  export FIRESTORE_LOCATION=${{ secrets.FIRESTORE_LOCATION }} && export UPDATE_WHERE=${{ secrets.UPDATE_WHERE }}
+    - env:
+        API_KEY: ${{ secrets.API_KEY }}
+        REDIS: ${{ secrets.REDIS }}
+        SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+        FIRESTORE_LOCATION: ${{ secrets.FIRESTORE_LOCATION }}
+        UPDATE_WHERE: ${{ secrets.UPDATE_WHERE }}
     - name: Build
       run: cargo build --verbose
     - name: Run tests
