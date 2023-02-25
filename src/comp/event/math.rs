@@ -23,9 +23,9 @@ pub struct EventData {
     score: i16,
     #[serde(rename = "Video")]
     video: Option<String>,
-    #[serde(rename = "Is Auto Charge Station Level")]
+    #[serde(rename = "Auto Charge Station Level")]
     pub auto_level: Option<String>,
-    #[serde(rename = "Is End Game Charge Station Level")]
+    #[serde(rename = "End Game Charge Station Level")]
     pub end_level: Option<String>,
     #[serde(rename = "Sustainability Bonus Achieved")]
     pub sustain_bonus: Option<bool>,
