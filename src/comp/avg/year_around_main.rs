@@ -1,15 +1,15 @@
 #![allow(clippy::needless_late_init)]
 
-use crate::comp::shared::team;
-use crate::ram::{CACHE_MATCH_AVG, ENV};
-use std::collections::HashMap;
-use std::thread;
-use log::{info, warn};
 use crate::comp::avg::math::YearAround;
 use crate::comp::http::get_yearly;
 use crate::comp::parse::TeamYearAroundJsonParser;
+use crate::comp::shared::team;
 use crate::db::firebase::YearStore;
+use crate::ram::{CACHE_MATCH_AVG, ENV};
+use log::{info, warn};
 use rayon::prelude::*;
+use std::collections::HashMap;
+use std::thread;
 
 const PUBLIC_CACHE: u16 = 16969;
 

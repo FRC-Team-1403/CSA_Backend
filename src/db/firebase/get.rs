@@ -11,4 +11,3 @@ pub fn get(args: Vec<String>) -> Result<String, Error> {
     }
     Ok(std_err)
 }
-
