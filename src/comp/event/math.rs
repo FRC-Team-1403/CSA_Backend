@@ -39,19 +39,22 @@ impl Event {
         for (game_json, team) in matches {
             let (auto, penalty, rp, auto_l, end_l, bonus) =
                 get_breakdown_data(game_json.score_breakdown.clone(), &team);
-            return_data.push(EventData {
-                team: check_team,
-                video: Self::get_video(&game_json),
-                auto_level: auto_l,
-                rp,
-                penalty,
-                score: get_score(&team, game_json.clone()),
-                match_number: game_json.match_number,
-                team_members: get_teammates(team, game_json),
-                auto,
-                end_level: end_l,
-                sustain_bonus: bonus,
-            });
+            let score = get_score(&team, game_json.clone());
+            if score != -1 {
+                return_data.push(EventData {
+                    team: check_team,
+                    video: Self::get_video(&game_json),
+                    auto_level: auto_l,
+                    rp,
+                    penalty,
+                    score,
+                    match_number: game_json.match_number,
+                    team_members: get_teammates(team, game_json),
+                    auto,
+                    end_level: end_l,
+                    sustain_bonus: bonus,
+                });
+            }
         }
         Ok(return_data)
     }

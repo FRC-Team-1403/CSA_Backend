@@ -75,7 +75,9 @@ impl YearAround {
         let mut avg_auto = vec![];
         //looping through the JSON
         for json in self.data.clone().ok_or(Error)? {
-            if json.alliances.red.team_keys.contains(&format!("frc{team}")) {
+            if json.alliances.red.team_keys.contains(&format!("frc{team}"))
+                && json.alliances.red.score != -1
+            {
                 (self.losses, self.wins) = check_win(
                     Team::Red,
                     self.losses,
@@ -105,6 +107,7 @@ impl YearAround {
                 .blue
                 .team_keys
                 .contains(&format!("frc{team}"))
+                && json.alliances.blue.score != -1
             {
                 (self.losses, self.wins) = check_win(
                     Team::Blue,
