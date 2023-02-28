@@ -37,5 +37,5 @@ cargo update
 
 cargo build --release
 
-./target/release/csa_backend
+./target/release/r1403_vison
 
