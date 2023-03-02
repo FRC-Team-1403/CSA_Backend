@@ -17,6 +17,7 @@ pub async fn run() {
 
 fn update_year(what: SendType) {
     thread::spawn(move || {
+        let mut fast_update = false;
         let mut year = YearData::new();
         loop {
             let tx_ctx =
@@ -49,5 +50,15 @@ fn update(mut year: YearData, what: SendType) -> YearData {
             warn!("critical Failure, skipping");
             return year;
         }
+    }
+}
+
+fn wait(done_before: bool, wait: u8, wait_long: u16) -> bool {
+    if !done_before {
+        thread::sleep(Duration::from_secs(wait as u64));
+        return done_before;
+    } else {
+        thread::sleep(Duration::from_secs(wait_long as u64));
+        return true;
     }
 }
