@@ -11,13 +11,12 @@ pub async fn run() {
     let mut event = Event::new();
     loop {
         event = event.update_match_data().await;
-        thread::sleep(Duration::from_secs(120));
+        event.updated = wait(event.updated, 5, 160);
     }
 }
 
 fn update_year(what: SendType) {
     thread::spawn(move || {
-        let mut fast_update = false;
         let mut year = YearData::new();
         loop {
             let tx_ctx =
@@ -26,7 +25,7 @@ fn update_year(what: SendType) {
             info!("Updating year value: ");
             year = update(year, what.clone());
             transaction.finish();
-            thread::sleep(Duration::from_secs(360))
+            year.updated = wait(year.updated, 5, 180);
         }
     });
 }
@@ -59,6 +58,6 @@ fn wait(done_before: bool, wait: u8, wait_long: u16) -> bool {
         return done_before;
     } else {
         thread::sleep(Duration::from_secs(wait_long as u64));
-        return true;
+        return false;
     }
 }

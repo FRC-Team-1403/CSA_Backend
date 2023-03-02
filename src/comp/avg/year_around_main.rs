@@ -16,12 +16,14 @@ const PUBLIC_CACHE: u16 = 16969;
 #[derive(Clone)]
 pub struct YearData {
     pub cache: HashMap<u16, TeamYearAroundJsonParser>,
+    pub updated: bool,
 }
 
 impl YearData {
     pub fn new() -> Self {
         Self {
             cache: HashMap::new(),
+            updated: false,
         }
     }
     fn check_cache(
@@ -51,6 +53,7 @@ impl YearData {
                 loc = PUBLIC_CACHE;
             }
         }
+        self.updated = true;
         self.cache.insert(loc, json);
         (self, true)
     }
