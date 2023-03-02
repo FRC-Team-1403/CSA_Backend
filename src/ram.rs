@@ -19,8 +19,8 @@ pub static ENV: Lazy<Env> = Lazy::new(|| {
         api_key: dotenv!("API_KEY").to_owned(),
         redis_key: dotenv!("REDIS").to_owned(),
         sentry_dsn: dotenv!("SENTRY_DSN").to_owned(),
-        firestore_collection: dotenv!("FIRESTORE_LOCATION").to_owned(),
-        update_where: dotenv!("UPDATE_WHERE").to_owned(),
+        firestore_collection: "ISR District Event #1".to_owned(),
+        update_where: "2023isde1".to_owned(),
     }
 });
 
