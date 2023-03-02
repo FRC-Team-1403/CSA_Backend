@@ -7,6 +7,7 @@ use crate::db::firebase::r#match::MatchStore;
 pub mod math;
 
 pub struct Event {
+    pub updated: bool,
     pub cache: TeamYearAroundJsonParser,
     pub new_data: TeamYearAroundJsonParser,
 }
@@ -14,6 +15,7 @@ pub struct Event {
 impl Event {
     pub fn new() -> Self {
         Self {
+            updated: false,
             cache: vec![],
             new_data: vec![],
         }
@@ -23,8 +25,10 @@ impl Event {
             return Err(self);
         };
         if json == self.cache {
+            self.updated = false;
             return Err(self);
         }
+        self.updated = true;
         self.cache = json.clone();
         self.new_data = json;
         Ok(self)
