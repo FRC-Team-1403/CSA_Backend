@@ -7,7 +7,6 @@ use crate::comp::avg::year_around_main::{SendType, YearData};
 
 pub async fn run() {
     update_year(SendType::Match);
-    update_year(SendType::Year(2023));
     let mut event = Event::new();
     loop {
         event = event.update_match_data().await;
@@ -25,7 +24,7 @@ fn update_year(what: SendType) {
             info!("Updating year value: ");
             year = update(year, what.clone());
             transaction.finish();
-            year.updated = wait(year.updated, 5, 180);
+            year.updated = wait(year.updated, 8, 180);
         }
     });
 }

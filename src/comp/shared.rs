@@ -32,8 +32,9 @@ pub fn team() -> Vec<u16> {
         8513, 8588, 8628, 8630, 8706, 8721, 8771, 8801, 9064, 9100, 11, 25, 41, 56, 75, 87, 102,
         136, 193, 203, 204, 219, 223, 224, 265, 555, 58, 88, 125, 157, 238, 246, 501, 509, 1073,
         1721, 2370, 2713, 3467, 4041, 6153, 8724, //delete later
-        1574, 1576, 1577, 1690, 1943, 2096, 2230, 2630, 3065, 3083, 3211, 3388, 4319, 4338, 4661,
-        5135, 5554, 5654, 5990, 6168, 6738, 6740, 6741, 7067, 9304,
+        21, 59, 108, 179, 348, 744, 1523, 1592, 1744, 2168, 2183, 2190, 2383, 2383, 3164, 3627,
+        3932, 4206, 4471, 4481, 4592, 4707, 5410, 5472, 5842, 6686, 7403, 7442, 7652, 7833, 8324,
+        8754, 8817,
     ]
 }
 pub fn compare_highest(old: i16, new: i16) -> i16 {
@@ -67,9 +68,9 @@ pub fn get_breakdown_data(
                     Some(location.auto_points),
                     Some(location.foul_points),
                     Some(location.rp),
-                    Some(location.auto_bridge_state),
-                    Some(location.end_game_bridge_state),
-                    Some(location.sustainability_bonus_achieved),
+                    location.auto_bridge_state,
+                    location.end_game_bridge_state,
+                    location.sustainability_bonus_achieved,
                 )
             }
             Team::Blue => {
@@ -78,9 +79,9 @@ pub fn get_breakdown_data(
                     Some(location.auto_points),
                     Some(location.foul_points),
                     Some(location.rp),
-                    Some(location.auto_bridge_state),
-                    Some(location.end_game_bridge_state),
-                    Some(location.sustainability_bonus_achieved),
+                    location.auto_bridge_state,
+                    location.end_game_bridge_state,
+                    location.sustainability_bonus_achieved,
                 )
             }
         };
