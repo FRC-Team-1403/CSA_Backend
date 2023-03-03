@@ -10,7 +10,7 @@ pub async fn run() {
     let mut event = Event::new();
     loop {
         event = event.update_match_data().await;
-        event.updated = wait(event.updated, 5, 160);
+        event.updated = wait(event.updated, 8, 160);
     }
 }
 
@@ -24,7 +24,7 @@ fn update_year(what: SendType) {
             info!("Updating year value: ");
             year = update(year, what.clone());
             transaction.finish();
-            year.updated = wait(year.updated, 8, 180);
+            year.updated = wait(year.updated, 15, 180);
         }
     });
 }
