@@ -6,6 +6,7 @@ use std::time::Duration;
 use crate::comp::avg::year_around_main::{SendType, YearData};
 
 pub async fn run() {
+    update_year(SendType::Year(2023));
     update_year(SendType::Match);
     let mut event = Event::new();
     loop {
