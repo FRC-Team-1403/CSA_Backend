@@ -20,7 +20,8 @@ pub fn get_yearly(year: &SendType, team: &str) -> Result<TeamYearAroundJsonParse
         .get(send_url)
         .header("X-TBA-Auth-Key", &ENV.api_key)
         .send()?;
-    response.json::<TeamYearAroundJsonParser>()
+    let cool = response.json::<TeamYearAroundJsonParser>();
+    cool
 }
 
 pub async fn get_match() -> reqwest::Result<TeamYearAroundJsonParser> {
