@@ -8,6 +8,7 @@ pub fn get_score(team: &Team, json: Root2) -> i16 {
         Team::Red => json.alliances.red.score,
     }
 }
+
 pub fn get_teammates(team: Team, json: Root2) -> Vec<String> {
     let team_list;
     match team {
@@ -16,6 +17,7 @@ pub fn get_teammates(team: Team, json: Root2) -> Vec<String> {
     }
     remove_frc(team_list)
 }
+
 pub fn remove_frc(who: Vec<String>) -> Vec<String> {
     let mut return_data = vec![];
     for x in who {
@@ -23,6 +25,7 @@ pub fn remove_frc(who: Vec<String>) -> Vec<String> {
     }
     return_data
 }
+
 pub fn team() -> Vec<u16> {
     vec![
         //  613, 747, 752, 816, 869, 896, 1228, 1279, 1647, 1672, 1676, 1791, 1809, 1914, 1923, 1989,
@@ -37,18 +40,21 @@ pub fn team() -> Vec<u16> {
         7110, 7414,
     ]
 }
+
 pub fn compare_highest(old: i16, new: i16) -> i16 {
     if old > new {
         return old;
     }
     new
 }
+
 pub fn compare_lowest(old: i16, new: i16) -> i16 {
     if old < new {
         return old;
     }
     new
 }
+
 pub fn get_breakdown_data(
     breakdown: Option<ScoreBreakdown>,
     team: &Team,
@@ -88,14 +94,11 @@ pub fn get_breakdown_data(
     }
     (None, None, None, None, None, None)
 }
+
 pub fn avg(avg_score: Vec<i16>) -> f32 {
-    let divider = avg_score.len();
-    let mut divide = 0;
-    for num in avg_score {
-        divide += num;
-    }
-    divide as f32 / divider as f32
+    avg_score.iter().sum::<i16>() as f32 / avg_score.len() as f32
 }
+
 pub fn check_win(compare: Team, losses: i16, wins: i16, winner: &str) -> (i16, i16) {
     match compare {
         Team::Red => {
