@@ -1,3 +1,4 @@
+use crate::comp::ai::Ai;
 use crate::comp::event::Event;
 use log::{info, warn};
 use std::thread;
@@ -11,6 +12,7 @@ pub async fn run() {
     let mut event = Event::new();
     loop {
         event = event.update_match_data().await;
+        Ai::new().calc();
         event.updated = wait(event.updated, 8, 160);
     }
 }
@@ -53,11 +55,11 @@ fn update(mut year: YearData, what: SendType) -> YearData {
 }
 
 fn wait(done_before: bool, wait: u8, wait_long: u16) -> bool {
-    if !done_before {
+    return if !done_before {
         thread::sleep(Duration::from_secs(wait as u64));
-        return done_before;
+        done_before
     } else {
         thread::sleep(Duration::from_secs(wait_long as u64));
-        return false;
-    }
+        false
+    };
 }

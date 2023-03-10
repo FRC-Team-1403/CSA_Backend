@@ -57,7 +57,6 @@ impl YearData {
         self.cache.insert(loc, json);
         (self, true)
     }
-    //work on this
     pub fn get_new_data(what: SendType, frc: &str) -> Option<TeamYearAroundJsonParser> {
         let mut _failed: u8 = 0;
         loop {
