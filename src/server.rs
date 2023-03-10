@@ -12,7 +12,7 @@ pub async fn run() {
     let mut event = Event::new();
     loop {
         event = event.update_match_data().await;
-        Ai::new().calc();
+        // Ai::new().calc();
         event.updated = wait(event.updated, 8, 160);
     }
 }
