@@ -30,7 +30,6 @@ impl Ai {
                     penalty = 0.0;
                     rp = 0.0;
                 }
-
                 (
                     team,
                     (data.points.avg / 2.5) + (data.win_rato * 100.0) + (rp * 15.0)

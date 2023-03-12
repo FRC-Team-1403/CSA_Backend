@@ -6,6 +6,7 @@ use once_cell::sync::Lazy;
 use std::collections::HashMap;
 use std::sync::Mutex;
 
+#[derive(Debug)]
 pub struct Env {
     pub api_key: String,
     pub redis_key: String,

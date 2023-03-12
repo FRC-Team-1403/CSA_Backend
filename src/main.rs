@@ -5,6 +5,11 @@ extern crate core;
 #[macro_use]
 extern crate dotenv_codegen;
 
+use crate::ram::ENV;
+use log::info;
+use std::env::set_var;
+use std::thread;
+
 mod comp;
 mod db;
 mod ram;
@@ -13,7 +18,15 @@ pub mod startup;
 
 #[tokio::main]
 async fn main() {
-    log4rs::init_file("logging_config.yaml", Default::default()).unwrap();
+    let wait = thread::spawn(|| {
+        info!(
+            "\nTeams That Will Be Tracked:\n{:?}\n\
+        The Event Name: {}\n",
+            ENV.teams, ENV.firestore_collection
+        );
+    });
+    set_var("RUST_LOG", "info");
+    env_logger::init();
     let sentry_dsn = dotenv::var("SENTRY_DSN").unwrap();
     let _guard = sentry::init((
         sentry_dsn,
@@ -25,5 +38,6 @@ async fn main() {
             ..Default::default()
         },
     ));
+    wait.join().unwrap();
     server::run().await;
 }
