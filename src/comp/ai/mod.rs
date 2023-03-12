@@ -1,7 +1,6 @@
 use crate::comp::shared::avg;
 use crate::ram::{CACHE_MATCH, CACHE_MATCH_AVG};
 use rayon::prelude::*;
-use std::future::pending;
 
 pub struct Ai {}
 

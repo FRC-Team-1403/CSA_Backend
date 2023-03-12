@@ -3,7 +3,6 @@
 use crate::comp::avg::math::YearAround;
 use crate::comp::http::get_yearly;
 use crate::comp::parse::TeamYearAroundJsonParser;
-use crate::comp::shared::team;
 use crate::db::firebase::YearStore;
 use crate::ram::{CACHE_MATCH_AVG, ENV};
 use log::{info, warn};
@@ -75,7 +74,7 @@ impl YearData {
     pub fn update(mut self, what: SendType) -> Result<Self, Self> {
         match what {
             SendType::Year(year_check) => {
-                for team_num in team() {
+                for team_num in ENV.teams.clone() {
                     let team = team_num.to_string();
                     let Some(json) =
                         Self::get_new_data(what.clone(), &team) else {
@@ -103,7 +102,7 @@ impl YearData {
                 (self, _allow) = self.check_cache(json.clone(), &what, &69);
                 if _allow {
                     let calc = YearAround::new(json);
-                    team()
+                    ENV.teams
                         .par_iter()
                         .try_for_each(|team_num| -> Result<(), Self> {
                             let team_calc = calc.clone();

@@ -9,6 +9,7 @@ mod comp;
 mod db;
 mod ram;
 mod server;
+pub mod startup;
 
 #[tokio::main]
 async fn main() {

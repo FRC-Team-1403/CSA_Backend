@@ -26,14 +26,6 @@ pub fn remove_frc(who: Vec<String>) -> Vec<String> {
     return_data
 }
 
-pub fn team() -> Vec<u16> {
-    vec![
-        102, 11, 1143, 125, 1279, 1672, 1676, 1811, 1923, 193, 1989, 2070, 219, 222, 223, 2458,
-        2577, 2600, 3142, 3515, 41, 4361, 4573, 484, 5438, 555, 56, 5732, 5992, 6860, 6945, 7045,
-        75, 752, 8117, 8513, 8628, 9116,
-    ]
-}
-
 pub fn compare_highest(old: i16, new: i16) -> i16 {
     if old > new {
         return old;

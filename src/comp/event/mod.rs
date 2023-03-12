@@ -1,8 +1,8 @@
 use crate::comp::event::math::EventData;
 use crate::comp::http::get_match;
 use crate::comp::parse::TeamYearAroundJsonParser;
-use crate::comp::shared::team;
 use crate::db::firebase::r#match::MatchStore;
+use crate::ram::ENV;
 
 pub mod math;
 
@@ -40,14 +40,14 @@ impl Event {
         Ok((self, final_data))
     }
     pub async fn update_match_data(mut self) -> Self {
-        let teams = team();
+        let teams = &ENV.teams;
         match self.send_request().await {
             Ok(class) => self = class,
             Err(e) => return e,
         }
         for team in teams {
             let event_data;
-            match self.parse(team) {
+            match self.parse(team.to_owned()) {
                 Ok((class, event)) => {
                     self = class;
                     event_data = event;
