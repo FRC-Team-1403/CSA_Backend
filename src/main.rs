@@ -27,9 +27,8 @@ async fn main() {
     });
     set_var("RUST_LOG", "info");
     env_logger::init();
-    let sentry_dsn = dotenv::var("SENTRY_DSN").unwrap();
     let _guard = sentry::init((
-        sentry_dsn,
+        dotenv!("SENTRY_DSN"),
         sentry::ClientOptions {
             release: sentry::release_name!(),
             traces_sample_rate: 1.0,

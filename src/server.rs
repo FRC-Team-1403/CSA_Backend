@@ -1,6 +1,5 @@
-use crate::comp::ai::Ai;
 use crate::comp::event::Event;
-use log::{info, warn};
+use log::{error, info, warn};
 use std::thread;
 use std::time::Duration;
 
@@ -11,8 +10,8 @@ pub async fn run() {
     update_year(SendType::Match);
     let mut event = Event::new();
     loop {
+        info!("Updating Match value: ");
         event = event.update_match_data().await;
-        // Ai::new().calc();
         event.updated = wait(event.updated, 8, 160);
     }
 }
@@ -48,7 +47,7 @@ fn update(mut year: YearData, what: SendType) -> YearData {
         }
         transaction.finish();
         if error > 120 {
-            warn!("critical Failure, skipping");
+            error!("critical Failure, skipping");
             return year;
         }
     }
@@ -57,8 +56,10 @@ fn update(mut year: YearData, what: SendType) -> YearData {
 fn wait(done_before: bool, wait: u8, wait_long: u16) -> bool {
     return if !done_before {
         thread::sleep(Duration::from_secs(wait as u64));
+        info!("Retrying Polling");
         done_before
     } else {
+        warn!("Sleeping For a Long Time");
         thread::sleep(Duration::from_secs(wait_long as u64));
         false
     };
