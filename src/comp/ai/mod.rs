@@ -1,21 +1,24 @@
 use crate::comp::shared::avg;
-use crate::ram::{CACHE_MATCH, CACHE_MATCH_AVG};
 use rayon::prelude::*;
+use std::collections::HashMap;
 
-pub struct Ai {}
+use super::avg::math::YearAround;
+use super::event::math::EventData;
 
-impl Ai {
-    pub fn new() -> Self {
-        Ai {}
-    }
-    fn deviation(data: Vec<i16>) -> f32 {
+pub struct Ai<'a> {
+    year: Option<&'a HashMap<u16, YearAround>>,
+    event: Option<&'a HashMap<u16, Vec<EventData>>>,
+}
+
+impl Ai<'_> {
+    fn deviation(data: &Vec<i16>) -> f32 {
         let half = (data.len() - 1) / 2;
         let low = &data[..half];
         let high = &data[half..];
         avg(high.to_owned()) - avg(low.to_owned())
     }
-    pub fn calc(&mut self) {
-        let Ok(year) = CACHE_MATCH_AVG.try_lock() else {
+    pub fn calc_year_br(self) {
+        let Some(year) = &self.year else {
             return;
         };
         let data: Vec<(&u16, f32)> = year
@@ -32,14 +35,11 @@ impl Ai {
                 }
                 (
                     team,
-                    (data.points.avg / 2.5) + (data.win_rato * 100.0) + (rp * 15.0)
-                        - (penalty * 2.0) / 2.0,
+                    (data.points.avg / 2.5) + (data.win_rato * 10.0) + (rp * 15.0)
+                        - ((penalty * 2.0) + (Self::deviation(&data.points.graph) * 2.5)),
                 )
             })
             .collect();
-        // let Ok(matchd) = CACHE_MATCH_AVG.try_lock() else {
-        //     return;
-        // };
         for (a, b) in data {
             println!("{}, {}", a, b);
         }
