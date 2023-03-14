@@ -1,6 +1,6 @@
 use crate::comp::parse::TeamYearAroundJsonParser;
 use crate::comp::shared::{
-    avg, check_win, compare_highest, compare_lowest, get_breakdown_data, Team,
+    avg, check_win, compare_highest, compare_lowest, deviation, get_breakdown_data, Team,
 };
 use std::fmt::Error;
 
@@ -51,11 +51,15 @@ pub struct YearAround {
     pub pen: OData,
     pub rp: OData,
     pub auto: OData,
+    pub deviation: f32,
+    pub br: f32,
 }
 
 impl YearAround {
     pub fn new(data: TeamYearAroundJsonParser) -> Self {
         Self {
+            deviation: 0.0,
+            br: 0.0,
             data: Some(data),
             points: Data::new(),
             wins: 0,
@@ -135,6 +139,7 @@ impl YearAround {
             }
         }
         self.data = None;
+        self.deviation = deviation(&avg_score);
         self.rp.graph = avg_rp.clone();
         self.rp.avg = Some(avg(avg_rp));
         self.pen.graph = avg_foul.clone();
@@ -145,7 +150,6 @@ impl YearAround {
         self.auto.avg = Some(avg(avg_auto));
         self.win_rato = self.wins as f32 / self.losses as f32;
         self.matches_played = self.wins + self.losses;
-
         Ok(self)
     }
     fn handle(mut self, mut return_data: HandleData) -> (Self, HandleData) {

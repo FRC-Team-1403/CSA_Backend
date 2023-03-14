@@ -1,5 +1,6 @@
 #![allow(clippy::needless_late_init)]
 
+use crate::comp::ai::{Ai, Type};
 use crate::comp::avg::math::YearAround;
 use crate::comp::http::get_yearly;
 use crate::comp::parse::TeamYearAroundJsonParser;
@@ -84,10 +85,11 @@ impl YearData {
                     (self, _allow) = self.check_cache(json.clone(), &what, &team_num);
                     if _allow {
                         let year = YearAround::new(json).calculate(&team);
-                        let Ok(year) = year else {
+                        let Ok(mut year) = year else {
                             error!("failed to parse data");
                             return Err(self);
                         };
+                        year.br = Ai::calc(&year, Type::Year);
                         get_pub().insert(team_num, year.clone());
                         send_and_check(year, team, year_check.to_string());
                     }
@@ -109,9 +111,10 @@ impl YearData {
                             let team_calc = calc.clone();
                             let team = team_num.to_string();
                             let year = team_calc.calculate(&team);
-                            let Ok(year) = year else {
+                            let Ok(mut year) = year else {
                                 return Err(self.clone());
                             };
+                            year.br = Ai::calc(&year, Type::Match(team_num));
                             if check_cache(&year, team_num) {
                                 send_and_check(year, team, ENV.firestore_collection.clone());
                             }

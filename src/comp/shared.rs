@@ -41,6 +41,13 @@ pub fn compare_lowest(old: i16, new: i16) -> i16 {
     new
 }
 
+pub fn deviation(data: &Vec<i16>) -> f32 {
+    let half = (data.len() - 1) / 2;
+    let low = &data[..half];
+    let high = &data[half..];
+    avg(high.to_owned()) - avg(low.to_owned())
+}
+
 pub fn get_breakdown_data(
     breakdown: Option<ScoreBreakdown>,
     team: &Team,

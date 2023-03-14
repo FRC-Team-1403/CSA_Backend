@@ -16,17 +16,17 @@ mod ram;
 mod server;
 pub mod startup;
 
-
-
 #[tokio::main]
 async fn main() {
-    let wait = thread::spawn(|| {
+    thread::spawn(|| {
         info!(
             "\nTeams That Will Be Tracked:\n{:?}\n\
         The Event Name: {}\n",
             ENV.teams, ENV.firestore_collection
         );
-    });
+    })
+    .join()
+    .unwrap();
     set_var("RUST_LOG", "info");
     env_logger::init();
     let _guard = sentry::init((
@@ -39,6 +39,5 @@ async fn main() {
             ..Default::default()
         },
     ));
-    wait.join().unwrap();
     server::run().await;
 }
