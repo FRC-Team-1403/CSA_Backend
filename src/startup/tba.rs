@@ -9,13 +9,10 @@ pub struct EventJson {
 }
 
 pub type JSON = Vec<String>;
-
+#[derive(Default)]
 pub struct Tba {}
 
 impl Tba {
-    pub fn new() -> Tba {
-        Self {}
-    }
     pub fn get_event(key: &str, api_key: &str) -> reqwest::Result<String> {
         let response = reqwest::blocking::Client::new()
             .get(format!(

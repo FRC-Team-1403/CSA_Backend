@@ -54,7 +54,7 @@ fn update(mut year: YearData, what: SendType) -> YearData {
 }
 
 fn wait(done_before: bool, wait: u8, wait_long: u16) -> bool {
-    return if !done_before {
+    if !done_before {
         thread::sleep(Duration::from_secs(wait as u64));
         info!("Retrying Polling");
         done_before
@@ -62,5 +62,5 @@ fn wait(done_before: bool, wait: u8, wait_long: u16) -> bool {
         warn!("Sleeping For a Long Time");
         thread::sleep(Duration::from_secs(wait_long as u64));
         false
-    };
+    }
 }

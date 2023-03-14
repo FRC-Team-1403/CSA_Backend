@@ -10,19 +10,19 @@ pub struct EventData {
     #[serde(rename = "team")]
     pub team: u16,
     #[serde(rename = "Penalty Points")]
-    penalty: Option<i16>,
+    pub penalty: Option<i16>,
     #[serde(rename = "Auto Points")]
-    auto: Option<i16>,
+    pub auto: Option<i16>,
     #[serde(rename = "Ranking Points")]
-    rp: Option<i16>,
+    pub rp: Option<i16>,
     #[serde(rename = "Match Number")]
     pub match_number: u8,
     #[serde(rename = "Team Members")]
-    team_members: Vec<String>,
+    pub team_members: Vec<String>,
     #[serde(rename = "Total Points")]
-    score: i16,
+    pub score: i16,
     #[serde(rename = "Video")]
-    video: Option<String>,
+    pub video: Option<String>,
     #[serde(rename = "Auto Charge Station Level")]
     pub auto_level: Option<String>,
     #[serde(rename = "End Game Charge Station Level")]
@@ -30,7 +30,6 @@ pub struct EventData {
     #[serde(rename = "Sustainability Bonus Achieved")]
     pub sustain_bonus: Option<bool>,
 }
-//https://www.youtube.com/watch?v=_G38qoLkH4A
 
 impl Event {
     pub fn math(&self, check_team: u16) -> Result<Vec<EventData>, Error> {

@@ -4,8 +4,8 @@ use crate::comp::avg::math::YearAround;
 use crate::comp::http::get_yearly;
 use crate::comp::parse::TeamYearAroundJsonParser;
 use crate::db::firebase::YearStore;
-use crate::ram::{CACHE_MATCH_AVG, ENV};
-use log::{info, warn};
+use crate::ram::{get_pub, CACHE_MATCH_AVG, ENV};
+use log::{error, info, warn};
 use rayon::prelude::*;
 use std::collections::HashMap;
 use std::thread;
@@ -85,9 +85,10 @@ impl YearData {
                     if _allow {
                         let year = YearAround::new(json).calculate(&team);
                         let Ok(year) = year else {
-                            warn!("failed to parse data");
+                            error!("failed to parse data");
                             return Err(self);
                         };
+                        get_pub().insert(team_num, year.clone());
                         send_and_check(year, team, year_check.to_string());
                     }
                 }

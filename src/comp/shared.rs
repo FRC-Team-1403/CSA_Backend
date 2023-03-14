@@ -1,5 +1,6 @@
 #![allow(clippy::needless_late_init)]
 
+use rayon::prelude::*;
 use crate::comp::parse::{Root2, ScoreBreakdown};
 
 pub fn get_score(team: &Team, json: Root2) -> i16 {
@@ -81,7 +82,7 @@ pub fn get_breakdown_data(
 }
 
 pub fn avg(avg_score: Vec<i16>) -> f32 {
-    avg_score.iter().sum::<i16>() as f32 / avg_score.len() as f32
+    avg_score.par_iter().sum::<i16>() as f32 / avg_score.len() as f32
 }
 
 pub fn check_win(compare: Team, losses: i16, wins: i16, winner: &str) -> (i16, i16) {
