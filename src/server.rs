@@ -9,6 +9,7 @@ pub async fn run() {
     update_year(SendType::Year(2023));
     update_year(SendType::Match);
     let mut event = Event::new();
+    thread::sleep(Duration::from_secs(10));
     loop {
         info!("Updating Match value: ");
         event = event.update_match_data().await;

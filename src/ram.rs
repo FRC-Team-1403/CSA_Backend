@@ -2,12 +2,10 @@ use crate::comp::avg::math::YearAround;
 use crate::comp::event::math::EventData;
 use crate::startup::tba::Tba;
 use dotenv::dotenv;
+use log::error;
 use once_cell::sync::Lazy;
 use std::collections::HashMap;
 use std::sync::{Mutex, MutexGuard};
-use std::thread;
-use std::time::Duration;
-use log::error;
 
 #[derive(Debug)]
 pub struct Env {
@@ -37,11 +35,10 @@ pub static ENV: Lazy<Env> = Lazy::new(|| {
 
 pub fn get_pub() -> MutexGuard<'static, HashMap<u16, YearAround>> {
     loop {
-        if let Ok(data) = CACHE_YEAR_AVG.try_lock(){
+        if let Ok(data) = CACHE_YEAR_AVG.try_lock() {
             return data;
         }
         error!("FAILED WHEN LOCKING CACHE_YEAR_AVG, THIS MAY BE A DEAD LOCK!!!!");
-        thread::sleep(Duration::from_micros(1000))
     }
 }
 

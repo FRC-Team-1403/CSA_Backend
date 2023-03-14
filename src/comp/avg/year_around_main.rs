@@ -150,14 +150,14 @@ fn send_and_check(year: YearAround, team: String, location: String) {
             let e = YearStore::new(year).set_year(&team, &location);
             match e {
                 Ok(e) => {
-                    warn!(
+                    info!(
                         "Full data is found and is pushed to firstore for {}!\n\
                                 \nWith Status: {}",
                         &team, e
                     );
                 }
                 Err(err) => {
-                    warn!(
+                    error!(
                         "Failed for {}!\n\
                     with message {}",
                         &team, err

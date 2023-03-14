@@ -9,7 +9,6 @@ use crate::ram::ENV;
 use log::info;
 use std::env::set_var;
 use std::thread;
-use std::time::Duration;
 
 mod comp;
 mod db;
@@ -21,15 +20,13 @@ pub mod startup;
 async fn main() {
     set_var("RUST_LOG", "info");
     env_logger::init();
-    thread::spawn(|| {
+    let wait = thread::spawn(|| {
         info!(
-            "\nTeams That Will Be Tracked:\n{:?}\n\
+            "Teams That Will Be Tracked:\n{:?}\n\
         The Event Name: {}\n",
             ENV.teams, ENV.firestore_collection
         );
-    })
-    .join()
-    .unwrap();
+    });
     let _guard = sentry::init((
         dotenv!("SENTRY_DSN"),
         sentry::ClientOptions {
@@ -40,6 +37,6 @@ async fn main() {
             ..Default::default()
         },
     ));
-    thread::sleep(Duration::from_secs(3));
+    wait.join().unwrap();
     server::run().await;
 }

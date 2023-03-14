@@ -34,8 +34,8 @@ impl Ai {
         penalty: f32,
         points_graph: &Vec<i16>,
     ) -> f32 {
-        (avg_points / 2.0) + (win_ratio * 10.0) + (rp * 15.0)
-            - (penalty + (deviation(points_graph) * 1.5))
+        (avg_points / 2.5) + (win_ratio * 10.0) + (rp * 10.0)
+            - (penalty + (deviation(points_graph) / 1.8))
     }
 
     fn calc_avg_br(year: &YearAround) -> f32 {
