@@ -19,7 +19,7 @@ impl Ai {
                     if let Some(year) = get_pub().get(team) {
                         Self::calc_avg_br(year)
                     } else {
-                        0.0
+                        Self::calc_avg_br(match_data)
                     }
                 }
                 Type::Year => Self::calc_avg_br(match_data),

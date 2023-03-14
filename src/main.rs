@@ -9,6 +9,7 @@ use crate::ram::ENV;
 use log::info;
 use std::env::set_var;
 use std::thread;
+use std::time::Duration;
 
 mod comp;
 mod db;
@@ -18,6 +19,8 @@ pub mod startup;
 
 #[tokio::main]
 async fn main() {
+    set_var("RUST_LOG", "info");
+    env_logger::init();
     thread::spawn(|| {
         info!(
             "\nTeams That Will Be Tracked:\n{:?}\n\
@@ -27,8 +30,6 @@ async fn main() {
     })
     .join()
     .unwrap();
-    set_var("RUST_LOG", "info");
-    env_logger::init();
     let _guard = sentry::init((
         dotenv!("SENTRY_DSN"),
         sentry::ClientOptions {
@@ -39,5 +40,6 @@ async fn main() {
             ..Default::default()
         },
     ));
+    thread::sleep(Duration::from_secs(3));
     server::run().await;
 }
