@@ -1,7 +1,7 @@
 #![allow(clippy::needless_late_init)]
 
-use rayon::prelude::*;
 use crate::comp::parse::{Root2, ScoreBreakdown};
+use rayon::prelude::*;
 
 pub fn get_score(team: &Team, json: Root2) -> i16 {
     match team {
@@ -42,6 +42,8 @@ pub fn compare_lowest(old: i16, new: i16) -> i16 {
 }
 
 pub fn deviation(data: &Vec<i16>) -> f32 {
+    let mut data = data.to_owned();
+    data.sort();
     let half = (data.len() - 1) / 2;
     let low = &data[..half];
     let high = &data[half..];
