@@ -33,11 +33,9 @@ impl Event {
         self.new_data = json;
         Ok(self)
     }
-    pub fn parse(self, team: u16) -> Result<(Self, Vec<EventData>), Self> {
-        let Ok(final_data) = self.math(team) else {
-            return Err(self);
-        };
-        Ok((self, final_data))
+    pub fn parse(self, team: u16) -> (Self, Vec<EventData>) {
+        let final_data = self.math(team);
+        (self, final_data)
     }
     pub async fn update_match_data(mut self) -> Self {
         let teams = &ENV.teams;
@@ -47,13 +45,7 @@ impl Event {
         }
         for team in teams {
             let event_data;
-            match self.parse(team.to_owned()) {
-                Ok((class, event)) => {
-                    self = class;
-                    event_data = event;
-                }
-                Err(e) => return e,
-            }
+            (self, event_data) = self.parse(team.to_owned());
             MatchStore::new(event_data).send();
         }
         self

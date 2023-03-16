@@ -46,18 +46,15 @@ impl MatchStore {
         });
     }
 }
+
 fn check_cache(year: &EventData, team_num: &u16) -> bool {
     if let Ok(mut hash) = CACHE_MATCH.lock() {
         let add;
         if let Some(data) = hash.get(team_num) {
-            for check in data {
-                if check == year {
-                    return false;
-                }
+            if data.iter().any(|value| value == year) {
+                return false;
             }
-            let mut data = data.to_owned();
-            data.push(year.to_owned());
-            add = data
+            add = vec![year.to_owned()]
         } else {
             add = vec![year.to_owned()]
         }
