@@ -19,7 +19,7 @@ pub struct Env {
 
 pub static ENV: Lazy<Env> = Lazy::new(|| {
     let api_key = dotenv!("API_KEY");
-    let code = "2023njfla";
+    let code = "2023njrob";
     let teams = Tba::get_teams(code, api_key).expect("Failed While Getting Teams");
     let event_name = Tba::get_event(code, api_key).expect("Failed While Getting Teams");
     dotenv().ok();
