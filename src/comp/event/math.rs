@@ -37,12 +37,12 @@ impl Event {
             .par_iter()
             .filter_map(|(game_json, team)| {
                 let (auto, penalty, rp, auto_l, end_l, bonus) =
-                    get_breakdown_data(game_json.score_breakdown.clone(), &team);
-                let score = get_score(&team, game_json.clone());
+                    get_breakdown_data(game_json.score_breakdown.clone(), team);
+                let score = get_score(team, game_json.clone());
                 if score != -1 {
                     Some(EventData {
                         team: check_team,
-                        video: Self::get_video(&game_json),
+                        video: Self::get_video(game_json),
                         auto_level: auto_l,
                         rp,
                         penalty,

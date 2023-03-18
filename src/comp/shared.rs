@@ -95,14 +95,14 @@ pub fn avg(avg_score: Vec<i16>) -> f32 {
 pub fn check_win(compare: Team, losses: i16, wins: i16, winner: &str) -> (i16, i16) {
     match compare {
         Team::Red => {
-            if winner == "red" {
+            if winner.contains("red") {
                 (losses, wins + 1)
             } else {
                 (losses + 1, wins)
             }
         }
         Team::Blue => {
-            if winner == "blue" {
+            if winner.contains("blue") {
                 (losses, wins + 1)
             } else {
                 (losses + 1, wins)

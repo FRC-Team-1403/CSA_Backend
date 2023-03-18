@@ -148,10 +148,18 @@ impl YearAround {
         self.points.avg = avg(avg_score);
         self.auto.graph = avg_auto.clone();
         self.auto.avg = Some(avg(avg_auto));
-        self.win_rato = self.wins as f32 / self.losses as f32;
+        self.calc_ratio();
         self.matches_played = self.wins + self.losses;
         Ok(self)
     }
+    fn calc_ratio(&mut self) {
+        if self.losses == 0 {
+            self.win_rato = 1.0;
+            return;
+        }
+        self.win_rato = self.wins as f32 / self.losses as f32;
+    }
+
     fn handle(mut self, mut return_data: HandleData) -> (Self, HandleData) {
         //happens if match breakdown works
         if let Some(rp) = return_data.rp {
