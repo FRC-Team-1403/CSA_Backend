@@ -38,14 +38,13 @@ pub fn compare_lowest(old: i16, new: i16) -> i16 {
 }
 
 pub fn deviation(data: &Vec<i16>) -> f32 {
-    if data.len() <= 1 {
+    if data.len() <= 2 {
         return 0.0;
     }
     let mut data = data.to_owned();
     data.sort();
     let half = (data.len() - 1) / 2;
-    let low = &data[..half];
-    let high = &data[half..];
+    let (low, high) = data.split_at(half);
     avg(high.to_owned()) - avg(low.to_owned())
 }
 

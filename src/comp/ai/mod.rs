@@ -2,8 +2,8 @@ use super::avg::math::YearAround;
 use super::shared::avg;
 use crate::comp::shared::deviation;
 use crate::ram::get_pub;
+use log::debug;
 use plr::regression::OptimalPLR;
-
 pub enum Type<'a> {
     Match(&'a u16),
     Year,
@@ -53,13 +53,12 @@ impl Ai {
         let match_br = Self::calc_avg_br(match_data);
         let year_br: f32 = {
             match what {
-                Type::Match(team) => {
+                Type::Match(team) => loop {
                     if let Some(year) = get_pub().get(team) {
-                        Self::calc_avg_br(year)
-                    } else {
-                        Self::calc_avg_br(match_data)
+                        return Self::calc_avg_br(year);
                     }
-                }
+                    log::error!("Failed locking year data");
+                },
                 Type::Year => Self::calc_avg_br(match_data),
             }
         };
@@ -72,10 +71,12 @@ impl Ai {
         penalty: f32,
         points_graph: &Vec<i16>,
     ) -> f32 {
-        ((avg_points + Self::avg_regession(points_graph.to_owned()) / 2.0) / 2.5)
+        let val = ((avg_points + Self::avg_regession(points_graph.to_owned()) / 2.0) / 2.5)
             + (win_ratio * 10.0)
             + (rp)
-            - ((penalty / 2.0) + (deviation(points_graph) / 3.2))
+            - ((penalty / 2.0) + (deviation(points_graph) / 3.2));
+        debug!("Ai val is: {}", val);
+        val
     }
 
     fn calc_avg_br(year: &YearAround) -> f32 {
