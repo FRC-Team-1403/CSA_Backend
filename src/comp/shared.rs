@@ -38,7 +38,7 @@ pub fn compare_lowest(old: i16, new: i16) -> i16 {
 }
 
 pub fn deviation(data: &Vec<i16>) -> f32 {
-    if data.len() <= 3 {
+    if data.len() <= 1 {
         return 0.0;
     }
     let mut data = data.to_owned();
