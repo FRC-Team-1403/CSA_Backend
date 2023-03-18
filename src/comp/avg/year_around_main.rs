@@ -111,10 +111,12 @@ impl YearData {
                             let team_calc = calc.clone();
                             let team = team_num.to_string();
                             let year = team_calc.calculate(&team);
-                            let Ok(mut year) = year else {
-                                return Err(self.clone());
+                            let year = loop {
+                                if let Ok(mut year) = year {
+                                    year.br = Ai::calc(&year, Type::Match(team_num));
+                                    break year;
+                                };
                             };
-                            year.br = Ai::calc(&year, Type::Match(team_num));
                             if check_cache(&year, team_num) {
                                 send_and_check(year, team, ENV.firestore_collection.clone());
                             }

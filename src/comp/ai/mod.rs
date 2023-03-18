@@ -4,6 +4,7 @@ use crate::comp::shared::deviation;
 use crate::ram::get_pub;
 use log::debug;
 use plr::regression::OptimalPLR;
+
 pub enum Type<'a> {
     Match(&'a u16),
     Year,
@@ -53,12 +54,13 @@ impl Ai {
         let match_br = Self::calc_avg_br(match_data);
         let year_br: f32 = {
             match what {
-                Type::Match(team) => loop {
+                Type::Match(team) => {
                     if let Some(year) = get_pub().get(team) {
-                        return Self::calc_avg_br(year);
+                        Self::calc_avg_br(year)
+                    } else {
+                        Self::calc_avg_br(match_data)
                     }
-                    log::error!("Failed locking year data");
-                },
+                }
                 Type::Year => Self::calc_avg_br(match_data),
             }
         };
@@ -84,9 +86,12 @@ impl Ai {
         let rp: f32;
         if let Some(pen) = year.pen.avg {
             penalty = pen;
-            rp = year.rp.avg.unwrap();
         } else {
             penalty = 0.0;
+        }
+        if let Some(rp_data) = year.rp.avg {
+            rp = rp_data;
+        } else {
             rp = 0.0;
         }
         Self::math(
