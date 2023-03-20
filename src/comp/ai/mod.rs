@@ -13,7 +13,7 @@ pub enum Type<'a> {
 pub struct Ai {}
 
 impl Ai {
-    fn regression(vals: &Vec<i16>) -> f64 {
+    fn slope(vals: &Vec<i16>) -> bool {
         if vals.len() < 6 {}
         let data_points: Vec<(f64, f64)> = vals
             .iter()
@@ -27,17 +27,10 @@ impl Ai {
                 segments.push(segment);
             }
         }
-        let last = segments.len() - 1;
-        drop(segments);
-        let finish = plr.finish();
-        if let Some(data_p) = finish {
-            let result = (data_p.slope * last as f64) + data_p.intercept;
-            if result > 160.0 || result.is_sign_negative() {
-                return Self::avg_regession(vals.to_owned()) as f64;
-            }
-            return result;
+        if let Some(slope) = plr.finish() {
+            return slope.slope > 0.0;
         }
-        Self::avg_regession(vals.to_owned()) as f64
+        false
     }
     fn avg_regession(vals: Vec<i16>) -> f32 {
         let calc = {
@@ -50,7 +43,11 @@ impl Ai {
         };
         avg(calc)
     }
-    pub fn calc(match_data: &YearAround, what: Type) -> f32 {
+    pub fn calc_v2(match_data: &YearAround, what: Type) -> i32 {
+        if match_data.points.graph.len() < 2 {}
+        todo!()
+    }
+    pub fn calc_v1(match_data: &YearAround, what: Type) -> f32 {
         let match_br = Self::calc_avg_br(match_data);
         let year_br: f32 = {
             match what {
@@ -66,7 +63,23 @@ impl Ai {
         };
         match_br + (year_br / 1.5)
     }
-    fn math(
+    fn math_v2(avg_points: f32, win_ratio: f32, points_graph: &Vec<i16>) -> f32 {
+        let add = {
+            if Self::slope(points_graph) {
+                5.0
+            } else {
+                0.0
+            }
+        };
+
+        let val = ((avg_points * 2.0 + Self::avg_regession(points_graph.to_owned()) / 3.0) / 2.5)
+            + (win_ratio * 10.0)
+            + add
+            - (deviation(points_graph) * 1.5);
+        debug!("Ai val is: {}", val);
+        val
+    }
+    fn math_v1(
         avg_points: f32,
         win_ratio: f32,
         rp: f32,
