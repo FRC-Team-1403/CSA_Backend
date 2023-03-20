@@ -2,11 +2,10 @@ use super::avg::math::YearAround;
 use super::shared::avg;
 use crate::comp::shared::deviation;
 use crate::ram::get_pub;
-use linfa::prelude::*;
-use linfa_logistic::LogisticRegression;
 use log::{debug, info};
 use plr::regression::OptimalPLR;
 use std::error::Error;
+use std::ops::Add;
 
 pub enum Type<'a> {
     Match(&'a u16),
@@ -16,42 +15,6 @@ pub enum Type<'a> {
 pub struct Ai {}
 
 impl Ai {
-    pub fn predict(data: &Vec<i16>) -> Result<(), Box<dyn Error>> {
-        // everything above 6.5 is considered a good wine
-        dbg!(linfa_datasets::winequality());
-        let (train, valid) = linfa_datasets::winequality()
-            .map_targets(|x| if *x > 6 { "good" } else { "bad" })
-            .split_with_ratio(0.9);
-
-        println!(
-            "Fit Logistic Regression classifier with #{} training points",
-            train.nsamples()
-        );
-
-        // fit a Logistic regression model with 150 max iterations
-        let model = LogisticRegression::default()
-            .max_iterations(150)
-            .fit(&train)
-            .unwrap();
-
-        // predict and map targets
-        let pred = model.predict(&valid);
-
-        // create a confusion matrix
-        let cm = pred.confusion_matrix(&valid).unwrap();
-
-        // Print the confusion matrix, this will print a table with four entries. On the diagonal are
-        // the number of true-positive and true-negative predictions, off the diagonal are
-        // false-positive and false-negative
-        println!("{:?}", cm);
-
-        // Calculate the accuracy and Matthew Correlation Coefficient (cross-correlation between
-        // predicted and targets)
-        println!("accuracy {}, MCC {}", cm.accuracy(), cm.mcc());
-
-        Ok(())
-    }
-
     fn slope(vals: &Vec<i16>) -> bool {
         if vals.len() < 6 {}
         let data_points: Vec<(f64, f64)> = vals
@@ -71,6 +34,7 @@ impl Ai {
         }
         false
     }
+
     fn avg_regession(vals: Vec<i16>) -> f32 {
         let calc = {
             if vals.len() > 5 {
@@ -82,10 +46,12 @@ impl Ai {
         };
         avg(calc)
     }
+
     pub fn calc_v2(match_data: &YearAround, what: Type) -> i32 {
         if match_data.points.graph.len() < 2 {}
         todo!()
     }
+
     pub fn calc_v1(match_data: &YearAround, what: Type) -> f32 {
         let match_br = Self::calc_avg_br(match_data);
         let year_br: f32 = {
@@ -102,6 +68,7 @@ impl Ai {
         };
         match_br + (year_br / 1.5)
     }
+
     fn math_v2(avg_points: f32, win_ratio: f32, points_graph: &Vec<i16>) -> f32 {
         let add = {
             if Self::slope(points_graph) {
@@ -117,6 +84,7 @@ impl Ai {
         debug!("Ai val is: {}", val);
         val
     }
+
     fn math_v1(
         avg_points: f32,
         win_ratio: f32,
@@ -153,23 +121,4 @@ impl Ai {
             &year.points.graph,
         )
     }
-}
 
-//use ndarray::{Array, Array1, Array2};
-// use linfa::traits::{Transformer, Fit};
-// use linfa::prelude::LogisticRegression;
-//
-// fn main() -> Result<(), Box<dyn std::error::Error>> {
-//     let x = Array::from(vec![0.5, 1.0, 1.5, 2.0, 2.5, 3.0]);
-//     let y = Array::from(vec![0., 0., 1., 1., 1., 1.]);
-//
-//     let mut model = LogisticRegression::default();
-//     let fitted_model = model.fit(&x, &y)?;
-//
-//     let x_new = Array::from(vec![0.0, 1.0, 2.0, 3.0]);
-//     let y_pred = fitted_model.predict(&x_new)?;
-//
-//     println!("{:?}", y_pred);
-//
-//     Ok(())
-// }

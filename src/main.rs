@@ -19,9 +19,6 @@ pub mod startup;
 
 #[tokio::main]
 async fn main() {
-    let cool: Vec<i16> = vec![];
-    dbg!(Ai::predict(&cool).expect("TODO: panic message"));
-    todo!();
     set_var("RUST_LOG", "info");
     env_logger::init();
     let wait = thread::spawn(|| {
