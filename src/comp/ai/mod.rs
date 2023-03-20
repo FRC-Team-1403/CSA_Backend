@@ -107,7 +107,7 @@ impl Ai {
         } else {
             rp = 0.0;
         }
-        Self::math(
+        Self::math_v1(
             year.points.avg,
             year.win_rato,
             rp,
