@@ -18,6 +18,7 @@ pub struct Ai {}
 impl Ai {
     pub fn predict(data: &Vec<i16>) -> Result<(), Box<dyn Error>> {
         // everything above 6.5 is considered a good wine
+        dbg!(linfa_datasets::winequality());
         let (train, valid) = linfa_datasets::winequality()
             .map_targets(|x| if *x > 6 { "good" } else { "bad" })
             .split_with_ratio(0.9);
@@ -153,3 +154,22 @@ impl Ai {
         )
     }
 }
+
+//use ndarray::{Array, Array1, Array2};
+// use linfa::traits::{Transformer, Fit};
+// use linfa::prelude::LogisticRegression;
+//
+// fn main() -> Result<(), Box<dyn std::error::Error>> {
+//     let x = Array::from(vec![0.5, 1.0, 1.5, 2.0, 2.5, 3.0]);
+//     let y = Array::from(vec![0., 0., 1., 1., 1., 1.]);
+//
+//     let mut model = LogisticRegression::default();
+//     let fitted_model = model.fit(&x, &y)?;
+//
+//     let x_new = Array::from(vec![0.0, 1.0, 2.0, 3.0]);
+//     let y_pred = fitted_model.predict(&x_new)?;
+//
+//     println!("{:?}", y_pred);
+//
+//     Ok(())
+// }
