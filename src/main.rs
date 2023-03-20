@@ -5,6 +5,7 @@ extern crate core;
 #[macro_use]
 extern crate dotenv_codegen;
 
+use crate::comp::ai::Ai;
 use crate::ram::ENV;
 use log::info;
 use std::env::set_var;
@@ -18,6 +19,9 @@ pub mod startup;
 
 #[tokio::main]
 async fn main() {
+    let cool: Vec<i16> = vec![];
+    dbg!(Ai::predict(&cool).expect("TODO: panic message"));
+    todo!();
     set_var("RUST_LOG", "info");
     env_logger::init();
     let wait = thread::spawn(|| {

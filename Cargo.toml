@@ -21,3 +21,6 @@ dotenv_codegen = "0.15.0"
 rayon = "1.6.1"
 openssl = "0.10.45"
 plr = "0.3.1"
+linfa = "0.6.1"
+linfa-logistic = "0.6.1"
+linfa-datasets = { version = "0.6.1", features = ["winequality"] }
