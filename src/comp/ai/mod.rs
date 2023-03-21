@@ -52,8 +52,8 @@ impl Ai {
 
     fn guess_next(vals: &Vec<i16>) -> f32 {
         let calc = {
-            if vals.len() > AI_VALUE.recent {
-                let parse = vals.len() - 5;
+            if vals.len() > AI_VALUE.recent + 2 {
+                let parse = vals.len() - AI_VALUE.recent;
                 vals[parse..].to_owned()
             } else {
                 vals.to_owned()
