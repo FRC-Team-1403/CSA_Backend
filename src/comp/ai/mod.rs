@@ -1,10 +1,30 @@
 use super::avg::math::YearAround;
-use crate::comp::shared::{avg, deviation};
+use crate::comp::shared::avg;
 use crate::ram::get_pub;
 use log::debug;
 use plr::regression::OptimalPLR;
 use std::thread;
 use std::time::Duration;
+
+struct AiValue {
+    win_ratio: f32,
+    ai_guess: f32,
+    avg: f32,
+    deviation: f32,
+    ranking_points: f32,
+    positive_slope: f32,
+    year_value: f32,
+}
+
+const AI_VALUE: AiValue = AiValue {
+    positive_slope: 5.0,
+    win_ratio: 10.0,
+    ai_guess: 1.0,
+    avg: 1.2,
+    deviation: 2.0,
+    ranking_points: 1.5,
+    year_value: 0.5,
+};
 
 pub struct Ai {}
 
@@ -46,7 +66,9 @@ impl Ai {
             loop {
                 if let Some(year) = get_pub().get(team) {
                     // this allows more value to the recent data
-                    return (Self::math_v2(year) + (Self::math_v2(match_data) * 2.0)) / 3.0;
+                    return ((Self::math_v2(year) * AI_VALUE.year_value)
+                        + Self::math_v2(match_data))
+                        / (AI_VALUE.year_value + 1.0);
                 }
                 thread::sleep(Duration::from_secs(1))
             }
@@ -58,20 +80,22 @@ impl Ai {
     }
 
     fn math_v2(data: &YearAround) -> f32 {
-        let rp_guess = Self::guess_next(&data.rp.graph) * 1.5;
+        let rp_guess = Self::guess_next(&data.rp.graph) * AI_VALUE.ranking_points;
         let add = {
             if Self::slope(&data.points.graph) {
-                5.0
+                AI_VALUE.positive_slope
             } else {
                 0.0
             }
         };
-        let val = ((data.points.avg * 1.2 + Self::guess_next(&data.points.graph) / 2.2) / 2.5)
-            + (data.win_rato * 10.0)
+        let ai_val = (((data.points.avg * AI_VALUE.avg)
+            + (Self::guess_next(&data.points.graph) * AI_VALUE.ai_guess))
+            / (AI_VALUE.ai_guess + AI_VALUE.avg))
+            + (data.win_rato * AI_VALUE.win_ratio)
             + add
             + rp_guess
-            - (data.deviation * 1.5);
-        debug!("Ai val is: {}", val);
-        val
+            - (data.deviation * AI_VALUE.deviation);
+        debug!("Ai val is: {}", ai_val);
+        ai_val
     }
 }
