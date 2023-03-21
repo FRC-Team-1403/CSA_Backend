@@ -19,8 +19,21 @@ async fn train() {
     let train_results: Vec<i16> = vec![0; 100]
         .par_iter()
         .filter_map(|_| {
-            let (train, predict) = api_data.split_at(thread_rng().gen_range(3..api_data.len()));
-            let teams_br: Vec<(u16, f32)> = vec![];
+            let (train, predict) = api_data.split_at(thread_rng().gen_range(3..api_data.len() - 1));
+            if predict.is_empty() || train.is_empty() {
+                panic!(
+                    "Bad data in the vector\n train data set : {:?}\n predict data set : {:?}\n",
+                    predict, train
+                );
+            }
+            let teams_br: Vec<(u16, f32)> = ENV
+                .teams
+                .par_iter()
+                .map(|team| {
+                    let cool = "yes";
+                    (team.to_owned(), 0.0)
+                })
+                .collect();
             todo!()
         })
         .collect();
