@@ -1,11 +1,11 @@
 use super::avg::math::YearAround;
 use crate::comp::shared::avg;
 use crate::ram::get_pub;
-use log::debug;
+use log::{debug, warn};
 use plr::regression::OptimalPLR;
 use std::thread;
 use std::time::Duration;
-
+mod train;
 const AI_VALUE: AiValue = AiValue {
     positive_slope: 5.0,
     win_ratio: 10.0,
@@ -71,6 +71,7 @@ impl Ai {
                         + Self::math_v2(match_data))
                         / (AI_VALUE.year_value + 1.0);
                 }
+                warn!("Failed to find data for {}, waiting....", team);
                 thread::sleep(Duration::from_secs(1))
             }
         }
