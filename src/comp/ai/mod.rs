@@ -8,11 +8,11 @@ use std::time::Duration;
 mod train;
 const AI_VALUE: AiValue = AiValue {
     positive_slope: 5.0,
-    win_ratio: 100.0,
+    win_ratio: 120.0,
     ai_guess: 1.0,
-    avg: 1.2,
+    avg: 0.4,
     deviation: 2.0,
-    ranking_points: 1.5,
+    ranking_points: 2.5,
     year_value: 0.5,
     recent: 3,
 };
