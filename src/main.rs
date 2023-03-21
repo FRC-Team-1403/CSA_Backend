@@ -5,7 +5,6 @@ extern crate core;
 #[macro_use]
 extern crate dotenv_codegen;
 
-use crate::comp::ai::Ai;
 use crate::ram::ENV;
 use log::info;
 use std::env::set_var;

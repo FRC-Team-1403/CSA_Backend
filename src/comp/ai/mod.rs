@@ -14,6 +14,7 @@ const AI_VALUE: AiValue = AiValue {
     deviation: 2.0,
     ranking_points: 1.5,
     year_value: 0.5,
+    recent: 5,
 };
 
 struct AiValue {
@@ -24,19 +25,19 @@ struct AiValue {
     ranking_points: f32,
     positive_slope: f32,
     year_value: f32,
+    recent: usize,
 }
 
 pub struct Ai {}
 
 impl Ai {
-    fn slope(vals: &Vec<i16>) -> bool {
-        if vals.len() < 6 {}
+    fn slope(vals: &[i16]) -> bool {
         let data_points: Vec<(f64, f64)> = vals
             .iter()
             .enumerate()
             .map(|(index, val)| (index.to_owned() as f64, val.to_owned() as f64))
             .collect();
-        let mut plr = OptimalPLR::new(0.05);
+        let mut plr = OptimalPLR::new(0.5);
         let mut segments = Vec::new();
         for (x, y) in data_points {
             if let Some(segment) = plr.process(x, y) {
@@ -51,7 +52,7 @@ impl Ai {
 
     fn guess_next(vals: &Vec<i16>) -> f32 {
         let calc = {
-            if vals.len() > 5 {
+            if vals.len() > AI_VALUE.recent {
                 let parse = vals.len() - 5;
                 vals[parse..].to_owned()
             } else {
