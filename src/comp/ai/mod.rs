@@ -6,16 +6,6 @@ use plr::regression::OptimalPLR;
 use std::thread;
 use std::time::Duration;
 
-struct AiValue {
-    win_ratio: f32,
-    ai_guess: f32,
-    avg: f32,
-    deviation: f32,
-    ranking_points: f32,
-    positive_slope: f32,
-    year_value: f32,
-}
-
 const AI_VALUE: AiValue = AiValue {
     positive_slope: 5.0,
     win_ratio: 10.0,
@@ -25,6 +15,16 @@ const AI_VALUE: AiValue = AiValue {
     ranking_points: 1.5,
     year_value: 0.5,
 };
+
+struct AiValue {
+    win_ratio: f32,
+    ai_guess: f32,
+    avg: f32,
+    deviation: f32,
+    ranking_points: f32,
+    positive_slope: f32,
+    year_value: f32,
+}
 
 pub struct Ai {}
 
