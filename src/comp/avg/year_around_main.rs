@@ -1,6 +1,6 @@
 #![allow(clippy::needless_late_init)]
 
-use crate::comp::ai::{Ai, Type};
+use crate::comp::ai::Ai;
 use crate::comp::avg::math::YearAround;
 use crate::comp::http::get_yearly;
 use crate::comp::parse::TeamYearAroundJsonParser;
@@ -89,7 +89,7 @@ impl YearData {
                             error!("failed to parse data");
                             return Err(self);
                         };
-                        year.br = Ai::calc_v1(&year, Type::Year);
+                        year.br = Ai::calc_year(&year);
                         get_pub().insert(team_num, year.clone());
                         send_and_check(year, team, year_check.to_string());
                     }
@@ -113,7 +113,7 @@ impl YearData {
                             let year = team_calc.calculate(&team);
                             let year = loop {
                                 if let Ok(mut year) = year {
-                                    year.br = Ai::calc_v1(&year, Type::Match(team_num));
+                                    year.br = Ai::calc_match(&year, team_num);
                                     break year;
                                 };
                             };
