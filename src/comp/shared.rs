@@ -89,6 +89,9 @@ pub fn get_breakdown_data(
 }
 
 pub fn avg(avg_score: Vec<i16>) -> f32 {
+    if avg_score.is_empty() {
+        return 0.0;
+    }
     avg_score.par_iter().sum::<i16>() as f32 / avg_score.len() as f32
 }
 
