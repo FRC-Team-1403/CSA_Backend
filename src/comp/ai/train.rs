@@ -1,3 +1,4 @@
+use std::env::set_var;
 use std::{thread, time::Duration};
 
 use rayon::prelude::*;
@@ -21,12 +22,15 @@ fn init() {
 #[tokio::test]
 async fn train() {
     thread::sleep(Duration::from_secs(3));
+    set_var("RUST_LOG", "info");
+    env_logger::init();
     let api_data = crate::comp::http::get_match().await.unwrap();
     //data is recived, time to test
     let train_results: Vec<i16> = vec![0; 100]
         .par_iter()
-        .filter_map(|_| {
-            let (train, predict) = api_data.split_at(thread_rng().gen_range(3..api_data.len() - 1));
+        .map(|_| {
+            let (train, predict) =
+                api_data.split_at(thread_rng().gen_range(60..api_data.len() - 1));
             if predict.is_empty() || train.is_empty() {
                 panic!(
                     "Bad data in the vector\n train data set : {:?}\n predict data set : {:?}\n",
@@ -34,8 +38,8 @@ async fn train() {
                 );
             }
             let train = YearAround::new(train.to_owned());
-            let teams_br: Vec<(u16, f32)> = ENV
-                .teams
+            let mut calc_teams = ENV.teams.clone();
+            let teams_br: Vec<(u16, f32)> = calc_teams
                 .par_iter()
                 .map(|team| {
                     let ai_data = Ai::calc_match(&train, team);
@@ -56,7 +60,11 @@ async fn train() {
                     "red"
                 }
             };
-            todo!();
+            if winner == winner_ai {
+                1
+            } else {
+                0
+            }
         })
         .collect();
     let avg = avg(train_results);

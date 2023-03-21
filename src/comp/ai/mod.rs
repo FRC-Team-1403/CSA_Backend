@@ -63,18 +63,18 @@ impl Ai {
     }
 
     pub fn calc_match(match_data: &YearAround, team: &u16) -> f32 {
-        if match_data.points.graph.len() < 2 {
-            loop {
-                if let Some(year) = get_pub().get(team) {
-                    // this allows more value to the recent data
-                    return ((Self::math_v2(year) * AI_VALUE.year_value)
-                        + Self::math_v2(match_data))
-                        / (AI_VALUE.year_value + 1.0);
-                }
-                warn!("Failed to find data for {}, waiting....", team);
-                thread::sleep(Duration::from_secs(1))
-            }
-        }
+        // if match_data.points.graph.len() < 2 {
+        //     loop {
+        //         if let Some(year) = get_pub().get(team) {
+        //             // this allows more value to the recent data
+        //             return ((Self::math_v2(year) * AI_VALUE.year_value)
+        //                 + Self::math_v2(match_data))
+        //                 / (AI_VALUE.year_value + 1.0);
+        //         }
+        //         warn!("Failed to find data for {}, waiting....", team);
+        //         thread::sleep(Duration::from_secs(1))
+        //     }
+        // }
         Self::math_v2(match_data)
     }
     pub fn calc_year(year_data: &YearAround) -> f32 {
