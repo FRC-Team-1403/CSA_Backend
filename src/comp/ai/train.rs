@@ -1,3 +1,4 @@
+use log::{info, warn};
 use std::env::set_var;
 use std::{thread, time::Duration};
 
@@ -12,21 +13,22 @@ use crate::{
     ram::ENV,
 };
 
+use crate::comp::avg::year_around_main::SendType;
 use rand::prelude::*;
 
-#[test]
-fn init() {
-    dbg!(&ENV.teams);
-}
+// #[test]
+// fn init() {
+//     dbg!(&ENV.teams);
+// }
 
-#[tokio::test]
-async fn train() {
-    thread::sleep(Duration::from_secs(3));
+#[test]
+fn train() {
     set_var("RUST_LOG", "info");
     env_logger::init();
-    let api_data = crate::comp::http::get_match().await.unwrap();
+    info!("Ai Test running");
+    let api_data = crate::comp::http::get_yearly(&SendType::Match, "").unwrap();
     //data is recived, time to test
-    let train_results: Vec<i16> = vec![0; 100]
+    let train_results: Vec<i16> = vec![0; 10000]
         .par_iter()
         .map(|_| {
             let (train, predict) =
@@ -37,11 +39,14 @@ async fn train() {
                     predict, train
                 );
             }
-            let train = YearAround::new(train.to_owned());
-            let mut calc_teams = ENV.teams.clone();
+            let calc_teams = ENV.teams.clone();
             let teams_br: Vec<(u16, f32)> = calc_teams
                 .par_iter()
                 .map(|team| {
+                    let train = YearAround::new(train.to_owned())
+                        .calculate(&team.to_string())
+                        .unwrap();
+                    // log::info!("{:#?}", &train);
                     let ai_data = Ai::calc_match(&train, team);
                     (team.to_owned(), ai_data)
                 })
@@ -61,8 +66,10 @@ async fn train() {
                 }
             };
             if winner == winner_ai {
+                info!("AI passed!, blue br {}, red br {}", red_br, blue_br);
                 1
             } else {
+                warn!("AI WRONG, blue br {}, red br {}", red_br, blue_br);
                 0
             }
         })
@@ -84,8 +91,7 @@ fn avg_br(teams: Vec<String>, br_data: &[(u16, f32)]) -> f32 {
                 .iter()
                 .find(|(team_num, _)| team == &format!("frc{}", team_num))
                 .unwrap();
-            println!("Team {} br is: {}", team, br);
-            br.round() as i16
+            br.to_owned() as i16
         })
         .collect())
 }
