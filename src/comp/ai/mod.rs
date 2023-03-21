@@ -14,7 +14,7 @@ const AI_VALUE: AiValue = AiValue {
     deviation: 2.0,
     ranking_points: 1.5,
     year_value: 0.5,
-    recent: 5,
+    recent: 3,
 };
 
 struct AiValue {
