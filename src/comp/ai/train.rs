@@ -67,10 +67,10 @@ fn train() {
                 }
             };
             if winner == winner_ai {
-                info!("AI passed!, blue br {}, red br {}", red_br, blue_br);
+                // info!("AI passed!, blue br {}, red br {}", red_br, blue_br);
                 1
             } else {
-                warn!("AI WRONG, blue br {}, red br {}", red_br, blue_br);
+                // warn!("AI WRONG, blue br {}, red br {}", red_br, blue_br);
                 0
             }
         })
