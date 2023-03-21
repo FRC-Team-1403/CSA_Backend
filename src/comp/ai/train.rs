@@ -70,12 +70,14 @@ fn train() {
                 // info!("AI passed!, blue br {}, red br {}", red_br, blue_br);
                 1
             } else {
+                //todo add a formuala to calc diffrence
                 // warn!("AI WRONG, blue br {}, red br {}", red_br, blue_br);
                 0
             }
         })
         .collect();
     let avg = avg(train_results);
+    info!("Ai Score: {} ", avg);
     if avg < 0.74 {
         panic!(
             "Ai test failed with different score\n the ai score is: {}",
