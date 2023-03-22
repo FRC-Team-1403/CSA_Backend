@@ -1,19 +1,20 @@
 use super::avg::math::YearAround;
 use crate::comp::shared::avg;
 use crate::ram::get_pub;
-use log::{debug, error, warn};
+use log::{debug, warn};
 use plr::regression::OptimalPLR;
+use plr::Segment;
 use std::thread;
 use std::time::Duration;
 
 mod train;
 
 const AI_VALUE: AiValue = AiValue {
-    plr: 0.6,
+    plr: 0.05,
     positive_slope: 3.0,
     win_ratio: 70.0,
-    ai_guess: 1.0,
-    avg: 1.5,
+    ai_guess: 1.2,
+    avg: 1.0,
     deviation: 0.095,
     ranking_points: 9.5,
     year_value: 0.5,
@@ -52,15 +53,23 @@ impl Ai {
             ((((seg.slope as f32 * segments.len() as f32) + seg.intercept as f32) * AI_VALUE.plr)
                 + Self::guess_next(vals))
                 / (1.0 + AI_VALUE.plr)
+                + Self::slope(&seg)
         } else if let Some(seg) = segments.last() {
             ((((seg.slope as f32 * segments.len() as f32) + seg.intercept as f32) * AI_VALUE.plr)
                 + Self::guess_next(vals))
                 / (1.0 + AI_VALUE.plr)
+                + Self::slope(seg)
         } else {
             0.0
         }
     }
-
+    fn slope(seg: &Segment) -> f32 {
+        if seg.slope.is_sign_positive() {
+            AI_VALUE.positive_slope
+        } else {
+            0.0
+        }
+    }
     fn guess_next(vals: &[i16]) -> f32 {
         let calc = {
             if vals.len() > AI_VALUE.recent + 2 {
