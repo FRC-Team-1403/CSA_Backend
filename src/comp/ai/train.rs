@@ -35,6 +35,21 @@ fn train() {
         "2023casf",
         "2023isde4",
         "2023vaale",
+        "2023okok",
+        "2023ilch",
+        "2023milan",
+        "2023misjo",
+        "2023txbel",
+        "2023orwil",
+        "2023cafr",
+        "2023cave",
+        "2023ausc",
+        "2023ncjoh",
+        "2023txcha",
+        "2023scand",
+        "2023inpri",
+        "2023njfla",
+        "2023ncmec",
     ];
     let train_final: Vec<i16> = loop_keys
         .par_iter()
