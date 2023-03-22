@@ -20,7 +20,7 @@ use crate::comp::avg::year_around_main::SendType;
 use crate::comp::shared::deviation;
 use rand::prelude::*;
 
-const START_FROM: usize = 25;
+const START_FROM: usize = 20;
 
 #[test]
 fn train() {
