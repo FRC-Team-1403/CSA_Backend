@@ -1,6 +1,6 @@
 #![allow(unused_imports)]
 
-use log::{info, warn};
+use log::{error, info, warn};
 use std::env::set_var;
 use std::{thread, time::Duration};
 
@@ -20,7 +20,7 @@ use crate::comp::avg::year_around_main::SendType;
 use crate::comp::shared::deviation;
 use rand::prelude::*;
 
-const START_FROM: usize = 20;
+const START_FROM: usize = 25;
 
 #[test]
 fn train() {
@@ -106,7 +106,7 @@ fn train() {
                         info!("AI passed!, blue br {}, red br {}", red_br, blue_br);
                         100
                     } else {
-                        warn!("AI WRONG, blue br {}, red br {}", red_br, blue_br);
+                        error!("AI WRONG, blue br {}, red br {}", red_br, blue_br);
                         if winner_ai == "blue" {
                             100 - ((blue_br / (red_br + blue_br)) * 100.0) as i16
                         } else {
