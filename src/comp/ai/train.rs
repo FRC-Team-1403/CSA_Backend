@@ -81,7 +81,7 @@ fn train() {
         .collect();
     let avg = avg(train_results);
     info!("Ai Score: {} ", avg);
-    if avg < 80.0 {
+    if avg < 80.22951 {
         panic!(
             "Ai test failed with different score\n the ai score is: {}",
             avg
