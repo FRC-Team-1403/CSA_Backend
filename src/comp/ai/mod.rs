@@ -3,19 +3,17 @@ use crate::comp::shared::avg;
 use crate::ram::get_pub;
 use log::{debug, error, warn};
 use plr::regression::OptimalPLR;
-use plr::Segment;
-use std::sync::{Arc, Mutex};
 use std::thread;
 use std::time::Duration;
 
 mod train;
 
 const AI_VALUE: AiValue = AiValue {
-    plr: 0.5,
+    plr: 0.6,
     positive_slope: 3.0,
     win_ratio: 70.0,
-    ai_guess: 1.8,
-    avg: 0.2,
+    ai_guess: 1.0,
+    avg: 1.5,
     deviation: 0.095,
     ranking_points: 9.5,
     year_value: 0.5,
@@ -37,14 +35,6 @@ struct AiValue {
 pub struct Ai {}
 
 impl Ai {
-    pub fn process(locker: Arc<Mutex<OptimalPLR>>, x: f64, y: f64) -> Option<Segment> {
-        loop {
-            if let Ok(mut data) = locker.try_lock() {
-                return data.process(x.to_owned(), y.to_owned());
-            }
-            error!("FAILED WHEN LOCKING CACHE_YEAR_AVG, THIS MAY BE A DEAD LOCK!!!!");
-        }
-    }
     fn line_point_regression(vals: &[i16]) -> f32 {
         let data_points: Vec<(f64, f64)> = vals
             .iter()
@@ -59,13 +49,13 @@ impl Ai {
             }
         }
         if let Some(seg) = plr.finish() {
-            (((seg.slope as f32 * segments.len() as f32) + seg.intercept as f32)
-                + Self::guess_next(vals) * 2.0)
-                / 3.0
+            ((((seg.slope as f32 * segments.len() as f32) + seg.intercept as f32) * AI_VALUE.plr)
+                + Self::guess_next(vals))
+                / (1.0 + AI_VALUE.plr)
         } else if let Some(seg) = segments.last() {
-            (((seg.slope as f32 * segments.len() as f32) + seg.intercept as f32)
-                + Self::guess_next(vals) * 2.0)
-                / 3.0
+            ((((seg.slope as f32 * segments.len() as f32) + seg.intercept as f32) * AI_VALUE.plr)
+                + Self::guess_next(vals))
+                / (1.0 + AI_VALUE.plr)
         } else {
             0.0
         }
