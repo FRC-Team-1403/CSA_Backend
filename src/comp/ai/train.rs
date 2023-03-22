@@ -19,6 +19,8 @@ use crate::comp::avg::year_around_main::SendType;
 use crate::comp::shared::deviation;
 use rand::prelude::*;
 
+const START_FROM: usize = 15;
+
 #[test]
 fn train() {
     set_var("RUST_LOG", "info");
@@ -28,9 +30,15 @@ fn train() {
     let matches: Vec<usize> = vec![0; api_data.len()]
         .iter()
         .enumerate()
-        .filter_map(|(index, _)| if index > 15 { Some(index) } else { None })
+        .filter_map(|(index, _)| {
+            if index > START_FROM {
+                Some(index)
+            } else {
+                None
+            }
+        })
         .collect();
-    //data is recived, time to test
+    //data is received, time to test
     let train_results: Vec<i16> = matches
         .par_iter()
         .map(|location| {
