@@ -16,6 +16,7 @@ use crate::{
 };
 
 use crate::comp::avg::year_around_main::SendType;
+use crate::comp::shared::deviation;
 use rand::prelude::*;
 
 #[test]
@@ -27,7 +28,7 @@ fn train() {
     let matches: Vec<usize> = vec![0; api_data.len()]
         .iter()
         .enumerate()
-        .filter_map(|(index, _)| if index > 40 { Some(index) } else { None })
+        .filter_map(|(index, _)| if index > 15 { Some(index) } else { None })
         .collect();
     //data is recived, time to test
     let train_results: Vec<i16> = matches
@@ -47,7 +48,6 @@ fn train() {
                     let train = YearAround::new(train.to_owned())
                         .calculate(&team.to_string())
                         .unwrap();
-                    // log::info!("{:#?}", &train);
                     let ai_data = Ai::calc_match(&train, team);
                     (team.to_owned(), ai_data)
                 })
@@ -67,18 +67,21 @@ fn train() {
                 }
             };
             if winner == winner_ai {
-                // info!("AI passed!, blue br {}, red br {}", red_br, blue_br);
-                1
+                info!("AI passed!, blue br {}, red br {}", red_br, blue_br);
+                100
             } else {
-                //todo add a formuala to calc diffrence
-                // warn!("AI WRONG, blue br {}, red br {}", red_br, blue_br);
-                0
+                warn!("AI WRONG, blue br {}, red br {}", red_br, blue_br);
+                if winner_ai == "blue" {
+                    100 - ((blue_br / (red_br + blue_br)) * 100.0) as i16
+                } else {
+                    100 - ((red_br / (red_br + blue_br)) * 100.0) as i16
+                }
             }
         })
         .collect();
     let avg = avg(train_results);
     info!("Ai Score: {} ", avg);
-    if avg < 0.74 {
+    if avg < 80.0 {
         panic!(
             "Ai test failed with different score\n the ai score is: {}",
             avg
