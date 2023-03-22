@@ -73,9 +73,9 @@ fn train() {
                     let (train, predict) = api_data.split_at(location.to_owned());
                     if predict.is_empty() || train.is_empty() {
                         panic!(
-                    "Bad data in the vector\n train data set : {:?}\n predict data set : {:?}\n",
-                    predict, train
-                );
+                            "Bad data in the vector\n train data set : {:?}\n predict data set : {:?}\n",
+                            predict, train
+                        );
                     }
                     let calc_teams = Tba::get_teams(key, &ENV.api_key).unwrap();
                     let teams_br: Vec<(u16, f32)> = calc_teams
@@ -105,13 +105,14 @@ fn train() {
                     if winner == winner_ai {
                         info!("AI passed!, blue br {}, red br {}", red_br, blue_br);
                         100
+                    } else if winner_ai == "blue" {
+                        let ratio = ((blue_br / (red_br + blue_br)) * 100.0) as i16;
+                        error!("AI WRONG, ratio by ai: {ratio}",);
+                        100 - ratio
                     } else {
-                        error!("AI WRONG, blue br {}, red br {}", red_br, blue_br);
-                        if winner_ai == "blue" {
-                            100 - ((blue_br / (red_br + blue_br)) * 100.0) as i16
-                        } else {
-                            100 - ((red_br / (red_br + blue_br)) * 100.0) as i16
-                        }
+                        let ratio = ((red_br / (red_br + blue_br)) * 100.0) as i16;
+                        error!("AI WRONG, ratio by ai: {ratio}",);
+                        100 - ratio
                     }
                 })
                 .collect();
