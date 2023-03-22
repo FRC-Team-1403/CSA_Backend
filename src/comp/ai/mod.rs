@@ -7,12 +7,12 @@ use std::thread;
 use std::time::Duration;
 mod train;
 const AI_VALUE: AiValue = AiValue {
-    positive_slope: 10.0,
-    win_ratio: 180.0,
-    ai_guess: 1.5,
+    positive_slope: 3.0,
+    win_ratio: 70.0,
+    ai_guess: 1.8,
     avg: 0.2,
-    deviation: 0.5,
-    ranking_points: 4.5,
+    deviation: 0.095,
+    ranking_points: 9.5,
     year_value: 0.5,
     recent: 3,
 };
