@@ -38,7 +38,7 @@ impl YearStore {
             ranking_graph: self.year.rp.graph.clone(),
             win: self.year.wins,
             auto_graph: self.year.auto.graph.clone(),
-            br: self.year.br,
+            ekam_ai: self.year.br,
             deviation: self.year.deviation,
         };
         let json = serde_json::to_string(&data)?;
@@ -92,7 +92,7 @@ struct SendYearAround {
     #[serde(rename = "Standard Deviation")]
     deviation: f32,
     #[serde(rename = "Ekam Ai Rating")]
-    br: f32,
+    ekam_ai: f32,
     score_graph: Vec<i16>,
     penalty_graph: Vec<i16>,
     ranking_graph: Vec<i16>,

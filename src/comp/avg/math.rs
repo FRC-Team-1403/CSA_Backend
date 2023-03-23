@@ -91,7 +91,7 @@ impl YearAround {
                 let (auto_points, foul, rp, _, _, _) =
                     get_breakdown_data(json.score_breakdown, &Team::Red);
                 let handle = HandleData {
-                    rp,
+                    ekam_ai: rp,
                     score: json.alliances.red.score,
                     avg_score,
                     avg_rp,
@@ -122,7 +122,7 @@ impl YearAround {
                 let (auto_points, foul, rp, _, _, _) =
                     get_breakdown_data(json.score_breakdown, &Team::Blue);
                 let mut handle = HandleData {
-                    rp,
+                    ekam_ai: rp,
                     score: json.alliances.red.score,
                     avg_score,
                     avg_rp,
@@ -162,7 +162,7 @@ impl YearAround {
 
     fn handle(mut self, mut return_data: HandleData) -> (Self, HandleData) {
         //happens if match breakdown works
-        if let Some(rp) = return_data.rp {
+        if let Some(rp) = return_data.ekam_ai {
             let foul = return_data.foul.unwrap_or(0);
             let auto_points = return_data.auto_points.unwrap_or(0);
             //lowest code
@@ -197,7 +197,7 @@ struct HandleData {
     avg_rp: Vec<i16>,
     avg_foul: Vec<i16>,
     avg_auto: Vec<i16>,
-    rp: Option<i16>,
+    ekam_ai: Option<i16>,
     auto_points: Option<i16>,
     foul: Option<i16>,
 }
