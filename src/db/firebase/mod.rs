@@ -91,7 +91,7 @@ struct SendYearAround {
     win_ratio: f32,
     #[serde(rename = "Standard Deviation")]
     deviation: f32,
-    #[serde(rename = "BR")]
+    #[serde(rename = "Ekam Ai Rating")]
     br: f32,
     score_graph: Vec<i16>,
     penalty_graph: Vec<i16>,
