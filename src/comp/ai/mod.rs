@@ -98,7 +98,7 @@ impl Ai {
                     return Self::math_v2(match_data);
                 }
                 warn!("Failed to find data for {}, waiting....", team);
-                thread::sleep(Duration::from_secs(1))
+                thread::sleep(Duration::from_secs_f32(0.5))
             }
         }
         Self::math_v2(match_data)
