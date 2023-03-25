@@ -1,12 +1,12 @@
 use super::avg::math::YearAround;
 use crate::comp::shared::avg;
 use crate::ram::get_pub;
+use log::error;
 use log::{debug, warn};
 use plr::regression::OptimalPLR;
 use plr::Segment;
 use std::thread;
 use std::time::Duration;
-
 mod train;
 
 const AI_VALUE: AiValue = AiValue {
@@ -84,12 +84,18 @@ impl Ai {
 
     pub fn calc_match(match_data: &YearAround, team: &u16) -> f32 {
         if match_data.points.graph.len() < 2 {
+            let mut tried: u8 = 0;
             loop {
                 if let Some(year) = get_pub().get(team) {
                     // this allows more value to the recent data
                     return ((Self::math_v2(year) * AI_VALUE.year_value)
                         + Self::math_v2(match_data))
                         / (AI_VALUE.year_value + 1.0);
+                }
+                tried += 1;
+                if tried > 150 {
+                    error!("Dead lock or some other and it failed to get data error");
+                    return Self::math_v2(match_data);
                 }
                 warn!("Failed to find data for {}, waiting....", team);
                 thread::sleep(Duration::from_secs(1))
