@@ -36,6 +36,3 @@ rustup default nightly
 cargo update
 
 cargo build --release
-
-./target/release/r1403_vison
-
