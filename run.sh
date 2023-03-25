@@ -1,1 +1,1 @@
-./target/release/r1403_vison
+nohup ./target/release/r1403_vison &
