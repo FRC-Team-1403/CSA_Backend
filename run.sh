@@ -1,1 +1,1 @@
-nohup ./target/release/r1403_vison &
+nohup cargo run --release&
