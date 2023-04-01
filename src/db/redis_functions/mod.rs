@@ -65,7 +65,7 @@ impl RedisDb {
             if retry.is_ok() {
                 return;
             }
-            if error > 120 {
+            if error > 10 {
                 return;
             }
             error!(
