@@ -13,7 +13,6 @@ func main() {
 	err := json.Unmarshal(jsonData, &result)
 	if err != nil {
 		if os.Args[1] == "get" {
-
 			send := firebaseRead{}
 			send.Path = os.Args[2]
 			send.Id = os.Args[3]
