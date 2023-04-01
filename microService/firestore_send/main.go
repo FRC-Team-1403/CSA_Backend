@@ -12,6 +12,28 @@ func main() {
 	jsonData := []byte(os.Args[1])
 	err := json.Unmarshal(jsonData, &result)
 	if err != nil {
+		if os.Args[1] == "get" {
+
+			send := firebaseRead{}
+			send.Path = os.Args[2]
+			send.Id = os.Args[3]
+			jsonReturn := map[string]interface{}{
+				"Average Auto Contributed":   0.0,
+				"Average Points Contributed": 0.0,
+				"Average Telop Contributed":  0.0,
+				"Error":                      "Good",
+			}
+			defer fmt.Println(jsonReturn)
+			err, data := send.One(send)
+			if err != nil {
+				jsonReturn["Error"] = err
+				return
+			}
+			jsonReturn["Average Auto Contributed"] = data.OneData["Average Auto Contributed"]
+			jsonReturn["Average Points Contributed"] = data.OneData["Average Points Contributed"]
+			jsonReturn["Average Telop Contributed"] = data.OneData["Average Telop Contributed"]
+			return
+		}
 		fmt.Println("Error parsing JSON:", err)
 		return
 	}

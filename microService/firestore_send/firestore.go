@@ -61,3 +61,28 @@ func (Firestore) Close(r Firestore) (err error) {
 	}
 	return err
 }
+
+type firebaseRead struct {
+	Path     string
+	Id       string
+	ManyData []map[string]interface{}
+	OneData  map[string]interface{}
+}
+
+func (firebaseRead) One(r firebaseRead) (err error, s firebaseRead) {
+	app := Firestore{}
+	app, err = Firestore{}.Init()
+	if err != nil {
+		return errors.New("Failed due to: " + err.Error()), r
+	}
+	dsnap, err := app.Client.Collection(r.Path).Doc(r.Id).Get(app.Ctx)
+	if err != nil {
+		return errors.New("Failed due to: " + err.Error()), r
+	}
+	err = app.Close(app)
+	if err != nil {
+		return errors.New("Failed due to: " + err.Error()), r
+	}
+	r.OneData = dsnap.Data()
+	return err, r
+}

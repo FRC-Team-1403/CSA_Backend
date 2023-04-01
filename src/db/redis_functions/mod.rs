@@ -1,5 +1,5 @@
 use crate::ram::ENV;
-use redis::{pipe, Client, Commands, ConnectionLike};
+use redis::{pipe, Client, Commands};
 use std::thread;
 
 fn get_redis_data(key: String) -> redis::RedisResult<String> {
