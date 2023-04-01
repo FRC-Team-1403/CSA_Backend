@@ -13,15 +13,15 @@ use std::time::Duration;
 mod train;
 
 const AI_VALUE: AiValue = AiValue {
-    plr: 0.05,
+    plr: 0.001,
     positive_slope: 3.0,
     win_ratio: 70.0,
     ai_guess: 1.2,
-    avg: 1.0,
+    avg: 2.5,
     deviation: 0.095,
     ranking_points: 9.5,
     year_value: 0.5,
-    recent: 3,
+    recent: 5,
 };
 
 struct AiValue {
