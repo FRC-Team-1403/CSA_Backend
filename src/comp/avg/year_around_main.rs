@@ -100,7 +100,6 @@ impl YearData {
                 Ok(self)
             }
             SendType::Match => {
-                let redis_db = Mutex::new(RedisDb::new());
                 let Some(json) =
                     Self::get_new_data(what.clone(), "69") else {
                     return Err(self);
@@ -108,6 +107,7 @@ impl YearData {
                 let mut _allow = false;
                 (self, _allow) = self.check_cache(json.clone(), &what, &69);
                 if _allow {
+                    let redis_db = Mutex::new(RedisDb::new());
                     let calc = YearAround::new(json);
                     ENV.teams
                         .par_iter()
