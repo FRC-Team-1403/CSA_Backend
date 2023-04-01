@@ -68,7 +68,10 @@ impl RedisDb {
             if error > 120 {
                 return;
             }
-            error!("FAILED WHILE SENDING REDIS DATA, RETRYING {error}");
+            error!(
+                "FAILED WHILE SENDING REDIS DATA, {}, RETRYING {error}",
+                retry.unwrap_err()
+            );
             error += 1;
             thread::sleep(Duration::from_secs(1));
         }
