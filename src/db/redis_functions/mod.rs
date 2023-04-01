@@ -1,7 +1,8 @@
 use crate::ram::ENV;
 use log::error;
-use redis::{pipe, Client, Commands, Connection};
+use redis::{pipe, Client, Commands, Connection, RedisResult};
 use std::thread;
+use std::time::Duration;
 
 pub struct RedisDb {
     con: Connection,
@@ -48,11 +49,24 @@ impl RedisDb {
                 return None;
             }
             error += 1;
+            thread::sleep(Duration::from_secs(1));
         }
     }
 
-    pub fn set_team(&mut self) {
-        todo!()
+    pub fn set_team(&mut self, team: u16, kind: &str, value: f32) {
+        let mut error: u8 = 0;
+        loop {
+            let retry: RedisResult<()> = self.con.zadd(kind, team, value);
+            if retry.is_ok() {
+                return;
+            }
+            if error > 120 {
+                return;
+            }
+            error!("FAILED WHILE SENDING REDIS DATA, RETRYING {error}");
+            error += 1;
+            thread::sleep(Duration::from_secs(1));
+        }
     }
 }
 
