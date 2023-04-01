@@ -100,7 +100,7 @@ pub fn clear() {
             .unwrap()
             .get_connection()
             .unwrap();
-        let check: redis::RedisResult<()> = redis::cmd("FLUSHDB").query(&mut con);
+        let check: RedisResult<()> = redis::cmd("FLUSHDB").query(&mut con);
         check.unwrap()
     });
 }
