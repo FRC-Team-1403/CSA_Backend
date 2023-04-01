@@ -94,7 +94,7 @@ impl YearData {
                         };
                         year.br = Ai::calc_year(&year);
                         get_pub().insert(team_num, year.clone());
-                        send_and_check(year, team_num, year_check.to_string(), Mutex::new(None));
+                        send_and_check(year, team, year_check.to_string());
                     }
                 }
                 Ok(self)
@@ -107,7 +107,7 @@ impl YearData {
                 let mut _allow = false;
                 (self, _allow) = self.check_cache(json.clone(), &what, &69);
                 if _allow {
-                    let redis_db = Arc::new(Mutex::new(RedisDb::new());
+                    let redis_db = Mutex::new(RedisDb::new());
                     let calc = YearAround::new(json);
                     ENV.teams
                         .par_iter()
@@ -123,11 +123,11 @@ impl YearData {
                             };
                             if check_cache(&year, team_num) {
                                 send_and_check(
-                                    year,
-                                    team_num.to_owned(),
+                                    year.clone(),
+                                    team,
                                     ENV.firestore_collection.clone(),
-                                    redis_db,
                                 );
+                                send_redis(team_num, &year, &redis_db);
                             }
                             Ok(())
                         })?;
@@ -138,11 +138,11 @@ impl YearData {
     }
 }
 
-fn send_redis(team: &u16, data: YearAround, what: &Mutex<Option<RedisDb>>) {
+fn send_redis(team: &u16, data: &YearAround, what: &Mutex<Option<RedisDb>>) {
     loop {
         if let Ok(mut cool_data) = what.try_lock() {
             if cool_data.is_some() {
-                cool_data.as_mut().unwrap().send_avg_redis(team, &data);
+                cool_data.as_mut().unwrap().send_avg_redis(team, data);
             }
             return;
         }
@@ -163,7 +163,7 @@ fn check_cache(year: &YearAround, team_num: &u16) -> bool {
     true
 }
 
-fn send_and_check(year: YearAround, team: u16, location: String, redis_db: Mutex<Option<RedisDb>>) {
+fn send_and_check(year: YearAround, team: String, location: String) {
     thread::spawn(move || {
         if year.rp.avg.is_none() {
             warn!("Advanced data unavailable for team {}", &team)
@@ -171,10 +171,9 @@ fn send_and_check(year: YearAround, team: u16, location: String, redis_db: Mutex
         if year.points.lowest == 10000 {
             warn!("Data unavailable for {} , skipping...", &team)
         } else {
-            let e = YearStore::new(year.clone()).set_year(&team.to_string(), &location);
+            let e = YearStore::new(year).set_year(&team, &location);
             match e {
                 Ok(e) => {
-                    send_redis(&team, year, &redis_db);
                     info!(
                         "Full data is found and is pushed to firstore for {}!\n\
                                 \nWith Status: {}",

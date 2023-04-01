@@ -59,6 +59,9 @@ impl RedisDb {
             return;
         }
         let value = value.unwrap();
+        if value.is_nan() || value.is_finite() || value == 0.0 {
+            return;
+        }
         let mut error: u8 = 0;
         loop {
             let retry: RedisResult<()> = self.con.zadd(kind, team, value);
