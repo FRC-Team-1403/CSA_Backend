@@ -4,12 +4,15 @@ use crate::comp::ai::Ai;
 use crate::comp::avg::math::YearAround;
 use crate::comp::http::get_yearly;
 use crate::comp::parse::TeamYearAroundJsonParser;
-use crate::db::firebase::{Version, YearStore};
+use crate::db::firebase::YearStore;
+use crate::db::redis_functions::RedisDb;
 use crate::ram::{get_pub, CACHE_MATCH_AVG, ENV};
 use log::{error, info, warn};
 use rayon::prelude::*;
 use std::collections::HashMap;
+use std::sync::{Arc, Mutex};
 use std::thread;
+use std::time::Duration;
 
 const PUBLIC_CACHE: u16 = 16969;
 
@@ -91,12 +94,13 @@ impl YearData {
                         };
                         year.br = Ai::calc_year(&year);
                         get_pub().insert(team_num, year.clone());
-                        send_and_check(year, team, year_check.to_string(), Version::Year);
+                        send_and_check(year, team, year_check.to_string());
                     }
                 }
                 Ok(self)
             }
             SendType::Match => {
+                let redis_db = Arc::new(Mutex::new(RedisDb::new()));
                 let Some(json) =
                     Self::get_new_data(what.clone(), "69") else {
                     return Err(self);
@@ -118,12 +122,8 @@ impl YearData {
                                 };
                             };
                             if check_cache(&year, team_num) {
-                                send_and_check(
-                                    year,
-                                    team,
-                                    ENV.firestore_collection.clone(),
-                                    Version::Match,
-                                );
+                                send_redis(team_num, &year, &redis_db);
+                                send_and_check(year, team, ENV.firestore_collection.clone());
                             }
                             Ok(())
                         })?;
@@ -131,6 +131,19 @@ impl YearData {
                 Ok(self)
             }
         }
+    }
+}
+
+fn send_redis(team: &u16, data: &YearAround, what: &Mutex<Option<RedisDb>>) {
+    loop {
+        if let Ok(mut cool_data) = what.try_lock() {
+            if cool_data.is_some() {
+                cool_data.as_mut().unwrap().send_avg_redis(team, data);
+            }
+            return;
+        }
+        error!("DEAD LOCK WITH REDIS DB");
+        thread::sleep(Duration::from_millis(500));
     }
 }
 
@@ -146,7 +159,7 @@ fn check_cache(year: &YearAround, team_num: &u16) -> bool {
     true
 }
 
-fn send_and_check(year: YearAround, team: String, location: String, version: Version) {
+fn send_and_check(year: YearAround, team: String, location: String) {
     thread::spawn(move || {
         if year.rp.avg.is_none() {
             warn!("Advanced data unavailable for team {}", &team)
@@ -154,7 +167,7 @@ fn send_and_check(year: YearAround, team: String, location: String, version: Ver
         if year.points.lowest == 10000 {
             warn!("Data unavailable for {} , skipping...", &team)
         } else {
-            let e = YearStore::new(year).set_year(&team, &location, version);
+            let e = YearStore::new(year).set_year(&team, &location);
             match e {
                 Ok(e) => {
                     info!(

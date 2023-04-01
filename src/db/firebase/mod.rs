@@ -21,12 +21,7 @@ impl YearStore {
     pub fn new(data: YearAround) -> Self {
         Self { year: data }
     }
-    pub fn set_year(
-        &self,
-        team: &str,
-        year_check: &str,
-        version: Version,
-    ) -> Result<String, Error> {
+    pub fn set_year(&self, team: &str, year_check: &str) -> Result<String, Error> {
         let data = SendYearAround {
             team: team.to_owned(),
             auto_high: self.year.auto.highest,

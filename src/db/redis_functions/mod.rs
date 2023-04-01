@@ -73,7 +73,7 @@ impl RedisDb {
             thread::sleep(Duration::from_secs(1));
         }
     }
-    pub fn send_avg_redis(&mut self, team: &u16, data: YearAround) {
+    pub fn send_avg_redis(&mut self, team: &u16, data: &YearAround) {
         self.set_team(team, "TeamAuto", data.auto.avg);
         self.set_team(team, "TeamPoints", Some(data.points.avg));
         self.set_team(team, "TeamPenalty", data.pen.avg);
