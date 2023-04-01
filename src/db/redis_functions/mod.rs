@@ -7,7 +7,7 @@ use std::thread;
 use std::time::Duration;
 
 pub struct RedisDb {
-    con: Connection,
+    pub con: Connection,
 }
 
 impl RedisDb {
@@ -58,9 +58,6 @@ impl RedisDb {
         let Some(value) = value else {
             return;
         };
-        if value.is_nan() || value.is_finite() || value == 0.0 {
-            return;
-        }
         let mut error: u8 = 0;
         loop {
             let retry: RedisResult<()> = self.con.zadd(kind, team, value);
@@ -68,6 +65,7 @@ impl RedisDb {
                 return;
             }
             if error > 10 {
+                error!("SKIPPING {team} DUE TO REDIS FAILURE");
                 return;
             }
             error!(
@@ -86,10 +84,15 @@ impl RedisDb {
         self.set_team(team, "Deviation", Some(data.deviation));
         self.set_team(team, "WinRatio", Some(data.win_rato));
         let app_data = get_avg(team);
-        if let Ok(app_data) = app_data {
-            self.set_team(team, "TotalContributed", Some(app_data.total));
-            self.set_team(team, "AutoContributed", Some(app_data.auto));
-            self.set_team(team, "TeleopContributed", Some(app_data.teleop));
+        match app_data {
+            Ok(app_data) => {
+                self.set_team(team, "TotalContributed", Some(app_data.total));
+                self.set_team(team, "AutoContributed", Some(app_data.auto));
+                self.set_team(team, "TeleopContributed", Some(app_data.teleop));
+            }
+            Err(e) => {
+                error!("Error when getting data from firestore {e}")
+            }
         }
     }
 }

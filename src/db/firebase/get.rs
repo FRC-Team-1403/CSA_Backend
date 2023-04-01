@@ -1,16 +1,11 @@
 use crate::ram::ENV;
 use log::error;
+use log::info;
 use serde_derive::Deserialize;
 use serde_derive::Serialize;
 use std::{io::Error, process::Command};
-//jsonReturn := map[string]interface{}{
-// 				"Average Auto Contributed":   0.0,
-// 				"Average Points Contributed": 0.0,
-// 				"Average Telop Contributed":  0.0,
-// 				"Error":                      "Good",
-// 			}
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Debug)]
 pub struct GoReturnVal {
     #[serde(rename = "Average Auto Contributed")]
     pub auto: f32,
@@ -23,7 +18,7 @@ pub struct GoReturnVal {
 }
 
 pub fn get_avg(team: &u16) -> Result<GoReturnVal, Error> {
-    let command = Command::new("microService/firestore_get/bin")
+    let command = Command::new("microService/firestore_send/bin")
         .arg("get")
         .arg(&ENV.firestore_collection)
         .arg(team.to_string())
@@ -46,10 +41,11 @@ pub fn get_avg(team: &u16) -> Result<GoReturnVal, Error> {
                     json_go_return_val.error
                 );
             }
+            info!("Got Data With Repose of {}", json_go_return_val.error);
             Ok(json_go_return_val)
         }
         Err(e) => {
-            error!("FIRESTORE GET FAILURE DUE TO: {e}");
+            error!("FIRESTORE GET FAILURE DUE TO: {e}\nWith a value of {std}");
             Err(Error::from(e))
         }
     }

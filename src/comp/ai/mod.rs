@@ -1,12 +1,15 @@
 use super::avg::math::YearAround;
 use crate::comp::shared::avg;
+use crate::db::redis_functions::RedisDb;
 use crate::ram::get_pub;
 use log::error;
 use log::{debug, warn};
 use plr::regression::OptimalPLR;
 use plr::Segment;
+use redis::{Commands, RedisResult};
 use std::thread;
 use std::time::Duration;
+
 mod train;
 
 const AI_VALUE: AiValue = AiValue {
@@ -92,8 +95,16 @@ impl Ai {
                         + Self::math_v2(match_data))
                         / (AI_VALUE.year_value + 1.0);
                 }
+                if let Some(mut year) = RedisDb::new() {
+                    let find: RedisResult<Vec<f32>> = year.con.xrange(team, 0, -1);
+                    if let Ok(find) = find {
+                        if let Some(val) = find.get(team.to_owned() as usize) {
+                            return val.to_owned() * AI_VALUE.year_value;
+                        }
+                    }
+                }
                 tried += 1;
-                if tried > 150 {
+                if tried > 10 {
                     error!("Dead lock or some other and it failed to get data error");
                     return Self::math_v2(match_data);
                 }

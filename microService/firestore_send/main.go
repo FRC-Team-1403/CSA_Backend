@@ -4,6 +4,7 @@ import (
 	"cloud.google.com/go/firestore"
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 )
 
@@ -22,15 +23,22 @@ func main() {
 				"Average Telop Contributed":  0.0,
 				"Error":                      "Success",
 			}
-			defer fmt.Println(jsonReturn)
 			err, data := send.One(send)
 			if err != nil {
 				jsonReturn["Error"] = err
+				enc := json.NewEncoder(os.Stdout)
+				if err := enc.Encode(jsonReturn); err != nil {
+					log.Fatal(err)
+				}
 				return
 			}
 			jsonReturn["Average Auto Contributed"] = data.OneData["Average Auto Contributed"]
 			jsonReturn["Average Points Contributed"] = data.OneData["Average Points Contributed"]
 			jsonReturn["Average Telop Contributed"] = data.OneData["Average Telop Contributed"]
+			enc := json.NewEncoder(os.Stdout)
+			if err := enc.Encode(jsonReturn); err != nil {
+				log.Fatal(err)
+			}
 			return
 		}
 		fmt.Println("Error parsing JSON:", err)
