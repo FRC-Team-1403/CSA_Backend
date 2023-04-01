@@ -5,6 +5,7 @@ extern crate core;
 #[macro_use]
 extern crate dotenv_codegen;
 
+use crate::db::redis_functions::clear;
 use crate::ram::ENV;
 use log::info;
 use std::env::set_var;
@@ -18,6 +19,7 @@ pub mod startup;
 
 #[tokio::main]
 async fn main() {
+    clear();
     set_var("RUST_LOG", "info");
     env_logger::init();
     let wait = thread::spawn(|| {

@@ -1,2 +1,2 @@
 pub mod firebase;
-mod redis_functions;
+pub mod redis_functions;
