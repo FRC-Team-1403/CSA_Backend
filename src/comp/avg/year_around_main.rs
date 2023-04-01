@@ -92,7 +92,7 @@ impl YearData {
                             error!("failed to parse data");
                             return Err(self);
                         };
-                        year.br = Ai::calc_year(&year);
+                        year.ekam_ai = Ai::calc_year(&year);
                         get_pub().insert(team_num, year.clone());
                         send_and_check(year, team, year_check.to_string());
                     }
@@ -117,7 +117,7 @@ impl YearData {
                             let year = team_calc.calculate(&team);
                             let year = loop {
                                 if let Ok(mut year) = year {
-                                    year.br = Ai::calc_match(&year, team_num);
+                                    year.ekam_ai = Ai::calc_match(&year, team_num);
                                     break year;
                                 };
                             };

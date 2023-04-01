@@ -52,14 +52,14 @@ pub struct YearAround {
     pub rp: OData,
     pub auto: OData,
     pub deviation: f32,
-    pub br: f32,
+    pub ekam_ai: f32,
 }
 
 impl YearAround {
     pub fn new(data: TeamYearAroundJsonParser) -> Self {
         Self {
             deviation: 0.0,
-            br: 0.0,
+            ekam_ai: 0.0,
             data: Some(data),
             points: Data::new(),
             wins: 0,

@@ -43,7 +43,7 @@ impl YearStore {
             ranking_graph: self.year.rp.graph.clone(),
             win: self.year.wins,
             auto_graph: self.year.auto.graph.clone(),
-            ekam_ai: self.year.br,
+            ekam_ai: self.year.ekam_ai,
             deviation: self.year.deviation,
         };
         let json = serde_json::to_string(&data)?;

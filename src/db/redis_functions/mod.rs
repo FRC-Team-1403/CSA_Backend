@@ -83,6 +83,7 @@ impl RedisDb {
         self.set_team(team, "RankingPoints", data.rp.avg);
         self.set_team(team, "Deviation", Some(data.deviation));
         self.set_team(team, "WinRatio", Some(data.win_rato));
+        self.set_team(team, "EkamAi", Some(data.ekam_ai));
         let app_data = get_avg(team);
         match app_data {
             Ok(app_data) => {
