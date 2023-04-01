@@ -13,7 +13,7 @@ pub async fn run() {
     loop {
         info!("Updating Match value: ");
         event = event.update_match_data().await;
-        event.updated = wait(event.updated, 60, 480);
+        event.updated = wait(event.updated, 10, 480);
     }
 }
 
