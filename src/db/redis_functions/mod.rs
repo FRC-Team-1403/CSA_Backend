@@ -55,10 +55,9 @@ impl RedisDb {
     }
 
     pub fn set_team(&mut self, team: &u16, kind: &str, value: Option<f32>) {
-        if value.is_none() {
+        let Some(value) = value else {
             return;
-        }
-        let value = value.unwrap();
+        };
         if value.is_nan() || value.is_finite() || value == 0.0 {
             return;
         }
