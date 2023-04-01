@@ -10,7 +10,7 @@ use crate::ram::{get_pub, CACHE_MATCH_AVG, ENV};
 use log::{error, info, warn};
 use rayon::prelude::*;
 use std::collections::HashMap;
-use std::sync::{Arc, Mutex};
+use std::sync::Mutex;
 use std::thread;
 use std::time::Duration;
 
@@ -100,7 +100,7 @@ impl YearData {
                 Ok(self)
             }
             SendType::Match => {
-                let redis_db = Arc::new(Mutex::new(RedisDb::new()));
+                let redis_db = Mutex::new(RedisDb::new());
                 let Some(json) =
                     Self::get_new_data(what.clone(), "69") else {
                     return Err(self);
@@ -122,8 +122,12 @@ impl YearData {
                                 };
                             };
                             if check_cache(&year, team_num) {
+                                send_and_check(
+                                    year.clone(),
+                                    team,
+                                    ENV.firestore_collection.clone(),
+                                );
                                 send_redis(team_num, &year, &redis_db);
-                                send_and_check(year, team, ENV.firestore_collection.clone());
                             }
                             Ok(())
                         })?;
