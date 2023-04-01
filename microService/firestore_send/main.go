@@ -20,7 +20,7 @@ func main() {
 				"Average Auto Contributed":   0.0,
 				"Average Points Contributed": 0.0,
 				"Average Telop Contributed":  0.0,
-				"Error":                      "Good",
+				"Error":                      "Success",
 			}
 			defer fmt.Println(jsonReturn)
 			err, data := send.One(send)
