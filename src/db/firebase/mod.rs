@@ -8,6 +8,11 @@ use serde_derive::Serialize;
 
 use crate::comp::avg::math::YearAround;
 
+pub enum Version {
+    Match,
+    Year,
+}
+
 pub struct YearStore {
     pub(crate) year: YearAround,
 }
@@ -16,7 +21,12 @@ impl YearStore {
     pub fn new(data: YearAround) -> Self {
         Self { year: data }
     }
-    pub fn set_year(&self, team: &str, year_check: &str) -> Result<String, Error> {
+    pub fn set_year(
+        &self,
+        team: &str,
+        year_check: &str,
+        version: Version,
+    ) -> Result<String, Error> {
         let data = SendYearAround {
             team: team.to_owned(),
             auto_high: self.year.auto.highest,

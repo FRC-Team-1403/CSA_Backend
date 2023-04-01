@@ -4,7 +4,7 @@ use crate::comp::ai::Ai;
 use crate::comp::avg::math::YearAround;
 use crate::comp::http::get_yearly;
 use crate::comp::parse::TeamYearAroundJsonParser;
-use crate::db::firebase::YearStore;
+use crate::db::firebase::{Version, YearStore};
 use crate::ram::{get_pub, CACHE_MATCH_AVG, ENV};
 use log::{error, info, warn};
 use rayon::prelude::*;
@@ -91,7 +91,7 @@ impl YearData {
                         };
                         year.br = Ai::calc_year(&year);
                         get_pub().insert(team_num, year.clone());
-                        send_and_check(year, team, year_check.to_string());
+                        send_and_check(year, team, year_check.to_string(), Version::Year);
                     }
                 }
                 Ok(self)
@@ -118,7 +118,12 @@ impl YearData {
                                 };
                             };
                             if check_cache(&year, team_num) {
-                                send_and_check(year, team, ENV.firestore_collection.clone());
+                                send_and_check(
+                                    year,
+                                    team,
+                                    ENV.firestore_collection.clone(),
+                                    Version::Match,
+                                );
                             }
                             Ok(())
                         })?;
@@ -141,7 +146,7 @@ fn check_cache(year: &YearAround, team_num: &u16) -> bool {
     true
 }
 
-fn send_and_check(year: YearAround, team: String, location: String) {
+fn send_and_check(year: YearAround, team: String, location: String, version: Version) {
     thread::spawn(move || {
         if year.rp.avg.is_none() {
             warn!("Advanced data unavailable for team {}", &team)
@@ -149,7 +154,7 @@ fn send_and_check(year: YearAround, team: String, location: String) {
         if year.points.lowest == 10000 {
             warn!("Data unavailable for {} , skipping...", &team)
         } else {
-            let e = YearStore::new(year).set_year(&team, &location);
+            let e = YearStore::new(year).set_year(&team, &location, version);
             match e {
                 Ok(e) => {
                     info!(
