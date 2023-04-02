@@ -6,6 +6,8 @@ use log::error;
 use once_cell::sync::Lazy;
 use std::collections::HashMap;
 use std::sync::{Mutex, MutexGuard};
+use std::thread;
+use std::time::Duration;
 
 #[derive(Debug)]
 pub struct Env {
@@ -39,6 +41,7 @@ pub fn get_pub() -> MutexGuard<'static, HashMap<u16, YearAround>> {
             return data;
         }
         error!("FAILED WHEN LOCKING CACHE_YEAR_AVG, THIS MAY BE A DEAD LOCK!!!!");
+        thread::sleep(Duration::from_millis(1000));
     }
 }
 

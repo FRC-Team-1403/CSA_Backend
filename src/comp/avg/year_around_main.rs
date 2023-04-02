@@ -93,7 +93,10 @@ impl YearData {
                             return Err(self);
                         };
                         year.ekam_ai = Ai::calc_year(&year);
-                        get_pub().insert(team_num, year.clone());
+                        let year_clone = year.clone();
+                        thread::spawn(move || {
+                            get_pub().insert(team_num, year_clone);
+                        });
                         send_and_check(year, team, year_check.to_string());
                     }
                 }

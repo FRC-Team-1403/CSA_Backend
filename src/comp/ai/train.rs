@@ -55,6 +55,7 @@ fn train() {
         .par_iter()
         .map(|key| {
             let api_data = get_yearly(&SendType::Match, "", key).unwrap();
+
             let matches: Vec<usize> = vec![0; api_data.len()]
                 .iter()
                 .enumerate()
@@ -67,6 +68,12 @@ fn train() {
                 })
                 .collect();
             //data is received, time to test
+            let calc_teams = Tba::get_teams(key, &ENV.api_key).unwrap();
+            calc_teams.par_iter().for_each(|team| {
+                let json = get_yearly(&SendType::Year(2023), &team.to_string(), key).unwrap();
+                let year = YearAround::new(json).calculate(&team.to_string());
+                get_pub().insert(*team, year.unwrap());
+            });
             let train_results: Vec<i16> = matches
                 .par_iter()
                 .map(|location| {
@@ -77,7 +84,6 @@ fn train() {
                             predict, train
                         );
                     }
-                    let calc_teams = Tba::get_teams(key, &ENV.api_key).unwrap();
                     let teams_br: Vec<(u16, f32)> = calc_teams
                         .par_iter()
                         .map(|team| {
@@ -130,6 +136,7 @@ fn train() {
 }
 
 use crate::comp::parse::TeamYearAroundJsonParser;
+use crate::ram::get_pub;
 use reqwest::Error;
 
 pub fn get_yearly(

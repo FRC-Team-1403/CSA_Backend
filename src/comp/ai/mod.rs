@@ -1,12 +1,10 @@
 use super::avg::math::YearAround;
 use crate::comp::shared::avg;
-use crate::db::redis_functions::RedisDb;
 use crate::ram::get_pub;
 use log::error;
 use log::{debug, warn};
 use plr::regression::OptimalPLR;
 use plr::Segment;
-use redis::{Commands, RedisResult};
 use std::thread;
 use std::time::Duration;
 
@@ -17,10 +15,10 @@ const AI_VALUE: AiValue = AiValue {
     positive_slope: 3.0,
     win_ratio: 70.0,
     ai_guess: 1.2,
-    avg: 2.5,
+    avg: 3.5,
     deviation: 0.095,
     ranking_points: 9.5,
-    year_value: 0.5,
+    year_value: 1.6,
     recent: 5,
 };
 
@@ -86,33 +84,21 @@ impl Ai {
     }
 
     pub fn calc_match(match_data: &YearAround, team: &u16) -> f32 {
-        if match_data.points.graph.len() < 2 {
-            let mut tried: u8 = 0;
-            loop {
-                if let Some(year) = get_pub().get(team) {
-                    // this allows more value to the recent data
-                    return ((Self::math_v2(year) * AI_VALUE.year_value)
-                        + Self::math_v2(match_data))
-                        / (AI_VALUE.year_value + 1.0);
-                }
-                if let Some(mut year) = RedisDb::new() {
-                    let find: RedisResult<Vec<f32>> = year.con.xrange(team, 0, -1);
-                    if let Ok(find) = find {
-                        if let Some(val) = find.get(team.to_owned() as usize) {
-                            return val.to_owned() * AI_VALUE.year_value;
-                        }
-                    }
-                }
-                tried += 1;
-                if tried > 10 {
-                    error!("Dead lock or some other and it failed to get data error");
-                    return Self::math_v2(match_data);
-                }
-                warn!("Failed to find data for {}, waiting....", team);
-                thread::sleep(Duration::from_secs_f32(0.5))
+        let mut tried: u8 = 0;
+        loop {
+            if let Some(year) = get_pub().get(team) {
+                // this allows more value to the recent data
+                return ((Self::math_v2(year) * AI_VALUE.year_value) + Self::math_v2(match_data))
+                    / (AI_VALUE.year_value + 1.0);
             }
+            tried += 1;
+            if tried > 10 {
+                error!("Dead lock or some other and it failed to get data error");
+                return Self::math_v2(match_data);
+            }
+            warn!("Failed to find data for {}, waiting....", team);
+            thread::sleep(Duration::from_secs_f32(0.5))
         }
-        Self::math_v2(match_data)
     }
 
     pub fn calc_year(year_data: &YearAround) -> f32 {
