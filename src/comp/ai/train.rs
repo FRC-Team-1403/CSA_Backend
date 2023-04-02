@@ -113,11 +113,11 @@ fn train() {
                         100
                     } else if winner_ai == "blue" {
                         let ratio = ((blue_br / (red_br + blue_br)) * 100.0) as i16;
-                        error!("AI WRONG, ratio by ai: {ratio}",);
+                        warn!("AI WRONG, ratio by ai: {ratio}",);
                         100 - ratio
                     } else {
                         let ratio = ((red_br / (red_br + blue_br)) * 100.0) as i16;
-                        error!("AI WRONG, ratio by ai: {ratio}",);
+                        warn!("AI WRONG, ratio by ai: {ratio}",);
                         100 - ratio
                     }
                 })
