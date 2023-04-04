@@ -12,6 +12,7 @@ use std::env::set_var;
 use std::process::exit;
 use std::{env, thread};
 
+pub mod charts;
 mod comp;
 mod db;
 mod ram;
