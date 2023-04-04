@@ -2,6 +2,7 @@ use crate::ram::ENV;
 use serde_derive::Deserialize;
 use serde_derive::Serialize;
 use std::collections::HashMap;
+
 pub struct Http {
     pub team: u16,
     pub key: String,
@@ -21,7 +22,7 @@ impl Http {
             key: data.to_owned(),
         })
     }
-    pub fn get_data(&self) -> Option<()> {
+    pub fn get_data(&self) -> Option<Team> {
         let response = reqwest::blocking::Client::new()
             .get(format!(
                 "https://www.thebluealliance.com/api/v3/event/{}/oprs",
@@ -30,17 +31,26 @@ impl Http {
             .header("X-TBA-Auth-Key", &ENV.api_key)
             .send()
             .ok()?;
-        let events = response.json::<Opr>().ok()?;
-
-        todo!()
-        // https://www.thebluealliance.com/api/v3/event/2023njski/oprs
+        let events = response.json::<OprParser>().ok()?;
+        let team = format!("frc{}", self.team);
+        let ccwms = events.ccwms.get(&team)?.to_owned();
+        let dprs = events.dprs.get(&team)?.to_owned();
+        let oprs = events.oprs.get(&team)?.to_owned();
+        Some(Team { ccwms, dprs, oprs })
     }
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-struct Opr {
+struct OprParser {
     pub ccwms: HashMap<String, f32>,
     pub dprs: HashMap<String, f32>,
     pub oprs: HashMap<String, f32>,
+}
+
+#[derive(Default, Debug, Clone, PartialEq)]
+pub struct Team {
+    pub ccwms: f32,
+    pub dprs: f32,
+    pub oprs: f32,
 }
