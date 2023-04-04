@@ -51,7 +51,7 @@ async fn main() {
             server::run().await;
         }
         "redis" => {
-            populate();
+            populate().await;
         }
         _ => {
             println!("Bad Args Given");

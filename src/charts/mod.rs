@@ -1,6 +1,7 @@
 mod http;
 
 use crate::charts::http::Http;
+use crate::comp::http::get_top_60;
 use crate::db::redis_functions::RedisDb;
 use rayon::prelude::*;
 use std::sync::Mutex;
@@ -8,10 +9,8 @@ use std::sync::MutexGuard;
 use std::thread;
 use std::time::Duration;
 
-pub fn populate() {
-    let teams_to_track: Vec<u16> = vec![
-        1403, 1923, 2495, 1626, 254, 25, 75, 1089, 2590, 1323, 1640, 341, 11,
-    ];
+pub async fn populate() {
+    let teams_to_track: Vec<u16> = get_top_60().await;
     let db = Mutex::new(RedisDb::new().unwrap());
     let _: () = teams_to_track
         .par_iter()

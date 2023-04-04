@@ -9,6 +9,8 @@ use std::sync::{Mutex, MutexGuard};
 use std::thread;
 use std::time::Duration;
 
+pub const YEAR: u16 = 2023;
+
 #[derive(Debug)]
 pub struct Env {
     pub api_key: String,

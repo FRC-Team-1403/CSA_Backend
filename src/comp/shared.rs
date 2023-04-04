@@ -20,7 +20,7 @@ pub fn get_teammates(team: &Team, json: Root2) -> Vec<String> {
 }
 
 pub fn remove_frc(who: Vec<String>) -> Vec<String> {
-    who.par_iter().map(|x| x.replace("frc", "")).collect()
+    who.iter().map(|x| x.replace("frc", "")).collect()
 }
 
 pub fn compare_highest(old: i16, new: i16) -> i16 {
