@@ -11,7 +11,10 @@ pub struct Http {
 impl Http {
     pub fn new(team: u16) -> Option<Http> {
         let response = reqwest::blocking::Client::new()
-            .get("https://www.thebluealliance.com/api/v3/team/frc1403/events/2023/keys")
+            .get(format!(
+                "https://www.thebluealliance.com/api/v3/team/frc{}/events/2023/keys",
+                team
+            ))
             .header("X-TBA-Auth-Key", &ENV.api_key)
             .send()
             .ok()?;
