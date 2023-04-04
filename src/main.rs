@@ -9,7 +9,8 @@ use crate::db::redis_functions::clear;
 use crate::ram::ENV;
 use log::info;
 use std::env::set_var;
-use std::thread;
+use std::process::exit;
+use std::{env, thread};
 
 mod comp;
 mod db;
@@ -19,7 +20,11 @@ pub mod startup;
 
 #[tokio::main]
 async fn main() {
-    clear();
+    // clear();
+    let Some(arg) = env::args().nth(1) else {
+        println!("Please Give Args");
+        exit(1);
+    };
     set_var("RUST_LOG", "info");
     env_logger::init();
     let wait = thread::spawn(|| {
@@ -40,5 +45,16 @@ async fn main() {
         },
     ));
     wait.join().unwrap();
-    server::run().await;
+    match arg.trim() {
+        "server" => {
+            server::run().await;
+        }
+        "redis" => {
+            todo!()
+        }
+        _ => {
+            println!("Bad Args Given");
+            exit(1);
+        }
+    }
 }
