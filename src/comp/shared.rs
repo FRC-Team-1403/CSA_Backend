@@ -48,44 +48,44 @@ pub fn deviation(data: &Vec<i16>) -> f32 {
     avg(high.to_owned()) - avg(low.to_owned())
 }
 
-pub fn get_breakdown_data(
-    breakdown: Option<ScoreBreakdown>,
-    team: &Team,
-) -> (
-    Option<i16>,
-    Option<i16>,
-    Option<i16>,
-    Option<String>,
-    Option<String>,
-    Option<bool>,
-) {
+#[derive(Default, Debug, Clone, PartialEq)]
+pub struct BreakDown {
+    pub auto_points: Option<i16>,
+    pub foul_points: Option<i16>,
+    pub rp: Option<i16>,
+    pub auto_auto_bridge_state: Option<String>,
+    pub end_game_bridge_state: Option<String>,
+    pub sustainability_bonus_achieved: Option<bool>,
+}
+
+pub fn get_breakdown_data(breakdown: Option<ScoreBreakdown>, team: &Team) -> BreakDown {
     if let Some(breakdown) = breakdown {
         return match team {
             Team::Red => {
                 let location = breakdown.red;
-                (
-                    Some(location.auto_points),
-                    Some(location.foul_points),
-                    Some(location.rp),
-                    location.auto_bridge_state,
-                    location.end_game_bridge_state,
-                    location.sustainability_bonus_achieved,
-                )
+                BreakDown {
+                    auto_points: Some(location.auto_points),
+                    foul_points: Some(location.foul_points),
+                    rp: Some(location.rp),
+                    auto_auto_bridge_state: location.auto_bridge_state,
+                    end_game_bridge_state: location.end_game_bridge_state,
+                    sustainability_bonus_achieved: location.sustainability_bonus_achieved,
+                }
             }
             Team::Blue => {
                 let location = breakdown.blue;
-                (
-                    Some(location.auto_points),
-                    Some(location.foul_points),
-                    Some(location.rp),
-                    location.auto_bridge_state,
-                    location.end_game_bridge_state,
-                    location.sustainability_bonus_achieved,
-                )
+                BreakDown {
+                    auto_points: Some(location.auto_points),
+                    foul_points: Some(location.foul_points),
+                    rp: Some(location.rp),
+                    auto_auto_bridge_state: location.auto_bridge_state,
+                    end_game_bridge_state: location.end_game_bridge_state,
+                    sustainability_bonus_achieved: location.sustainability_bonus_achieved,
+                }
             }
         };
     }
-    (None, None, None, None, None, None)
+    BreakDown::default()
 }
 
 pub fn avg(avg_score: Vec<i16>) -> f32 {

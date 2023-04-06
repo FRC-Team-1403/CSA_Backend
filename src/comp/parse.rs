@@ -67,6 +67,12 @@ pub struct Blue2 {
     pub rp: i16,
     pub auto_points: i16,
     pub foul_count: i16,
+    pub telop_mobility_points: i16,
+    pub telop_game_piece_points: i16,
+    pub telop_game_piece_count: i16,
+    pub auto_mobility_points: i16,
+    pub auto_game_piece_points: i16,
+    pub auto_game_piece_count: i16,
     pub foul_points: i16,
     #[serde(rename = "sustainabilityBonusAchieved")]
     pub sustainability_bonus_achieved: Option<bool>,
@@ -83,6 +89,12 @@ pub struct Red2 {
     pub auto_points: i16,
     pub foul_count: i16,
     pub foul_points: i16,
+    pub telop_mobility_points: i16,
+    pub telop_game_piece_points: i16,
+    pub telop_game_piece_count: i16,
+    pub auto_mobility_points: i16,
+    pub auto_game_piece_points: i16,
+    pub auto_game_piece_count: i16,
     #[serde(rename = "sustainabilityBonusAchieved")]
     pub sustainability_bonus_achieved: Option<bool>,
     #[serde(rename = "endGameBridgeState")]

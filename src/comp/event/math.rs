@@ -36,22 +36,21 @@ impl Event {
         self.find_team(check_team)
             .par_iter()
             .filter_map(|(game_json, team)| {
-                let (auto, penalty, rp, auto_l, end_l, bonus) =
-                    get_breakdown_data(game_json.score_breakdown.clone(), team);
+                let breakdown = get_breakdown_data(game_json.score_breakdown.clone(), team);
                 let score = get_score(team, game_json.clone());
                 if score != -1 {
                     Some(EventData {
                         team: check_team,
                         video: Self::get_video(game_json),
-                        auto_level: auto_l,
-                        rp,
-                        penalty,
+                        auto_level: breakdown.auto_auto_bridge_state,
+                        rp: breakdown.rp,
+                        penalty: breakdown.foul_points,
                         score,
                         match_number: game_json.match_number,
                         team_members: get_teammates(team.to_owned(), game_json.to_owned()),
-                        auto,
-                        end_level: end_l,
-                        sustain_bonus: bonus,
+                        auto: breakdown.auto_points,
+                        end_level: breakdown.end_game_bridge_state,
+                        sustain_bonus: breakdown.sustainability_bonus_achieved,
                     })
                 } else {
                     None

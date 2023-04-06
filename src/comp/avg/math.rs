@@ -88,17 +88,16 @@ impl YearAround {
                     self.wins,
                     json.winning_alliance.trim(),
                 );
-                let (auto_points, foul, rp, _, _, _) =
-                    get_breakdown_data(json.score_breakdown, &Team::Red);
+                let breakdown = get_breakdown_data(json.score_breakdown, &Team::Red);
                 let handle = HandleData {
-                    ekam_ai: rp,
+                    rp: breakdown.rp,
                     score: json.alliances.red.score,
                     avg_score,
                     avg_rp,
                     avg_foul,
                     avg_auto,
-                    auto_points,
-                    foul,
+                    auto_points: breakdown.auto_points,
+                    foul: breakdown.foul_points,
                 };
                 let new_data: HandleData;
                 (self, new_data) = self.handle(handle);
@@ -119,17 +118,16 @@ impl YearAround {
                     self.wins,
                     json.winning_alliance.trim(),
                 );
-                let (auto_points, foul, rp, _, _, _) =
-                    get_breakdown_data(json.score_breakdown, &Team::Blue);
+                let breakdown = get_breakdown_data(json.score_breakdown, &Team::Blue);
                 let mut handle = HandleData {
-                    ekam_ai: rp,
+                    rp: breakdown.rp,
                     score: json.alliances.red.score,
                     avg_score,
                     avg_rp,
                     avg_foul,
                     avg_auto,
-                    auto_points,
-                    foul,
+                    auto_points: breakdown.auto_points,
+                    foul: breakdown.foul_points,
                 };
                 (self, handle) = self.handle(handle);
                 avg_score = handle.avg_score;
@@ -163,7 +161,7 @@ impl YearAround {
 
     fn handle(mut self, mut return_data: HandleData) -> (Self, HandleData) {
         //happens if match breakdown works
-        if let Some(rp) = return_data.ekam_ai {
+        if let Some(rp) = return_data.rp {
             let foul = return_data.foul.unwrap_or(0);
             let auto_points = return_data.auto_points.unwrap_or(0);
             //lowest code
@@ -198,7 +196,7 @@ struct HandleData {
     avg_rp: Vec<i16>,
     avg_foul: Vec<i16>,
     avg_auto: Vec<i16>,
-    ekam_ai: Option<i16>,
+    rp: Option<i16>,
     auto_points: Option<i16>,
     foul: Option<i16>,
 }
