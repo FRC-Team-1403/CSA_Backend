@@ -85,7 +85,14 @@ pub fn get_breakdown_data(breakdown: Option<ScoreBreakdown>, team: &Team) -> Bre
             }
         };
     }
-    BreakDown::default()
+    BreakDown {
+        auto_points: None,
+        foul_points: None,
+        rp: None,
+        auto_auto_bridge_state: None,
+        end_game_bridge_state: None,
+        sustainability_bonus_achieved: None,
+    }
 }
 
 pub fn avg(avg_score: Vec<i16>) -> f32 {
