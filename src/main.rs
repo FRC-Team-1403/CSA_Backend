@@ -21,7 +21,7 @@ pub mod startup;
 
 #[tokio::main]
 async fn main() {
-    // clear();
+    clear();
     let Some(arg) = env::args().nth(1) else {
         println!("Please Give Args");
         exit(1);
