@@ -114,28 +114,28 @@ struct SendYearAround {
     penalty_graph: Vec<i16>,
     ranking_graph: Vec<i16>,
     auto_graph: Vec<i16>,
-    #[serde(rename = "telop game pieces highest")]
+    #[serde(rename = "Telop Game Pieces Highest")]
     telop_game_pieces_highest: Option<i16>,
-    #[serde(rename = "telop game points highest")]
+    #[serde(rename = "Telop Game Pieces Points Highest")]
     telop_game_points_highest: Option<i16>,
-    #[serde(rename = "telop game pieces lowest")]
+    #[serde(rename = "Telop Game Pieces Lowest")]
     telop_game_pieces_lowest: Option<i16>,
-    #[serde(rename = "telop game points lowest")]
+    #[serde(rename = "Telop Game Pieces Points Lowest")]
     telop_game_points_lowest: Option<i16>,
-    #[serde(rename = "telop game pieces avg")]
+    #[serde(rename = "Telop Game Pieces Avg")]
     telop_game_pieces_avg: Option<f32>,
-    #[serde(rename = "telop game points avg")]
+    #[serde(rename = "Telop Game Pieces Points Avg")]
     telop_game_points_avg: Option<f32>,
-    #[serde(rename = "auto game pieces highest")]
+    #[serde(rename = "Auto Game Pieces Highest")]
     auto_game_pieces_highest: Option<i16>,
-    #[serde(rename = "auto game points highest")]
+    #[serde(rename = "Auto Game Pieces Points Highest")]
     auto_game_points_highest: Option<i16>,
-    #[serde(rename = "auto game pieces lowest")]
+    #[serde(rename = "Auto Game Pieces Pieces Lowest")]
     auto_game_pieces_lowest: Option<i16>,
-    #[serde(rename = "auto game points lowest")]
+    #[serde(rename = "Auto Game Pieces Points Lowest")]
     auto_game_points_lowest: Option<i16>,
-    #[serde(rename = "auto game pieces avg")]
+    #[serde(rename = "Auto Game Pieces Avg")]
     auto_game_pieces_avg: Option<f32>,
-    #[serde(rename = "auto game points avg")]
+    #[serde(rename = "Auto Game Pieces Points Avg")]
     auto_game_points_avg: Option<f32>,
 }
