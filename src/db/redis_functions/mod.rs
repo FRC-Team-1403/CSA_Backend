@@ -84,10 +84,10 @@ impl RedisDb {
         self.set_team(team, "Deviation", Some(data.deviation));
         self.set_team(team, "WinRatio", Some(data.win_rato));
         self.set_team(team, "EkamAi", Some(data.ekam_ai));
-        self.set_team(team, "auto_game_pieces", data.auto_game_pieces.avg);
-        self.set_team(team, "auto_game_points", data.auto_game_points.avg);
-        self.set_team(team, "telop_game_pieces", data.telop_game_pieces.avg);
-        self.set_team(team, "telop_game_points", data.telop_game_points.avg);
+        self.set_team(team, "AutoGamePieces", data.auto_game_pieces.avg);
+        self.set_team(team, "AutoGamePiecesPoints", data.auto_game_points.avg);
+        self.set_team(team, "TelopGamePieces", data.telop_game_pieces.avg);
+        self.set_team(team, "TelopGamePiecesPoints", data.telop_game_points.avg);
         // let app_data = get_avg(team);
         // match app_data {
         //     Ok(app_data) => {

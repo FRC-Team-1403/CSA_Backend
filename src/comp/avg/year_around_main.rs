@@ -64,14 +64,17 @@ impl YearData {
         let mut _failed: u8 = 0;
         loop {
             let response = get_yearly(&what, frc);
-            if let Ok(json) = response {
-                return Some(json);
-            } else {
-                if _failed == 120 {
-                    info!("failed to get data");
-                    return None;
+            match response {
+                Ok(json) => {
+                    return Some(json);
                 }
-                _failed += 1
+                Err(err) => {
+                    if _failed == 120 {
+                        info!("failed to get data due to: {}", err);
+                        return None;
+                    }
+                    _failed += 1
+                }
             }
         }
     }
