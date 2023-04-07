@@ -90,10 +90,14 @@ pub struct Red2 {
     pub foul_count: i16,
     pub foul_points: i16,
     pub telop_mobility_points: i16,
+    #[serde(rename = "teleopGamePiecePoints")]
     pub telop_game_piece_points: i16,
+    #[serde(rename = "teleopGamePieceCount")]
     pub telop_game_piece_count: i16,
-    pub auto_mobility_points: i16,
+    // pub auto_mobility_points: i16,
+    #[serde(rename = "autoGamePiecePoints")]
     pub auto_game_piece_points: i16,
+    #[serde(rename = "autoGamePieceCount")]
     pub auto_game_piece_count: i16,
     #[serde(rename = "sustainabilityBonusAchieved")]
     pub sustainability_bonus_achieved: Option<bool>,
