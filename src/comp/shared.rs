@@ -37,15 +37,17 @@ pub fn compare_lowest(old: i16, new: i16) -> i16 {
     new
 }
 
-pub fn deviation(data: &Vec<i16>) -> f32 {
-    if data.len() <= 2 {
+pub fn deviation(numbers: &Vec<i16>) -> f32 {
+    if numbers.len() <= 2 {
         return 0.0;
     }
-    let mut data = data.to_owned();
-    data.sort();
-    let half = (data.len() - 1) / 2;
-    let (low, high) = data.split_at(half);
-    avg(high.to_owned()) - avg(low.to_owned())
+    let mean = numbers.iter().sum::<i16>() as f32 / numbers.len() as f32;
+    let variance = numbers
+        .iter()
+        .map(|x| (x.to_owned() as f32 - mean).powi(2))
+        .sum::<f32>()
+        / numbers.len() as f32;
+    variance.sqrt()
 }
 
 #[derive(Default, Debug, Clone, PartialEq)]
