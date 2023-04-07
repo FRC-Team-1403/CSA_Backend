@@ -56,6 +56,10 @@ pub struct BreakDown {
     pub auto_auto_bridge_state: Option<String>,
     pub end_game_bridge_state: Option<String>,
     pub sustainability_bonus_achieved: Option<bool>,
+    pub auto_game_piece_count: Option<i16>,
+    pub auto_game_piece_points: Option<i16>,
+    pub telop_game_piece_count: Option<i16>,
+    pub telop_game_piece_points: Option<i16>,
 }
 
 pub fn get_breakdown_data(breakdown: Option<ScoreBreakdown>, team: &Team) -> BreakDown {
@@ -70,6 +74,10 @@ pub fn get_breakdown_data(breakdown: Option<ScoreBreakdown>, team: &Team) -> Bre
                     auto_auto_bridge_state: location.auto_bridge_state,
                     end_game_bridge_state: location.end_game_bridge_state,
                     sustainability_bonus_achieved: location.sustainability_bonus_achieved,
+                    auto_game_piece_count: Some(location.auto_game_piece_count),
+                    auto_game_piece_points: Some(location.auto_game_piece_points),
+                    telop_game_piece_count: Some(location.telop_game_piece_count),
+                    telop_game_piece_points: Some(location.telop_game_piece_points),
                 }
             }
             Team::Blue => {
@@ -81,6 +89,10 @@ pub fn get_breakdown_data(breakdown: Option<ScoreBreakdown>, team: &Team) -> Bre
                     auto_auto_bridge_state: location.auto_bridge_state,
                     end_game_bridge_state: location.end_game_bridge_state,
                     sustainability_bonus_achieved: location.sustainability_bonus_achieved,
+                    auto_game_piece_count: Some(location.auto_game_piece_count),
+                    auto_game_piece_points: Some(location.auto_game_piece_points),
+                    telop_game_piece_count: Some(location.telop_game_piece_count),
+                    telop_game_piece_points: Some(location.telop_game_piece_points),
                 }
             }
         };
@@ -92,6 +104,10 @@ pub fn get_breakdown_data(breakdown: Option<ScoreBreakdown>, team: &Team) -> Bre
         auto_auto_bridge_state: None,
         end_game_bridge_state: None,
         sustainability_bonus_achieved: None,
+        auto_game_piece_count: None,
+        auto_game_piece_points: None,
+        telop_game_piece_count: None,
+        telop_game_piece_points: None,
     }
 }
 
