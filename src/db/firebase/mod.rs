@@ -43,6 +43,18 @@ impl YearStore {
             ranking_graph: self.year.rp.graph.clone(),
             win: self.year.wins,
             auto_graph: self.year.auto.graph.clone(),
+            telop_game_pieces_highest: self.year.telop_game_pieces.highest,
+            telop_game_points_highest: self.year.telop_game_points.highest,
+            telop_game_pieces_lowest: self.year.telop_game_pieces.lowest,
+            telop_game_points_lowest: self.year.telop_game_points.lowest,
+            telop_game_pieces_avg: self.year.telop_game_pieces.avg,
+            telop_game_points_avg: self.year.telop_game_points.avg,
+            auto_game_pieces_highest: self.year.auto_game_pieces.highest,
+            auto_game_points_highest: self.year.auto_game_points.highest,
+            auto_game_pieces_lowest: self.year.auto_game_pieces.lowest,
+            auto_game_points_lowest: self.year.auto_game_points.lowest,
+            auto_game_pieces_avg: self.year.auto_game_pieces.avg,
+            auto_game_points_avg: self.year.auto_game_points.avg,
             ekam_ai: self.year.ekam_ai,
             deviation: self.year.deviation,
         };
@@ -102,4 +114,28 @@ struct SendYearAround {
     penalty_graph: Vec<i16>,
     ranking_graph: Vec<i16>,
     auto_graph: Vec<i16>,
+    #[serde(rename = "telop game pieces highest")]
+    telop_game_pieces_highest: Option<i16>,
+    #[serde(rename = "telop game points highest")]
+    telop_game_points_highest: Option<i16>,
+    #[serde(rename = "telop game pieces lowest")]
+    telop_game_pieces_lowest: Option<i16>,
+    #[serde(rename = "telop game points lowest")]
+    telop_game_points_lowest: Option<i16>,
+    #[serde(rename = "telop game pieces avg")]
+    telop_game_pieces_avg: Option<f32>,
+    #[serde(rename = "telop game points avg")]
+    telop_game_points_avg: Option<f32>,
+    #[serde(rename = "auto game pieces highest")]
+    auto_game_pieces_highest: Option<i16>,
+    #[serde(rename = "auto game points highest")]
+    auto_game_points_highest: Option<i16>,
+    #[serde(rename = "auto game pieces lowest")]
+    auto_game_pieces_lowest: Option<i16>,
+    #[serde(rename = "auto game points lowest")]
+    auto_game_points_lowest: Option<i16>,
+    #[serde(rename = "auto game pieces avg")]
+    auto_game_pieces_avg: Option<f32>,
+    #[serde(rename = "auto game points avg")]
+    auto_game_points_avg: Option<f32>,
 }
