@@ -1,5 +1,5 @@
 use crate::comp::avg::math::YearAround;
-use crate::db::firebase::get::get_avg;
+// use crate::db::firebase::get::get_avg;
 use crate::ram::ENV;
 use log::error;
 use redis::{pipe, Client, Commands, Connection, RedisResult};

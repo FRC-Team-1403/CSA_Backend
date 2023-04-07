@@ -8,10 +8,27 @@ use std::sync::Mutex;
 use std::sync::MutexGuard;
 use std::thread;
 use std::time::Duration;
+use log::error;
+use crate::ram::ENV;
 
-pub async fn populate() {
-    let teams_to_track: Vec<u16> = get_top_60().await;
-    let db = Mutex::new(RedisDb::new().unwrap());
+pub enum  Version{
+    Match,
+    Pre,
+}
+pub async fn populate(version: Version) {
+    let teams_to_track: Vec<u16> = match version {
+        Version::Match => {
+            ENV.teams.clone()
+        }
+        Version::Pre => {
+            get_top_60().await
+        }
+    };
+    let Some(redis) = RedisDb::new() else{
+        error!("FAILED TO START REDIS DB WHILE GETTING OPR DATA");
+        return;
+    };
+    let db = Mutex::new(redis);
     let _: () = teams_to_track
         .par_iter()
         .filter_map(|team| {

@@ -9,6 +9,14 @@ use serde_derive::Serialize;
 pub struct EventData {
     #[serde(rename = "team")]
     pub team: u16,
+    #[serde(rename = "Auto Game Pieces")]
+    pub auto_game_pieces: Option<i16>,
+    #[serde(rename = "Auto Game Points")]
+    pub auto_game_points: Option<i16>,
+    #[serde(rename = "Teleop Game Pieces")]
+    pub teleop_game_pieces: Option<i16>,
+    #[serde(rename = "Teleop Game Points")]
+    pub teleop_game_points: Option<i16>,
     #[serde(rename = "Penalty Points")]
     pub penalty: Option<i16>,
     #[serde(rename = "Auto Points")]
@@ -41,6 +49,9 @@ impl Event {
                 if score != -1 {
                     Some(EventData {
                         team: check_team,
+                        auto_game_pieces: breakdown.auto_game_piece_count,
+                        auto_game_points: breakdown.auto_game_piece_points,
+                        teleop_game_pieces: breakdown.telop_game_piece_count,
                         video: Self::get_video(game_json),
                         auto_level: breakdown.auto_auto_bridge_state,
                         rp: breakdown.rp,
@@ -51,6 +62,7 @@ impl Event {
                         auto: breakdown.auto_points,
                         end_level: breakdown.end_game_bridge_state,
                         sustain_bonus: breakdown.sustainability_bonus_achieved,
+                        teleop_game_points: breakdown.telop_game_piece_points,
                     })
                 } else {
                     None

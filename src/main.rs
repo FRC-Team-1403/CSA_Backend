@@ -5,7 +5,8 @@ extern crate core;
 #[macro_use]
 extern crate dotenv_codegen;
 
-use crate::charts::populate;
+use crate::charts::{populate, Version};
+use crate::db::redis_functions::clear;
 use crate::ram::ENV;
 use log::info;
 use std::env::set_var;
@@ -51,7 +52,7 @@ async fn main() {
             server::run().await;
         }
         "redis" => {
-            populate().await;
+            populate(Version::Pre).await;
         }
         _ => {
             println!("Bad Args Given");
