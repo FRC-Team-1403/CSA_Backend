@@ -1,3 +1,4 @@
+use crate::charts::{populate, Version};
 use crate::comp::event::Event;
 use log::{error, info, warn};
 use std::thread;
@@ -9,11 +10,17 @@ pub async fn run() {
     update_year(SendType::Year(2023));
     thread::sleep(Duration::from_secs(30));
     update_year(SendType::Match);
+    tokio::spawn(async {
+        loop {
+            populate(Version::Match).await;
+            thread::sleep(Duration::from_secs(60));
+        }
+    });
     let mut event = Event::new();
     loop {
         info!("Updating Match value: ");
         event = event.update_match_data().await;
-        event.updated = wait(event.updated, 10, 480);
+        event.updated = wait(event.updated, 5, 160);
     }
 }
 
