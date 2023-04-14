@@ -52,7 +52,7 @@ async fn main() {
             server::run().await;
         }
         "redis" => {
-            populate(Version::Pre).await;
+            populate(Version::Match).await;
         }
         _ => {
             println!("Bad Args Given");
