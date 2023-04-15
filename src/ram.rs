@@ -42,7 +42,7 @@ pub fn get_pub() -> MutexGuard<'static, HashMap<u16, YearAround>> {
         if let Ok(data) = CACHE_YEAR_AVG.try_lock() {
             return data;
         }
-        error!("FAILED WHEN LOCKING CACHE_YEAR_AVG, THIS MAY BE A DEAD LOCK!!!!");
+        // error!("FAILED WHEN LOCKING CACHE_YEAR_AVG, THIS MAY BE A DEAD LOCK!!!!");
         thread::sleep(Duration::from_millis(1000));
     }
 }

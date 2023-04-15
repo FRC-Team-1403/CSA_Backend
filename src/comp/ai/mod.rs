@@ -17,8 +17,8 @@ const AI_VALUE: AiValue = AiValue {
     ai_guess: 1.2,
     avg: 3.5,
     deviation: 1.4,
-    ranking_points: 9.5,
-    year_value: 4.8,
+    ranking_points: 6.5,
+    year_value: 5.2,
     recent: 5,
 };
 
