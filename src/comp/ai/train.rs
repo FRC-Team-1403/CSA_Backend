@@ -22,7 +22,7 @@ use rand::prelude::*;
 
 const START_FROM: usize = 25;
 const YEAR: u16 = 2023;
-
+const GAMES: u8 = 20;
 #[test]
 fn train() {
     set_var("RUST_LOG", "info");
@@ -121,7 +121,12 @@ pub fn get_keys() -> Vec<String> {
         .header("X-TBA-Auth-Key", &ENV.api_key)
         .send()
         .unwrap();
-    response.json::<Vec<String>>().unwrap()
+    let keys = response.json::<Vec<String>>().unwrap();
+    if GAMES == 0 {
+        return keys;
+    }
+    let (_, last) = keys.split_at(GAMES as usize - keys.len());
+    last.to_owned()
 }
 
 use crate::comp::parse::TeamYearAroundJsonParser;
