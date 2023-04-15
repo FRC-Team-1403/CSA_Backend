@@ -1,10 +1,11 @@
 #![allow(unused_imports)]
 
 use log::{error, info, warn};
-use std::env::set_var;
-use std::{thread, time::Duration};
-
 use rayon::prelude::*;
+use std::env::set_var;
+use std::fs::File;
+use std::io::prelude::*;
+use std::{fs, thread, time::Duration};
 
 use crate::startup::tba::Tba;
 use crate::{
@@ -22,7 +23,7 @@ use rand::prelude::*;
 
 const START_FROM: usize = 25;
 const YEAR: u16 = 2023;
-const GAMES: u8 = 20;
+const GAMES: u8 = 15;
 #[test]
 fn train() {
     set_var("RUST_LOG", "info");
@@ -125,8 +126,14 @@ pub fn get_keys() -> Vec<String> {
     if GAMES == 0 {
         return keys;
     }
-    let (_, last) = keys.split_at(keys.len() - GAMES as usize);
-    last.to_owned()
+    let (first, _) = keys.split_at(GAMES as usize);
+    first.to_owned()
+    // first.par_iter().for_each(|key| {
+    //     info!(
+    //         "{}",
+    //         Tba::get_event(key, &ENV.api_key).expect("Failed While Getting Teams"),
+    //     );
+    // });
 }
 
 use crate::comp::parse::TeamYearAroundJsonParser;
@@ -148,22 +155,35 @@ pub fn get_yearly(
             }
         }
     };
-    let response = reqwest::blocking::Client::new()
-        .get(send_url)
-        .header("X-TBA-Auth-Key", &ENV.api_key)
-        .send()?;
-    response.json::<TeamYearAroundJsonParser>()
+    let read_cache = send_url.replace('/', "\\");
+    let read_cache = format!("src/comp/ai/cache/{read_cache}.json");
+    let cache = fs::read_to_string(&read_cache);
+    let what = match cache {
+        Ok(e) => e,
+        Err(_) => {
+            let response = reqwest::blocking::Client::new()
+                .get(send_url)
+                .header("X-TBA-Auth-Key", &ENV.api_key)
+                .send()?;
+            let text = response.text()?;
+            fs::write(&read_cache, &text).unwrap();
+            text
+        }
+    };
+    Ok(serde_json::from_str(&what).unwrap())
 }
 
 fn avg_br(teams: Vec<String>, br_data: &[(u16, f32)]) -> f32 {
-    avg(teams
-        .par_iter()
-        .map(|team| {
-            let (_, br) = br_data
-                .iter()
-                .find(|(team_num, _)| team == &format!("frc{}", team_num))
-                .unwrap();
-            br.to_owned() as i16
-        })
-        .collect())
+    avg_f32(
+        teams
+            .par_iter()
+            .map(|team| {
+                let (_, br) = br_data
+                    .iter()
+                    .find(|(team_num, _)| team == &format!("frc{}", team_num))
+                    .unwrap();
+                br.to_owned()
+            })
+            .collect(),
+    )
 }

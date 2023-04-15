@@ -24,7 +24,7 @@ pub static ENV: Lazy<Env> = Lazy::new(|| {
     let api_key = dotenv!("API_KEY");
     let code = "2023cur";
     let teams = Tba::get_teams(code, api_key).expect("Failed While Getting Teams");
-    let event_name = Tba::get_event(code, api_key).expect("Failed While Getting Teams");
+    let event_name = Tba::get_event(code, api_key).expect("Failed While Getting Event Name");
     dotenv().ok();
     Env {
         api_key: api_key.to_owned(),
