@@ -16,7 +16,7 @@ const AI_VALUE: AiValue = AiValue {
     win_ratio: 70.0,
     ai_guess: 1.2,
     avg: 3.5,
-    deviation: 0.095,
+    deviation: 1.4,
     ranking_points: 9.5,
     year_value: 4.8,
     recent: 5,

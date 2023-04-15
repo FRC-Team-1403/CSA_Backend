@@ -29,7 +29,7 @@ fn train() {
     env_logger::init();
     info!("Ai Test running");
     let loop_keys = get_keys();
-    let train_final: Vec<f32> = loop_keys
+    let train_final: Vec<i16> = loop_keys
         .par_iter()
         .map(|key| {
             let api_data = get_yearly(&SendType::Match, "", key).unwrap();
@@ -100,10 +100,10 @@ fn train() {
                     }
                 })
                 .collect();
-            avg_f32(train_results)
+            avg_f32(train_results) as i16
         })
         .collect();
-    let avg = avg_f32(train_final);
+    let avg = avg(train_final);
     info!("Ai Score: {} ", avg);
     if avg < 76.0 {
         panic!(
@@ -125,7 +125,7 @@ pub fn get_keys() -> Vec<String> {
     if GAMES == 0 {
         return keys;
     }
-    let (_, last) = keys.split_at(GAMES as usize - keys.len());
+    let (_, last) = keys.split_at(keys.len() - GAMES as usize);
     last.to_owned()
 }
 
