@@ -1,7 +1,9 @@
 use crate::ram::ENV;
+use crate::startup::tba::Tba;
 use serde_derive::Deserialize;
 use serde_derive::Serialize;
 use std::collections::HashMap;
+use std::thread;
 
 pub struct Http {
     pub team: u16,
@@ -18,8 +20,20 @@ impl Http {
             .header("X-TBA-Auth-Key", &ENV.api_key)
             .send()
             .ok()?;
-        let events = response.json::<Vec<String>>().ok()?;
-        let data = events.last()?;
+        let mut events = response.json::<Vec<String>>().ok()?;
+        events.retain(|event| event != &ENV.code);
+        let data = events.first()?;
+        let check_data = data.to_owned();
+        let check_events = events.clone();
+        thread::spawn(move || {
+            let check_data = check_data;
+            log::info!(
+                "event: {:?} for team {team} with events of {:?}, with key of {}\n",
+                Tba::get_event(&check_data, &ENV.api_key).unwrap(),
+                &check_events,
+                check_data
+            );
+        });
         Some(Http {
             team,
             key: data.to_owned(),

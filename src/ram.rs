@@ -12,6 +12,7 @@ pub const YEAR: u16 = 2023;
 
 #[derive(Debug)]
 pub struct Env {
+    pub code: String,
     pub api_key: String,
     pub redis_key: String,
     pub sentry_dsn: String,
@@ -27,6 +28,7 @@ pub static ENV: Lazy<Env> = Lazy::new(|| {
     let event_name = Tba::get_event(code, api_key).expect("Failed While Getting Event Name");
     dotenv().ok();
     Env {
+        code: code.to_owned(),
         api_key: api_key.to_owned(),
         redis_key: dotenv!("REDIS").to_owned(),
         sentry_dsn: dotenv!("SENTRY_DSN").to_owned(),
