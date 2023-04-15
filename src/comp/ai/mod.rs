@@ -11,7 +11,7 @@ use std::time::Duration;
 mod train;
 
 const AI_VALUE: AiValue = AiValue {
-    plr: 0.05,
+    plr: 0.001,
     positive_slope: 3.0,
     win_ratio: 70.0,
     ai_guess: 1.2,

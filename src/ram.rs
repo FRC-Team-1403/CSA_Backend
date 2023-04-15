@@ -2,7 +2,6 @@ use crate::comp::avg::math::YearAround;
 use crate::comp::event::math::EventData;
 use crate::startup::tba::Tba;
 use dotenv::dotenv;
-use log::error;
 use once_cell::sync::Lazy;
 use std::collections::HashMap;
 use std::sync::{Mutex, MutexGuard};
