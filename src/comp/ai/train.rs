@@ -17,41 +17,19 @@ use crate::{
 };
 
 use crate::comp::avg::year_around_main::SendType;
-use crate::comp::shared::deviation;
+use crate::comp::shared::{avg_f32, deviation};
 use rand::prelude::*;
 
 const START_FROM: usize = 25;
+const YEAR: u16 = 2023;
 
 #[test]
 fn train() {
     set_var("RUST_LOG", "info");
     env_logger::init();
     info!("Ai Test running");
-    let loop_keys = vec![
-        "2023njrob",
-        "2023ncwak",
-        "2023marea",
-        "2023nyro",
-        "2023casf",
-        "2023isde4",
-        "2023vaale",
-        "2023okok",
-        "2023ilch",
-        "2023milan",
-        "2023misjo",
-        "2023txbel",
-        "2023orwil",
-        "2023cafr",
-        "2023cave",
-        "2023ausc",
-        "2023ncjoh",
-        "2023txcha",
-        "2023scand",
-        "2023inpri",
-        "2023njfla",
-        "2023ncmec",
-    ];
-    let train_final: Vec<i16> = loop_keys
+    let loop_keys = get_keys();
+    let train_final: Vec<f32> = loop_keys
         .par_iter()
         .map(|key| {
             let api_data = get_yearly(&SendType::Match, "", key).unwrap();
@@ -74,7 +52,7 @@ fn train() {
                 let year = YearAround::new(json).calculate(&team.to_string());
                 get_pub().insert(*team, year.unwrap());
             });
-            let train_results: Vec<i16> = matches
+            let train_results: Vec<f32> = matches
                 .par_iter()
                 .map(|location| {
                     let (train, predict) = api_data.split_at(location.to_owned());
@@ -110,22 +88,22 @@ fn train() {
                     };
                     if winner == winner_ai {
                         info!("AI passed!, blue br {}, red br {}", red_br, blue_br);
-                        100
+                        100.0
                     } else if winner_ai == "blue" {
-                        let ratio = ((blue_br / (red_br + blue_br)) * 100.0) as i16;
+                        let ratio = ((blue_br / (red_br + blue_br)) * 100.0) as f32;
                         warn!("AI WRONG, ratio by ai: {ratio}",);
-                        100 - ratio
+                        100.0 - ratio
                     } else {
-                        let ratio = ((red_br / (red_br + blue_br)) * 100.0) as i16;
+                        let ratio = ((red_br / (red_br + blue_br)) * 100.0) as f32;
                         warn!("AI WRONG, ratio by ai: {ratio}",);
-                        100 - ratio
+                        100.0 - ratio
                     }
                 })
                 .collect();
-            avg(train_results) as i16
+            avg_f32(train_results)
         })
         .collect();
-    let avg = avg(train_final);
+    let avg = avg_f32(train_final);
     info!("Ai Score: {} ", avg);
     if avg < 76.0 {
         panic!(
@@ -133,6 +111,17 @@ fn train() {
             avg
         )
     }
+}
+
+pub fn get_keys() -> Vec<String> {
+    let response = reqwest::blocking::Client::new()
+        .get(format!(
+            "https://www.thebluealliance.com/api/v3/events/{YEAR}/keys",
+        ))
+        .header("X-TBA-Auth-Key", &ENV.api_key)
+        .send()
+        .unwrap();
+    response.json::<Vec<String>>().unwrap()
 }
 
 use crate::comp::parse::TeamYearAroundJsonParser;

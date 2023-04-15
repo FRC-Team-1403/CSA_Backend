@@ -116,6 +116,9 @@ pub fn get_breakdown_data(breakdown: Option<ScoreBreakdown>, team: &Team) -> Bre
 pub fn avg(avg_score: Vec<i16>) -> f32 {
     avg_score.par_iter().sum::<i16>() as f32 / avg_score.len() as f32
 }
+pub fn avg_f32(avg_score: Vec<f32>) -> f32 {
+    avg_score.par_iter().sum::<f32>() / avg_score.len() as f32
+}
 
 pub fn check_win(compare: Team, losses: i16, wins: i16, winner: &str) -> (i16, i16) {
     match compare {
