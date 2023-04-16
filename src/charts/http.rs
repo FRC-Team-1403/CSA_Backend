@@ -14,7 +14,7 @@ pub struct Http {
 impl Http {
     pub fn new(team: u16, version: Version) -> Option<Http> {
         let data = if let Version::Match = version {
-            &ENV.api_key
+            ENV.api_key.to_owned()
         } else {
             let response = reqwest::blocking::Client::new()
                 .get(format!(
@@ -26,7 +26,7 @@ impl Http {
                 .ok()?;
             let mut events = response.json::<Vec<String>>().ok()?;
             events.retain(|event| event != &ENV.code);
-            events.first()?
+            events.first()?.to_owned()
         };
         let check_data = data.to_owned();
         thread::spawn(move || {
@@ -37,10 +37,7 @@ impl Http {
                 check_data
             );
         });
-        Some(Http {
-            team,
-            key: data.to_owned(),
-        })
+        Some(Http { team, key: data })
     }
     pub fn get_data(&self) -> Option<Team> {
         let response = reqwest::blocking::Client::new()

@@ -12,6 +12,7 @@ use std::sync::MutexGuard;
 use std::thread;
 use std::time::Duration;
 
+#[derive(Debug, Clone, PartialEq, Copy)]
 pub enum Version {
     Match,
     Pre,
