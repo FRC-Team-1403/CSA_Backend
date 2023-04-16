@@ -26,21 +26,19 @@ impl Http {
                 .ok()?;
             let mut events = response.json::<Vec<String>>().ok()?;
             events.retain(|event| event != &ENV.code);
-            events.first()?.to_owned()
-        };
-        let check_data = data.to_owned();
-        if let Version::Match = version {
-            log::info!("Updating OPRS, DPRS and CCWMS for team {team}")
-        } else {
+            let data = events.first()?.to_owned();
+            let check_data = data.to_owned();
             thread::spawn(move || {
                 let check_data = check_data;
                 log::info!(
-                    "event: {:?} for team {team} with key of {}\n",
+                    "event: {:?} for team {team} with key of {}, with keys of {:?}\n",
                     Tba::get_event(&check_data, &ENV.api_key),
-                    check_data
+                    check_data,
+                    events
                 );
             });
-        }
+            data
+        };
         Some(Http { team, key: data })
     }
     pub fn get_data(&self) -> Option<Team> {
