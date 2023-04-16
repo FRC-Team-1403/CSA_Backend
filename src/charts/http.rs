@@ -29,14 +29,18 @@ impl Http {
             events.first()?.to_owned()
         };
         let check_data = data.to_owned();
-        thread::spawn(move || {
-            let check_data = check_data;
-            log::info!(
-                "event: {:?} for team {team} with key of {}\n",
-                Tba::get_event(&check_data, &ENV.api_key),
-                check_data
-            );
-        });
+        if let Version::Match = version {
+            log::info!("Updating OPRS, DPRS and CCWMS for team {team}")
+        } else {
+            thread::spawn(move || {
+                let check_data = check_data;
+                log::info!(
+                    "event: {:?} for team {team} with key of {}\n",
+                    Tba::get_event(&check_data, &ENV.api_key),
+                    check_data
+                );
+            });
+        }
         Some(Http { team, key: data })
     }
     pub fn get_data(&self) -> Option<Team> {
