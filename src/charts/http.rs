@@ -1,3 +1,4 @@
+use crate::charts::Version;
 use crate::ram::ENV;
 use crate::startup::tba::Tba;
 use serde_derive::Deserialize;
@@ -11,26 +12,28 @@ pub struct Http {
 }
 
 impl Http {
-    pub fn new(team: u16) -> Option<Http> {
-        let response = reqwest::blocking::Client::new()
-            .get(format!(
-                "https://www.thebluealliance.com/api/v3/team/frc{}/events/2023/keys",
-                team
-            ))
-            .header("X-TBA-Auth-Key", &ENV.api_key)
-            .send()
-            .ok()?;
-        let mut events = response.json::<Vec<String>>().ok()?;
-        events.retain(|event| event != &ENV.code);
-        let data = events.first()?;
+    pub fn new(team: u16, version: Version) -> Option<Http> {
+        let data = if let Version::Match = version {
+            &ENV.api_key
+        } else {
+            let response = reqwest::blocking::Client::new()
+                .get(format!(
+                    "https://www.thebluealliance.com/api/v3/team/frc{}/events/2023/keys",
+                    team
+                ))
+                .header("X-TBA-Auth-Key", &ENV.api_key)
+                .send()
+                .ok()?;
+            let mut events = response.json::<Vec<String>>().ok()?;
+            events.retain(|event| event != &ENV.code);
+            events.first()?
+        };
         let check_data = data.to_owned();
-        let check_events = events.clone();
         thread::spawn(move || {
             let check_data = check_data;
             log::info!(
-                "event: {:?} for team {team} with events of {:?}, with key of {}\n",
-                Tba::get_event(&check_data, &ENV.api_key).unwrap(),
-                &check_events,
+                "event: {:?} for team {team} with key of {}\n",
+                Tba::get_event(&check_data, &ENV.api_key),
                 check_data
             );
         });

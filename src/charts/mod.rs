@@ -15,13 +15,16 @@ use std::time::Duration;
 pub enum Version {
     Match,
     Pre,
+    Top60,
 }
+
 pub async fn populate(version: Version) {
     let mut teams_to_track: Vec<u16> = match version {
         Version::Match => ENV.teams.clone(),
-        Version::Pre => get_top_60().await,
+        Version::Pre => ENV.teams.clone(),
+        Version::Top60 => get_top_60().await,
     };
-    let Some(redis) = RedisDb::new() else{
+    let Some(redis) = RedisDb::new() else {
         error!("FAILED TO START REDIS DB WHILE GETTING OPR DATA");
         return;
     };
@@ -29,7 +32,7 @@ pub async fn populate(version: Version) {
     let works: Vec<u16> = teams_to_track
         .par_iter()
         .filter_map(|team| {
-            let team_data = Http::new(*team)?.get_data()?;
+            let team_data = Http::new(*team, version)?.get_data()?;
             let mut db = lock(&db);
             db.set_team(team, "oprs", Some(team_data.oprs));
             db.set_team(team, "ccwms", Some(team_data.ccwms));

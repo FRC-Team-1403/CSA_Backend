@@ -13,7 +13,7 @@ pub async fn run() {
     tokio::spawn(async {
         loop {
             populate(Version::Match).await;
-            thread::sleep(Duration::from_secs(60));
+            thread::sleep(Duration::from_secs(600));
         }
     });
     let mut event = Event::new();
