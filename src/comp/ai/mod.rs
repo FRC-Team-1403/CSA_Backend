@@ -45,7 +45,7 @@ pub enum Math {
 
 impl Ai {
     fn line_point_regression(vals: &[i16], what: Math) -> f32 {
-        let muli = match what {
+        let muli_plr = match what {
             Math::Score => SCORE_AI.plr,
             Math::EkamAi => AI_VALUE.plr,
         };
@@ -62,14 +62,14 @@ impl Ai {
             }
         }
         if let Some(seg) = plr.finish() {
-            ((((seg.slope as f32 * segments.len() as f32) + seg.intercept as f32) * muli)
+            ((((seg.slope as f32 * segments.len() as f32) + seg.intercept as f32) * muli_plr)
                 + Self::guess_next(vals))
-                / (1.0 + muli)
+                / (1.0 + muli_plr)
                 + Self::slope(&seg, what)
         } else if let Some(seg) = segments.last() {
-            ((((seg.slope as f32 * segments.len() as f32) + seg.intercept as f32) * muli)
+            ((((seg.slope as f32 * segments.len() as f32) + seg.intercept as f32) * muli_plr)
                 + Self::guess_next(vals))
-                / (1.0 + muli)
+                / (1.0 + muli_plr)
                 + Self::slope(seg, what)
         } else {
             0.0

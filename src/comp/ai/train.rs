@@ -94,7 +94,7 @@ fn train() {
                     let red_diff = (red_score - predict.alliances.red.score as f32).abs();
                     let blue_diff = (blue_score - predict.alliances.blue.score as f32).abs();
                     let avg_diff = (red_diff + blue_diff) / 2.0;
-                    info!("Diff of score for red is {red_diff}, with blue {blue_diff}");
+                    info!("\nDiff of score for red is {red_diff}, with blue {blue_diff}\nRed Predict Score {red_score} with real score {}\nBlue Predict Score {blue_score}, with real score {}", predict.alliances.red.score, predict.alliances.blue.score);
                     if winner == winner_ai {
                         info!("AI passed!, blue br {}, red br {}", red_br, blue_br);
                         (100.0, avg_diff)

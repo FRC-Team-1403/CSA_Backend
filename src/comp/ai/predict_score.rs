@@ -3,23 +3,27 @@ use crate::comp::avg::math::YearAround;
 
 pub struct ScoreAi {
     pub plr: f32,
-    year_value: f32,
+    year: f32,
+    guess: f32,
+    remove: f32,
 }
 
 pub const SCORE_AI: ScoreAi = ScoreAi {
-    plr: 0.001,
-    year_value: 5.2,
+    plr: 0.0001,
+    year: 4.8,
+    guess: 0.1,
+    remove: 0.00,
 };
 
 impl Ai {
     pub fn predict_match_score(data: &YearAround, team: &u16) -> f32 {
-        if let Some(team_data) = Self::get_lock_find(team) {
-            (Self::line_point_regression(&data.points.graph, Math::Score)
-                + (Self::line_point_regression(&team_data.points.graph, Math::Score)
-                    * SCORE_AI.year_value))
-                / (1.0 + SCORE_AI.year_value)
+        let year_avg_guess = if let Some(team_data) = Self::get_lock_find(team) {
+            (data.points.avg + (team_data.points.avg * SCORE_AI.year)) / (1.0 + SCORE_AI.year)
         } else {
-            Self::line_point_regression(&data.points.graph, Math::Score)
-        }
+            data.points.avg
+        };
+        let ai_guess =
+            Self::line_point_regression(&data.points.graph, Math::Score) * SCORE_AI.guess;
+        (ai_guess + year_avg_guess) / (1.0 + SCORE_AI.guess + SCORE_AI.remove)
     }
 }
