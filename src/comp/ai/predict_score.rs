@@ -10,7 +10,7 @@ pub struct ScoreAi {
 
 pub const SCORE_AI: ScoreAi = ScoreAi {
     plr: 0.0001,
-    year: 4.8,
+    year: 5.8,
     guess: 0.1,
     remove: 0.00,
 };
