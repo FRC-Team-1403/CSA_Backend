@@ -88,6 +88,7 @@ impl RedisDb {
         self.set_team(team, "AutoGamePiecesPoints", data.auto_game_points.avg);
         self.set_team(team, "TelopGamePieces", data.telop_game_pieces.avg);
         self.set_team(team, "TelopGamePiecesPoints", data.telop_game_points.avg);
+        self.set_team(team, "ContributedScore", Some(data.contributed_score));
         // let app_data = get_avg(team);
         // match app_data {
         //     Ok(app_data) => {

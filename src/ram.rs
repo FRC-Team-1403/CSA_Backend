@@ -2,7 +2,6 @@ use crate::comp::avg::math::YearAround;
 use crate::comp::event::math::EventData;
 use crate::startup::tba::Tba;
 use dotenv::dotenv;
-use log::error;
 use once_cell::sync::Lazy;
 use std::collections::HashMap;
 use std::sync::{Mutex, MutexGuard};
@@ -13,6 +12,7 @@ pub const YEAR: u16 = 2023;
 
 #[derive(Debug)]
 pub struct Env {
+    pub code: String,
     pub api_key: String,
     pub redis_key: String,
     pub sentry_dsn: String,
@@ -25,9 +25,10 @@ pub static ENV: Lazy<Env> = Lazy::new(|| {
     let api_key = dotenv!("API_KEY");
     let code = "2023cur";
     let teams = Tba::get_teams(code, api_key).expect("Failed While Getting Teams");
-    let event_name = Tba::get_event(code, api_key).expect("Failed While Getting Teams");
+    let event_name = Tba::get_event(code, api_key).expect("Failed While Getting Event Name");
     dotenv().ok();
     Env {
+        code: code.to_owned(),
         api_key: api_key.to_owned(),
         redis_key: dotenv!("REDIS").to_owned(),
         sentry_dsn: dotenv!("SENTRY_DSN").to_owned(),
@@ -42,7 +43,7 @@ pub fn get_pub() -> MutexGuard<'static, HashMap<u16, YearAround>> {
         if let Ok(data) = CACHE_YEAR_AVG.try_lock() {
             return data;
         }
-        error!("FAILED WHEN LOCKING CACHE_YEAR_AVG, THIS MAY BE A DEAD LOCK!!!!");
+        // error!("FAILED WHEN LOCKING CACHE_YEAR_AVG, THIS MAY BE A DEAD LOCK!!!!");
         thread::sleep(Duration::from_millis(1000));
     }
 }
