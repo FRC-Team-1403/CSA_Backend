@@ -121,7 +121,7 @@ fn train() {
         .collect();
     let avg_ai = avg(ai_score);
     let score = avg(score_diff);
-    info!("Ai Is correct: {avg_ai}\nThe Team Score Predicter inaccacy +-{}", score/3.0);
+    info!("Ai Is correct: {avg_ai}\nThe Team Score Predicter inaccuratcy +-{}", score/3.0);
     if avg_ai < 76.0 {
         panic!(
             "Ai test failed with different score\n the ai score is: {}",
