@@ -124,6 +124,8 @@ impl YearData {
                             let year = loop {
                                 if let Ok(mut year) = year {
                                     year.ekam_ai = Ai::calc_match(&year, team_num);
+                                    year.contributed_score =
+                                        Ai::predict_match_score(&year, team_num);
                                     break year;
                                 };
                             };
