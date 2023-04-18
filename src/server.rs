@@ -7,7 +7,7 @@ use std::time::Duration;
 use crate::comp::avg::year_around_main::{SendType, YearData};
 
 pub async fn run() {
-    update_year(SendType::Year(2023));
+    // update_year(SendType::Year(2023));
     thread::sleep(Duration::from_secs(30));
     update_year(SendType::Match);
     tokio::spawn(async {
