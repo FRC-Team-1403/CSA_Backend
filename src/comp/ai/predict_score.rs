@@ -12,7 +12,7 @@ pub const SCORE_AI: ScoreAi = ScoreAi {
     plr: 0.0001,
     year: 5.8,
     guess: 0.1,
-    remove: 0.00,
+    remove: 1.002,
 };
 
 impl Ai {
@@ -24,6 +24,6 @@ impl Ai {
         };
         let ai_guess =
             Self::line_point_regression(&data.points.graph, Math::Score) * SCORE_AI.guess;
-        (ai_guess + year_avg_guess) / (1.0 + SCORE_AI.guess + SCORE_AI.remove)
+        ((ai_guess + year_avg_guess) / (1.0 + SCORE_AI.guess)) / SCORE_AI.remove
     }
 }
