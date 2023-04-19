@@ -100,7 +100,7 @@ impl YearData {
                         thread::spawn(move || {
                             get_pub().insert(team_num, year_clone);
                         });
-                        send_and_check(year, team, year_check.to_string());
+                        // send_and_check(year, team, year_check.to_string());
                     }
                 }
                 Ok(self)
