@@ -41,7 +41,7 @@ pub async fn populate(version: Version) {
             Some(team.to_owned())
         })
         .collect();
-    if teams_to_track != works {
+    if teams_to_track != works && version != Version::Match {
         for x in &works {
             teams_to_track.retain(|team| team != x);
         }
