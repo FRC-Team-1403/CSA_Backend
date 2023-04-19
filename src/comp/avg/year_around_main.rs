@@ -80,7 +80,7 @@ impl YearData {
     }
     pub fn update(mut self, what: SendType) -> Result<Self, Self> {
         match what {
-            SendType::Year(year_check) => {
+            SendType::Year(_) => {
                 for team_num in ENV.teams.clone() {
                     let team = team_num.to_string();
                     let Some(json) =
