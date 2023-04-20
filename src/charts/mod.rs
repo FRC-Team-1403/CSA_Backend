@@ -8,8 +8,6 @@ use log::{error, info};
 use rayon::prelude::*;
 use std::process::exit;
 use std::sync::Mutex;
-use std::thread;
-
 #[derive(Debug, Clone, PartialEq, Copy)]
 pub enum Version {
     Match,
@@ -32,10 +30,15 @@ pub async fn populate(version: Version) {
         .par_iter()
         .filter_map(|team| {
             let team_data = Http::new(*team, version)?.get_data()?;
-            let add_cache = team_data.clone();
-            // thread::spawn(|| {
-            //
-            // });
+            let add_cache: http::Team = team_data.clone();
+            let team_borrow: u16  = team.to_owned();
+            tokio::spawn(async move {
+                let team = team_borrow;
+                let add_cache: http::Team = add_cache;
+                CCWMS_CACHE.lock().await.insert(team, add_cache.ccwms);
+                DPRS_CACHE.lock().await.insert(team, add_cache.dprs);
+                OPRS_CACHE.lock().await.insert(team, add_cache.oprs);
+            });
             let mut db = db.lock().expect("Dead Lock");
             db.set_team(team, "oprs", Some(team_data.oprs));
             db.set_team(team, "ccwms", Some(team_data.ccwms));
