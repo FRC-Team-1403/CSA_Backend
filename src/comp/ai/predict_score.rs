@@ -12,7 +12,7 @@ pub const SCORE_AI: ScoreAi = ScoreAi {
     plr: 0.0001,
     year: 5.8,
     guess: 0.1,
-    remove: 1.002,
+    remove: 1.5,
 };
 
 impl Ai {

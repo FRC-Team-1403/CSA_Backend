@@ -23,7 +23,7 @@ use rand::prelude::*;
 
 const START_FROM: usize = 25;
 const YEAR: u16 = 2023;
-const GAMES: u8 = 15;
+const GAMES: u8 = 10;
 
 #[test]
 fn train() {
