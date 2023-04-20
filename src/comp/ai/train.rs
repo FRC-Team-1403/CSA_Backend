@@ -23,7 +23,7 @@ use rand::prelude::*;
 
 const START_FROM: usize = 25;
 const YEAR: u16 = 2023;
-const GAMES: u8 = 10;
+const GAMES: u8 = 15;
 
 #[test]
 fn train() {
@@ -121,7 +121,10 @@ fn train() {
         .collect();
     let avg_ai = avg(ai_score);
     let score = avg(score_diff);
-    info!("Ai Is correct: {avg_ai}\nThe Team Score Predicter inaccuratcy +-{}", score/3.0);
+    info!(
+        "Ai Is correct: {avg_ai}\nThe Team Score Predicter inaccuratcy +-{}",
+        score / 3.0
+    );
     if avg_ai < 76.0 {
         panic!(
             "Ai test failed with different score\n the ai score is: {}",
@@ -203,17 +206,12 @@ fn avg_ai_values(teams: Vec<String>, br_data: &[(u16, f32, f32)]) -> (f32, f32) 
                 })
                 .collect(),
         ),
-        avg_f32(
-            teams
-                .par_iter()
-                .map(|team| {
-                    let (_, _, pred_score) = br_data
-                        .iter()
-                        .find(|(team_num, _, _)| team == &format!("frc{}", team_num))
-                        .unwrap();
-                    pred_score.to_owned()
-                })
-                .collect(),
-        ),
+        teams.iter().fold(0.0, |val: f32, team| {
+            let (_, _, pred_score) = br_data
+                .iter()
+                .find(|(team_num, _, _)| team == &format!("frc{}", team_num))
+                .unwrap();
+            pred_score + val
+        }),
     )
 }
