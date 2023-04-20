@@ -148,11 +148,13 @@ impl YearData {
 
 fn send_redis(team: &u16, data: &YearAround, what: &Mutex<Option<RedisDb>>) {
     loop {
-        if let Ok(mut cool_data) = what.try_lock() {
+        if let Ok(mut cool_data) = what.lock() {
             if cool_data.is_some() {
                 cool_data.as_mut().unwrap().send_avg_redis(team, data);
             }
             return;
+        } else {
+            panic!("Dead Lock");
         }
         error!("DEAD LOCK WITH REDIS DB");
         thread::sleep(Duration::from_millis(500));

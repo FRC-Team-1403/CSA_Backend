@@ -106,10 +106,10 @@ impl RedisDb {
 pub fn clear() {
     thread::spawn(|| {
         let mut con = Client::open(ENV.redis_key.clone())
-            .unwrap()
+            .expect("Failed To Start Connection")
             .get_connection()
-            .unwrap();
+            .expect("Failed To Connect To Redis Db");
         let check: RedisResult<()> = redis::cmd("FLUSHDB").query(&mut con);
-        check.unwrap()
+        check.expect("Failed To Clear RedisDB... Quiting Code")
     });
 }

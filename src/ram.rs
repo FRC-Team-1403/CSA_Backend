@@ -7,7 +7,6 @@ use std::collections::HashMap;
 use std::sync::{Mutex, MutexGuard};
 use std::thread;
 use std::time::Duration;
-
 pub const YEAR: u16 = 2023;
 
 #[derive(Debug)]
@@ -48,6 +47,13 @@ pub fn get_pub() -> MutexGuard<'static, HashMap<u16, YearAround>> {
     }
 }
 
+pub static OPRS_CACHE: Lazy<Mutex<HashMap<u16, f32>>> =
+    Lazy::new(|| Mutex::new(HashMap::new()));
+pub static CCWMS_CACHE: Lazy<Mutex<HashMap<u16, f32>>> =
+    Lazy::new(|| Mutex::new(HashMap::new()));
+
+pub static DPRS_CACHE: Lazy<Mutex<HashMap<u16, f32>>> =
+    Lazy::new(|| Mutex::new(HashMap::new()));
 pub static CACHE_YEAR_AVG: Lazy<Mutex<HashMap<u16, YearAround>>> =
     Lazy::new(|| Mutex::new(HashMap::new()));
 
