@@ -22,7 +22,7 @@ impl Ai {
                 + (Self::geometic_mean(&team_data.points.graph) * SCORE_AI.year))
                 / (1.0 + SCORE_AI.year)
         } else {
-            Self::geometic_mean(&data.points.graph)
+            Self::harmonic_mean(&data.points.graph)
         };
         let ai_guess =
             Self::line_point_regression(&data.points.graph, Math::Score) * SCORE_AI.guess;
