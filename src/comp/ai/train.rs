@@ -194,18 +194,13 @@ pub fn get_yearly(
 
 fn avg_ai_values(teams: Vec<String>, br_data: &[(u16, f32, f32)]) -> (f32, f32) {
     (
-        avg_f32(
-            teams
-                .par_iter()
-                .map(|team| {
-                    let (_, br, _) = br_data
-                        .iter()
-                        .find(|(team_num, _, _)| team == &format!("frc{}", team_num))
-                        .unwrap();
-                    br.to_owned()
-                })
-                .collect(),
-        ),
+        teams.iter().fold(0.0, |old: f32, team| {
+            let (_, br, _) = br_data
+                .iter()
+                .find(|(team_num, _, _)| team == &format!("frc{}", team_num))
+                .unwrap();
+            old + br
+        }),
         teams.iter().fold(0.0, |val: f32, team| {
             let (_, _, pred_score) = br_data
                 .iter()
