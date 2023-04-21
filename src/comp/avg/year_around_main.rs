@@ -81,6 +81,7 @@ impl YearData {
         match what {
             SendType::Year(_) => {
                 for team_num in ENV.teams.clone() {
+                    info!("Doing Year Around For Team {team_num}");
                     let team = team_num.to_string();
                     let Some(json) =
                         Self::get_new_data(what.clone(), &team) else {
