@@ -98,6 +98,7 @@ impl YearData {
                         let year_clone = year.clone();
                         thread::spawn(move || {
                             get_pub().insert(team_num, year_clone);
+                            info!("Year Data Set For Team: {team_num}")
                         });
                         // send_and_check(year, team, year_check.to_string());
                     }
