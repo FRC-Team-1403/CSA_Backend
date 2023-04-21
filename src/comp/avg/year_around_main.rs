@@ -68,8 +68,9 @@ impl YearData {
                     return Some(json);
                 }
                 Err(err) => {
+                    error!("ERROR: {}", err);
                     if _failed == 120 {
-                        info!("failed to get data due to: {}", err);
+                        error!("failed to get data due to: {}", err);
                         return None;
                     }
                     _failed += 1
