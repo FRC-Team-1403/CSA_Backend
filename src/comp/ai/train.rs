@@ -7,6 +7,7 @@ use std::fs::File;
 use std::io::prelude::*;
 use std::{fs, thread, time::Duration};
 
+use crate::ram::CACHE_YEAR_AVG;
 use crate::startup::tba::Tba;
 use crate::{
     comp::{
@@ -52,7 +53,7 @@ fn train() {
             calc_teams.par_iter().for_each(|team| {
                 let json = get_yearly(&SendType::Year(2023), &team.to_string(), key).unwrap();
                 let year = YearAround::new(json).calculate(&team.to_string());
-                get_pub().insert(*team, year.unwrap());
+                CACHE_YEAR_AVG.lock().unwrap().insert(*team, year.unwrap());
             });
             //Year Data is set time to test
             let train_results: Vec<(f32, f32)> = matches
