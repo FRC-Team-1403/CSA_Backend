@@ -31,17 +31,26 @@ pub async fn populate(version: Version) {
         .par_iter()
         .filter_map(|team| {
             let team_data = Http::new(*team, version)?.get_data()?;
-            if !check_cache(team, &team_data.ccwms, &team_data.oprs, &team_data.dprs){
+            if check_cache(team, &team_data.ccwms, &team_data.oprs, &team_data.dprs) {
                 return None;
             }
             let add_cache: http::Team = team_data.clone();
-            let team_borrow: u16  = team.to_owned();
-            thread::spawn( move || {
+            let team_borrow: u16 = team.to_owned();
+            thread::spawn(move || {
                 let team = team_borrow;
                 let add_cache: http::Team = add_cache;
-                CCWMS_CACHE.lock().expect("Dead Lokc").insert(team, add_cache.ccwms);
-                DPRS_CACHE.lock().expect("Dead Lokc").insert(team, add_cache.dprs);
-                OPRS_CACHE.lock().expect("Dead Lokc").insert(team, add_cache.oprs);
+                CCWMS_CACHE
+                    .lock()
+                    .expect("Dead Lokc")
+                    .insert(team, add_cache.ccwms);
+                DPRS_CACHE
+                    .lock()
+                    .expect("Dead Lokc")
+                    .insert(team, add_cache.dprs);
+                OPRS_CACHE
+                    .lock()
+                    .expect("Dead Lokc")
+                    .insert(team, add_cache.oprs);
             });
             let mut db = db.lock().expect("Dead Lock");
             db.set_team(team, "oprs", Some(team_data.oprs));
@@ -68,19 +77,19 @@ pub async fn populate(version: Version) {
     )
 }
 
-fn check_cache(team : &u16, old_ccwms : &f32, old_oprs : &f32, old_drps: &f32)-> bool {
-    if let Some(ccwms) = CCWMS_CACHE.lock().expect("Dead Lokc").get(team)  {
-        if old_ccwms == ccwms {
+fn check_cache(team: &u16, old_ccwms: &f32, old_oprs: &f32, old_drps: &f32) -> bool {
+    if let Some(ccwms) = CCWMS_CACHE.lock().expect("Dead Lokc").get(team) {
+        if old_ccwms != ccwms {
             return true;
         }
     }
-    if let Some(old) = OPRS_CACHE.lock().expect("Dead Lokc").get(team)  {
-        if old_oprs == old {
+    if let Some(old) = OPRS_CACHE.lock().expect("Dead Lokc").get(team) {
+        if old_oprs != old {
             return true;
         }
     }
-    if let Some(old) = DPRS_CACHE.lock().expect("Dead Lokc").get(team)  {
-        if old_drps == old {
+    if let Some(old) = DPRS_CACHE.lock().expect("Dead Lokc").get(team) {
+        if old_drps != old {
             return true;
         }
     }

@@ -201,12 +201,12 @@ fn avg_ai_values(teams: Vec<String>, br_data: &[(u16, f32, f32)]) -> (f32, f32) 
                 .unwrap();
             old + br
         }),
-        teams.iter().fold(0.0, |val: f32, team| {
+        teams.iter().fold(0.0, |old: f32, team| {
             let (_, _, pred_score) = br_data
                 .iter()
                 .find(|(team_num, _, _)| team == &format!("frc{}", team_num))
                 .unwrap();
-            pred_score + val
+            pred_score + old
         }),
     )
 }

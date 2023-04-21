@@ -4,7 +4,8 @@ use crate::startup::tba::Tba;
 use dotenv::dotenv;
 use once_cell::sync::Lazy;
 use std::collections::HashMap;
-use std::sync::{Mutex, MutexGuard};
+use std::sync::atomic::AtomicBool;
+use std::sync::{Arc, Mutex, MutexGuard};
 use std::thread;
 use std::time::Duration;
 pub const YEAR: u16 = 2023;
@@ -47,16 +48,13 @@ pub fn get_pub() -> MutexGuard<'static, HashMap<u16, YearAround>> {
     }
 }
 
-pub static OPRS_CACHE: Lazy<Mutex<HashMap<u16, f32>>> =
-    Lazy::new(|| Mutex::new(HashMap::new()));
-pub static CCWMS_CACHE: Lazy<Mutex<HashMap<u16, f32>>> =
-    Lazy::new(|| Mutex::new(HashMap::new()));
-
-pub static DPRS_CACHE: Lazy<Mutex<HashMap<u16, f32>>> =
-    Lazy::new(|| Mutex::new(HashMap::new()));
+// pub static EKAMAI: Lazy<Mutex<HashMap<u16, f32>>> = Lazy::new(|| Mutex::new(HashMap::new()));
+pub static READY: Lazy<AtomicBool> = Lazy::new(|| AtomicBool::new(false));
+pub static OPRS_CACHE: Lazy<Mutex<HashMap<u16, f32>>> = Lazy::new(|| Mutex::new(HashMap::new()));
+pub static CCWMS_CACHE: Lazy<Mutex<HashMap<u16, f32>>> = Lazy::new(|| Mutex::new(HashMap::new()));
+pub static DPRS_CACHE: Lazy<Mutex<HashMap<u16, f32>>> = Lazy::new(|| Mutex::new(HashMap::new()));
 pub static CACHE_YEAR_AVG: Lazy<Mutex<HashMap<u16, YearAround>>> =
     Lazy::new(|| Mutex::new(HashMap::new()));
-
 pub static CACHE_MATCH_AVG: Lazy<Mutex<HashMap<u16, YearAround>>> =
     Lazy::new(|| Mutex::new(HashMap::new()));
 

@@ -131,7 +131,7 @@ impl Ai {
                 return Some(year.to_owned());
             }
             tried += 1;
-            if tried > 10 {
+            if tried > 120 {
                 error!("Dead lock or some other and it failed to get data error");
                 return None;
             }
@@ -140,7 +140,7 @@ impl Ai {
         }
     }
     pub fn calc_match(match_data: &YearAround, team: &u16) -> f32 {
-        if let Some(year) = Self::get_lock_find(team) {
+        let ai = if let Some(year) = Self::get_lock_find(team) {
             // this allows more value to the recent data
             ((Self::math_v2(&year, Comp::Year) * AI_VALUE.year_value)
                 + Self::math_v2(match_data, Comp::Match))
@@ -148,7 +148,12 @@ impl Ai {
         } else {
             error!("Dead lock or some other and it failed to get data error");
             Self::math_v2(match_data, Comp::Match)
-        }
+        };
+        // EKAMAI
+        //    .lock()
+        //    .expect("Dead Lock")
+        //    .insert(team.to_owned(), ai);
+        ai
     }
 
     pub fn calc_year(year_data: &YearAround) -> f32 {
