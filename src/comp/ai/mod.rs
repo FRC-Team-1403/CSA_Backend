@@ -1,7 +1,7 @@
 use super::avg::math::YearAround;
 use crate::comp::ai::predict_score::SCORE_AI;
 use crate::comp::shared::avg;
-use crate::ram::get_pub;
+use crate::ram::CACHE_YEAR_AVG;
 use log::error;
 use log::{debug, warn};
 use plr::regression::OptimalPLR;
@@ -126,7 +126,7 @@ impl Ai {
     fn get_lock_find(team: &u16) -> Option<YearAround> {
         let mut tried: u8 = 0;
         loop {
-            if let Some(year) = get_pub().get(team) {
+            if let Some(year) = CACHE_YEAR_AVG.lock().expect("deadlock").get(team) {
                 // this allows more value to the recent data
                 return Some(year.to_owned());
             }
