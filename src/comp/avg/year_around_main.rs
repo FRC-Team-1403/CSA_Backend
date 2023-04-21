@@ -12,7 +12,6 @@ use rayon::prelude::*;
 use std::collections::HashMap;
 use std::sync::Mutex;
 use std::thread;
-use std::time::Duration;
 
 const PUBLIC_CACHE: u16 = 16969;
 
@@ -154,10 +153,8 @@ fn send_redis(team: &u16, data: &YearAround, what: &Mutex<Option<RedisDb>>) {
             }
             return;
         } else {
-            panic!("Dead Lock");
+            panic!("Dead Lock With Send Redis Db");
         }
-        error!("DEAD LOCK WITH REDIS DB");
-        thread::sleep(Duration::from_millis(500));
     }
 }
 

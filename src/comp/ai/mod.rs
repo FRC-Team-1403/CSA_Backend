@@ -44,6 +44,32 @@ pub enum Math {
 }
 
 impl Ai {
+    pub fn geometic_mean(n: &[i16]) -> f32 {
+        let product: f64 = n.iter().fold(1.0, |mut old_value: f64, new| {
+            if old_value == 0.0 {
+                old_value = 1.0
+            }
+            let new = if new <= &0 {
+                1.0
+            } else {
+                new.to_owned() as f64
+            };
+            old_value * new
+        });
+        product.powf(1.0 / n.len() as f64) as f32
+    }
+    pub fn harmonic_mean(n: &[i16]) -> f32 {
+        let reciprocal: f32 = n.iter().fold(0.0, |old_value: f32, new| {
+            let new = if new <= &0 {
+                1.0
+            } else {
+                new.to_owned() as f32
+            };
+            old_value + (1.0 / new)
+        });
+        n.len() as f32 / reciprocal
+    }
+
     fn line_point_regression(vals: &[i16], what: Math) -> f32 {
         let muli_plr = match what {
             Math::Score => SCORE_AI.plr,
@@ -90,12 +116,12 @@ impl Ai {
         let calc = {
             if vals.len() > AI_VALUE.recent + 2 {
                 let parse = vals.len() - AI_VALUE.recent;
-                vals[parse..].to_owned()
+                &vals[parse..]
             } else {
-                vals.to_owned()
+                vals
             }
         };
-        avg(calc)
+        avg(calc.to_owned())
     }
     fn get_lock_find(team: &u16) -> Option<YearAround> {
         let mut tried: u8 = 0;
@@ -105,7 +131,7 @@ impl Ai {
                 return Some(year.to_owned());
             }
             tried += 1;
-            if tried > 10 {
+            if tried > 120 {
                 error!("Dead lock or some other and it failed to get data error");
                 return None;
             }
@@ -114,7 +140,7 @@ impl Ai {
         }
     }
     pub fn calc_match(match_data: &YearAround, team: &u16) -> f32 {
-        if let Some(year) = Self::get_lock_find(team) {
+        let ai = if let Some(year) = Self::get_lock_find(team) {
             // this allows more value to the recent data
             ((Self::math_v2(&year, Comp::Year) * AI_VALUE.year_value)
                 + Self::math_v2(match_data, Comp::Match))
@@ -122,7 +148,12 @@ impl Ai {
         } else {
             error!("Dead lock or some other and it failed to get data error");
             Self::math_v2(match_data, Comp::Match)
-        }
+        };
+        // EKAMAI
+        //    .lock()
+        //    .expect("Dead Lock")
+        //    .insert(team.to_owned(), ai);
+        ai
     }
 
     pub fn calc_year(year_data: &YearAround) -> f32 {
@@ -132,9 +163,9 @@ impl Ai {
     fn math_v2(data: &YearAround, comp: Comp) -> f32 {
         let rp_guess = data.rp.avg.unwrap_or(0.0) * AI_VALUE.ranking_points;
         let points = match comp {
-            Comp::Year => data.points.avg,
+            Comp::Year => Self::geometic_mean(&data.points.graph),
             Comp::Match => {
-                ((data.points.avg * AI_VALUE.avg)
+                ((Self::geometic_mean(&data.points.graph) * AI_VALUE.avg)
                     + (Self::line_point_regression(&data.points.graph, Math::EkamAi)
                         * AI_VALUE.ai_guess))
                     / (AI_VALUE.ai_guess + AI_VALUE.avg)
