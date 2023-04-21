@@ -156,7 +156,6 @@ pub fn get_keys() -> Vec<String> {
 }
 
 use crate::comp::parse::{Root2, TeamYearAroundJsonParser};
-use crate::ram::get_pub;
 use reqwest::Error;
 
 pub fn get_yearly(
