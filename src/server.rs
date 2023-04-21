@@ -1,14 +1,12 @@
 use crate::charts::{populate, Version};
 use crate::comp::avg::year_around_main::{SendType, YearData};
 use crate::comp::event::Event;
-use crate::ram::READY;
 use log::{error, info, warn};
-use std::sync::atomic::Ordering;
 use std::thread;
 use std::time::Duration;
 
 pub async fn run() {
-    update_year(SendType::Year(2023));
+    update(YearData::new(), SendType::Year(2023));
     thread::sleep(Duration::from_secs(30));
     update_year(SendType::Match);
     tokio::spawn(async {
@@ -29,24 +27,12 @@ fn update_year(what: SendType) {
     thread::spawn(move || {
         let mut year = YearData::new();
         loop {
-            if let SendType::Match = what {
-                if READY.load(Ordering::Relaxed) {
-                    break;
-                }
-                log::warn!("waiting for year_around_main signal");
-                thread::sleep(Duration::from_secs_f32(0.5))
-            }
-        }
-        loop {
             let tx_ctx =
                 sentry::TransactionContext::new("Updating new Year Value", "run() function");
             let transaction = sentry::start_transaction(tx_ctx);
             info!("Updating year value: ");
             year = update(year, what.clone());
             transaction.finish();
-            if let SendType::Year(_) = what {
-                READY.store(true, Ordering::Relaxed);
-            }
             year.updated = wait(year.updated, 15, 180);
         }
     });
