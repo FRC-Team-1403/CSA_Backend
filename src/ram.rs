@@ -24,8 +24,14 @@ pub struct Env {
 pub static ENV: Lazy<Env> = Lazy::new(|| {
     let api_key = dotenv!("API_KEY");
     let code = "2023cur";
-    let teams = Tba::get_teams(code, api_key).expect("Failed While Getting Teams");
+    let mut teams = Tba::get_teams(code, api_key).expect("Failed While Getting Teams");
     let event_name = Tba::get_event(code, api_key).expect("Failed While Getting Event Name");
+    teams = teams.iter().filter_map(|x| {
+        if x == &8177{
+            return  None;
+        }
+        Some(*x)
+    }).collect();
     dotenv().ok();
     Env {
         code: code.to_owned(),
@@ -34,19 +40,9 @@ pub static ENV: Lazy<Env> = Lazy::new(|| {
         sentry_dsn: dotenv!("SENTRY_DSN").to_owned(),
         firestore_collection: event_name,
         update_where: code.to_owned(),
-        teams,
+        teams : teams,
     }
 });
-
-pub fn get_pub() -> MutexGuard<'static, HashMap<u16, YearAround>> {
-    loop {
-        if let Ok(data) = CACHE_YEAR_AVG.try_lock() {
-            return data;
-        }
-        // error!("FAILED WHEN LOCKING CACHE_YEAR_AVG, THIS MAY BE A DEAD LOCK!!!!");
-        thread::sleep(Duration::from_millis(1000));
-    }
-}
 
 // pub static EKAMAI: Lazy<Mutex<HashMap<u16, f32>>> = Lazy::new(|| Mutex::new(HashMap::new()));
 pub static READY: Lazy<AtomicBool> = Lazy::new(|| AtomicBool::new(false));
