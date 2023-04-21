@@ -33,6 +33,8 @@ fn update_year(what: SendType) {
                 if READY.load(Ordering::Relaxed) {
                     break;
                 }
+                log::warn!("waiting for year_around_main signal");
+                thread::sleep(Duration::from_secs_f32(0.5))
             }
         }
         loop {
