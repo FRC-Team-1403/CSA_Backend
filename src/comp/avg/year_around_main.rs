@@ -99,7 +99,7 @@ impl YearData {
                         year.ekam_ai = 0.0;
                         let year_clone = year.clone();
                         thread::spawn(move || {
-                            get_pub().insert(team_num, year_clone);
+                            CACHE_YEAR_AVG.lock().expect("Dead Lock").insert(team_num, year_clone);
                             info!("Year Data Set For Team: {team_num}")
                         });
                         // send_and_check(year, team, year_check.to_string());
