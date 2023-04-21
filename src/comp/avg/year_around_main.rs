@@ -6,12 +6,11 @@ use crate::comp::http::get_yearly;
 use crate::comp::parse::TeamYearAroundJsonParser;
 use crate::db::firebase::YearStore;
 use crate::db::redis_functions::RedisDb;
-use crate::ram::{get_pub, CACHE_MATCH_AVG, CACHE_YEAR_AVG, ENV};
-use log::{error, info, warn};
+use crate::ram::{CACHE_MATCH_AVG, CACHE_YEAR_AVG, ENV};
+use log::{error,info, warn};
 use rayon::prelude::*;
 use std::collections::HashMap;
 use std::sync::Mutex;
-use std::thread;
 
 const PUBLIC_CACHE: u16 = 16969;
 
