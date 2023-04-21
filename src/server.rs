@@ -6,9 +6,9 @@ use std::thread;
 use std::time::Duration;
 
 pub async fn run() {
-    update(YearData::new(), SendType::Year(2023));
     info!("Data Is Ready, Starting Server");
     update_year(SendType::Year(2023));
+    thread::sleep(Duration::from_secs(120));
     update_year(SendType::Match);
     tokio::spawn(async {
         loop {

@@ -131,7 +131,7 @@ impl Ai {
                 return Some(year.to_owned());
             }
             tried += 1;
-            if tried > 120 {
+            if tried > 10 {
                 error!("Dead lock or some other and it failed to get data error");
                 return None;
             }
