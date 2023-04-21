@@ -6,7 +6,7 @@ use crate::comp::http::get_yearly;
 use crate::comp::parse::TeamYearAroundJsonParser;
 use crate::db::firebase::YearStore;
 use crate::db::redis_functions::RedisDb;
-use crate::ram::{get_pub, CACHE_MATCH_AVG, ENV};
+use crate::ram::{get_pub, CACHE_MATCH_AVG, CACHE_YEAR_AVG, ENV};
 use log::{error, info, warn};
 use rayon::prelude::*;
 use std::collections::HashMap;
@@ -95,7 +95,7 @@ impl YearData {
                             error!("failed to parse data");
                             return Err(self);
                         };
-                        year.ekam_ai = Ai::calc_year(&year);
+                        year.ekam_ai = 0.0;
                         let year_clone = year.clone();
                         thread::spawn(move || {
                             get_pub().insert(team_num, year_clone);
@@ -161,14 +161,15 @@ fn send_redis(team: &u16, data: &YearAround, what: &Mutex<Option<RedisDb>>) {
 }
 
 fn check_cache(year: &YearAround, team_num: &u16) -> bool {
-    if let Ok(mut data) = CACHE_MATCH_AVG.lock() {
-        if let Some(data) = data.get(team_num) {
-            if data == year {
-                return false;
-            }
+    if let Some(data) = CACHE_MATCH_AVG.lock().expect("Dead Lock").get(team_num) {
+        if data == year {
+            return false;
         }
-        data.insert(team_num.to_owned(), year.to_owned());
     }
+    CACHE_MATCH_AVG
+        .lock()
+        .expect("Dead Lock")
+        .insert(team_num.to_owned(), year.to_owned());
     true
 }
 
