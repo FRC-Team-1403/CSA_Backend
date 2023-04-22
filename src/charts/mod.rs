@@ -93,5 +93,6 @@ fn check_cache(team: &u16, old_ccwms: &f32, old_oprs: &f32, old_drps: &f32) -> b
             return true;
         }
     }
+    log::warn!("Skipping Insights update for {team} data is updated");
     false
 }
