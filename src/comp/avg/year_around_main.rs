@@ -7,14 +7,16 @@ use crate::comp::parse::TeamYearAroundJsonParser;
 use crate::db::firebase::YearStore;
 use crate::db::redis_functions::RedisDb;
 use crate::ram::{CACHE_MATCH_AVG, CACHE_YEAR_AVG, ENV};
-use log::{error,info, warn};
+use futures::executor::block_on;
+use log::{error, info, warn};
 use rayon::prelude::*;
 use std::collections::HashMap;
 use std::sync::Mutex;
 use std::thread;
+
 const PUBLIC_CACHE: u16 = 16969;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct YearData {
     pub cache: HashMap<u16, TeamYearAroundJsonParser>,
     pub updated: bool,
@@ -27,19 +29,14 @@ impl YearData {
             updated: false,
         }
     }
-    fn check_cache(
-        mut self,
-        json: TeamYearAroundJsonParser,
-        what: &SendType,
-        team: &u16,
-    ) -> (Self, bool) {
+    fn check_cache(&mut self, json: TeamYearAroundJsonParser, what: &SendType, team: &u16) -> bool {
         let loc: u16;
         match what {
             SendType::Year(_) => {
                 if let Some(compare) = self.cache.get(team) {
                     if compare == &json {
                         info!("Skipping {team}, The data is updated");
-                        return (self, false);
+                        return false;
                     }
                 }
                 loc = *team;
@@ -48,7 +45,7 @@ impl YearData {
                 if let Some(compare) = self.cache.get(&PUBLIC_CACHE) {
                     if compare == &json {
                         info!("Skipping match update,The data is updated");
-                        return (self, false);
+                        return false;
                     }
                 }
                 loc = PUBLIC_CACHE;
@@ -56,7 +53,7 @@ impl YearData {
         }
         self.updated = true;
         self.cache.insert(loc, json);
-        (self, true)
+        true
     }
     pub fn get_new_data(what: SendType, frc: &str) -> Option<TeamYearAroundJsonParser> {
         let mut _failed: u8 = 0;
@@ -80,30 +77,37 @@ impl YearData {
     pub fn update(mut self, what: SendType) -> Result<Self, Self> {
         match what {
             SendType::Year(_) => {
-                for team_num in ENV.teams.clone() {
+                let cache = tokio::sync::Mutex::new(self.clone());
+                ENV.teams.par_iter().try_for_each(|team_num| {
                     info!("Doing Year Around For Team {team_num}");
                     let team = team_num.to_string();
                     let Some(json) =
                         Self::get_new_data(what.clone(), &team) else {
-                        return Err(self);
+                        return Err(self.clone());
                     };
-                    let mut _allow: bool = false;
-                    (self, _allow) = self.check_cache(json.clone(), &what, &team_num);
+                    let mut _allow: bool =
+                        block_on(cache.lock()).check_cache(json.clone(), &what, team_num);
                     if _allow {
                         let year = YearAround::new(json).calculate(&team);
                         let Ok(mut year) = year else {
                             error!("failed to parse data");
-                            return Err(self);
+                            return Err(self.clone());
                         };
                         year.ekam_ai = 0.0;
-                        let year_clone = year.clone();
                         thread::spawn(move || {
-                            CACHE_YEAR_AVG.lock().expect("Dead Lock").insert(team_num, year_clone);
+                            CACHE_YEAR_AVG
+                                .lock()
+                                .expect("Dead Lock")
+                                .insert(team_num.to_owned(), year);
                             info!("Year Data Set For Team: {team_num}")
                         });
                         // send_and_check(year, team, year_check.to_string());
                     }
-                }
+                    Ok(())
+                })?;
+                let data = block_on(cache.lock());
+                self.cache = data.cache.clone();
+                self.updated = data.updated;
                 Ok(self)
             }
             SendType::Match => {
@@ -111,8 +115,7 @@ impl YearData {
                     Self::get_new_data(what.clone(), "69") else {
                     return Err(self);
                 };
-                let mut _allow = false;
-                (self, _allow) = self.check_cache(json.clone(), &what, &69);
+                let mut _allow = self.check_cache(json.clone(), &what, &69);
                 if _allow {
                     let redis_db = Mutex::new(RedisDb::new());
                     let calc = YearAround::new(json);

@@ -1,11 +1,12 @@
 use crate::comp::avg::math::YearAround;
+use crate::comp::avg::year_around_main::YearData;
 use crate::comp::event::math::EventData;
 use crate::startup::tba::Tba;
 use dotenv::dotenv;
 use once_cell::sync::Lazy;
 use std::collections::HashMap;
 use std::sync::atomic::AtomicBool;
-use std::sync::{Mutex};
+use std::sync::Mutex;
 pub const YEAR: u16 = 2023;
 
 #[derive(Debug)]
@@ -22,14 +23,8 @@ pub struct Env {
 pub static ENV: Lazy<Env> = Lazy::new(|| {
     let api_key = dotenv!("API_KEY");
     let code = "2023cur";
-    let mut teams = Tba::get_teams(code, api_key).expect("Failed While Getting Teams");
+    let teams = Tba::get_teams(code, api_key).expect("Failed While Getting Teams");
     let event_name = Tba::get_event(code, api_key).expect("Failed While Getting Event Name");
-    teams = teams.iter().filter_map(|x| {
-        if x == &8177{
-            return  None;
-        }
-        Some(*x)
-    }).collect();
     dotenv().ok();
     Env {
         code: code.to_owned(),
@@ -38,7 +33,7 @@ pub static ENV: Lazy<Env> = Lazy::new(|| {
         sentry_dsn: dotenv!("SENTRY_DSN").to_owned(),
         firestore_collection: event_name,
         update_where: code.to_owned(),
-        teams : teams,
+        teams,
     }
 });
 
@@ -54,3 +49,4 @@ pub static CACHE_MATCH_AVG: Lazy<Mutex<HashMap<u16, YearAround>>> =
 
 pub static CACHE_MATCH: Lazy<Mutex<HashMap<u16, Vec<EventData>>>> =
     Lazy::new(|| Mutex::new(HashMap::new()));
+pub static CACHE_YEAR_DATA: Lazy<Mutex<YearData>> = Lazy::new(|| Mutex::new(YearData::new()));
